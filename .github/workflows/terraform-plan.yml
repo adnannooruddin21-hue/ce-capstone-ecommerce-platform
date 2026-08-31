@@ -23,6 +23,16 @@ jobs:
             -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | jq -r '.value')
           echo "$IDTOKEN" | cut -d. -f2 | python3 -c "import sys,base64,json;s=sys.stdin.read().strip();s+='='*(-len(s)%4);print(json.dumps(json.loads(base64.urlsafe_b64decode(s))))"
 
+      - name: Raw STS AssumeRoleWithWebIdentity
+        run: |
+          IDTOKEN=$(curl -sS "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com" \
+            -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | jq -r '.value')
+          aws sts assume-role-with-web-identity \
+            --role-arn arn:aws:iam::128529977749:role/ce-capstone-gha-deploy \
+            --role-session-name diag \
+            --web-identity-token "$IDTOKEN" \
+            --region eu-north-1 2>&1 || true
+
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: arn:aws:iam::128529977749:role/ce-capstone-gha-deploy
