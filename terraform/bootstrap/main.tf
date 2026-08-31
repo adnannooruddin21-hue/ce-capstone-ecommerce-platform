@@ -85,15 +85,15 @@ data "aws_iam_policy_document" "gha_assume" {
       type        = "Federated"
       identifiers = [data.aws_iam_openid_connect_provider.gha.arn]
     }
-    condition {
+   condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:aud"
       values   = ["sts.amazonaws.com"]
     }
     condition {
       test     = "StringLike"
-      variable = "token.actions.githubusercontent.com:sub"
-      values   = ["repo:${var.github_repo}:*"]
+      variable = "token.actions.githubusercontent.com:job_workflow_ref"
+      values   = ["${var.github_repo}/.github/workflows/*"]
     }
   }
 }
