@@ -1,0 +1,28 @@
+#!/bin/bash
+set -euxo pipefail
+
+dnf install -y python3 python3-pip
+pip3 install flask gunicorn requests
+
+install -d -m 0755 /opt/app
+cat > /opt/app/app.py <<'PYEOF'
+${app_py}
+PYEOF
+
+cat > /etc/systemd/system/catalog.service <<'UNIT'
+[Unit]
+Description=Catalog service
+After=network-online.target
+
+[Service]
+WorkingDirectory=/opt/app
+Environment=APP_VERSION=${app_version}
+ExecStart=/usr/local/bin/gunicorn --bind 0.0.0.0:${app_port} --workers 2 app:app
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
+UNIT
+
+systemctl daemon-reload
+systemctl enable --now catalog
