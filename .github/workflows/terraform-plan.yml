@@ -16,10 +16,18 @@ jobs:
         working-directory: terraform
     steps:
       - uses: actions/checkout@v4
+
+      - name: Show OIDC token claims
+        run: |
+          IDTOKEN=$(curl -sS "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com" \
+            -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" | jq -r '.value')
+          echo "$IDTOKEN" | cut -d. -f2 | python3 -c "import sys,base64,json;s=sys.stdin.read().strip();s+='='*(-len(s)%4);print(json.dumps(json.loads(base64.urlsafe_b64decode(s))))"
+
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
           aws-region: eu-north-1
+
       - uses: hashicorp/setup-terraform@v3
       - run: terraform fmt -check -recursive
       - run: terraform init
