@@ -2,9 +2,12 @@ terraform {
   required_version = ">= 1.7"
   required_providers {
     aws = { source = "hashicorp/aws", version = "~> 5.0" }
+    tls = { source = "hashicorp/tls", version = "~> 4.0" }
   }
 }
 
+# Bootstrap stack: remote state backend + GitHub Actions deploy role.
+# Applied once with LOCAL state (no backend block here).
 provider "aws" {
   region = "eu-north-1"
   default_tags {
@@ -17,26 +20,32 @@ provider "aws" {
 }
 
 variable "github_repo" {
-  description = "owner/repo that may assume the deploy role"
+  description = "owner/repo allowed to assume the deploy role"
   type        = string
 }
 
 data "aws_caller_identity" "current" {}
 
-# ---- Remote state bucket ----
+# ---------------------------------------------------------------------------
+# Remote state bucket + lock table
+# ---------------------------------------------------------------------------
 resource "aws_s3_bucket" "tfstate" {
   bucket = "ce-capstone-tfstate-${data.aws_caller_identity.current.account_id}"
 }
 
 resource "aws_s3_bucket_versioning" "tfstate" {
   bucket = aws_s3_bucket.tfstate.id
-  versioning_configuration { status = "Enabled" }
+  versioning_configuration {
+    status = "Enabled"
+  }
 }
 
 resource "aws_s3_bucket_server_side_encryption_configuration" "tfstate" {
   bucket = aws_s3_bucket.tfstate.id
   rule {
-    apply_server_side_encryption_by_default { sse_algorithm = "AES256" }
+    apply_server_side_encryption_by_default {
+      sse_algorithm = "AES256"
+    }
   }
 }
 
@@ -53,12 +62,13 @@ resource "aws_s3_bucket_lifecycle_configuration" "tfstate" {
   rule {
     id     = "expire-noncurrent"
     status = "Enabled"
-    filter {} # applies to all objects; required by provider v5
-    noncurrent_version_expiration { noncurrent_days = 30 }
+    filter {}
+    noncurrent_version_expiration {
+      noncurrent_days = 30
+    }
   }
 }
 
-# ---- Lock table ----
 resource "aws_dynamodb_table" "tflock" {
   name         = "ce-capstone-tflock"
   billing_mode = "PAY_PER_REQUEST"
@@ -69,27 +79,35 @@ resource "aws_dynamodb_table" "tflock" {
   }
 }
 
-# ---- GitHub Actions OIDC ----
-# The account-level provider is shared; look it up, do not manage it here.
-# If your account does NOT already have it, create it once in the console or with
-#   aws iam create-open-id-connect-provider --url https://token.actions.githubusercontent.com --client-id-list sts.amazonaws.com
-data "aws_iam_openid_connect_provider" "gha" {
-  url = "https://token.actions.githubusercontent.com"
+# ---------------------------------------------------------------------------
+# GitHub Actions OIDC provider + deploy role
+# ---------------------------------------------------------------------------
+data "tls_certificate" "gha" {
+  url = "https://token.actions.githubusercontent.com/.well-known/openid-configuration"
+}
+
+resource "aws_iam_openid_connect_provider" "gha" {
+  url             = "https://token.actions.githubusercontent.com"
+  client_id_list  = ["sts.amazonaws.com"]
+  thumbprint_list = [data.tls_certificate.gha.certificates[0].sha1_fingerprint]
 }
 
 data "aws_iam_policy_document" "gha_assume" {
   statement {
     actions = ["sts:AssumeRoleWithWebIdentity"]
     effect  = "Allow"
+
     principals {
       type        = "Federated"
-      identifiers = [data.aws_iam_openid_connect_provider.gha.arn]
+      identifiers = [aws_iam_openid_connect_provider.gha.arn]
     }
-   condition {
+
+    condition {
       test     = "StringEquals"
       variable = "token.actions.githubusercontent.com:aud"
       values   = ["sts.amazonaws.com"]
     }
+
     condition {
       test     = "StringLike"
       variable = "token.actions.githubusercontent.com:job_workflow_ref"
@@ -109,6 +127,15 @@ resource "aws_iam_role_policy_attachment" "gha_admin" {
   policy_arn = "arn:aws:iam::aws:policy/AdministratorAccess"
 }
 
-output "state_bucket" { value = aws_s3_bucket.tfstate.id }
-output "lock_table" { value = aws_dynamodb_table.tflock.name }
-output "gha_role_arn" { value = aws_iam_role.gha_deploy.arn }
+# ---------------------------------------------------------------------------
+output "state_bucket" {
+  value = aws_s3_bucket.tfstate.id
+}
+
+output "lock_table" {
+  value = aws_dynamodb_table.tflock.name
+}
+
+output "gha_role_arn" {
+  value = aws_iam_role.gha_deploy.arn
+}
