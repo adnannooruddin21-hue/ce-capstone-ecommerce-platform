@@ -23,10 +23,10 @@ module "compute" {
   app_port           = var.app_port
 }
 
-# module "monitoring" {
-#   source         = "./modules/monitoring"
-#   project        = var.project
-#   alb_arn_suffix = module.compute.alb_arn_suffix
-#   tg_arn_suffix  = module.compute.tg_arn_suffix
-#   asg_name       = module.compute.asg_name
-# }
+module "monitoring" {
+  source         = "./modules/monitoring"
+  project        = var.project
+  alb_arn_suffix = module.compute.alb_arn_suffix
+  tg_arn_suffix  = module.compute.tg_arn_suffix
+  asg_name       = module.compute.asg_name
+}
