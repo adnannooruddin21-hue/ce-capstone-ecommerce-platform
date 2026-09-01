@@ -20,6 +20,7 @@ exclude:
   - aws-s3-encryption-customer-key
   - aws-cloudwatch-log-group-customer-key
   - aws-ssm-secret-use-customer-key
+  - aws-sns-topic-encryption-use-cmk   # SNS SSE uses alias/aws/sns (AWS-managed)
 
   # IAM policies are already scoped to a single resource ARN; the trailing "/*"
   # (S3 object keys) and ":*" (log streams) are the expected form for those actions.
