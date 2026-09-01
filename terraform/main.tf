@@ -14,6 +14,7 @@ module "security" {
 module "compute" {
   source             = "./modules/compute"
   project            = var.project
+  region             = var.region
   vpc_id             = module.networking.vpc_id
   public_subnet_ids  = module.networking.public_subnet_ids
   private_subnet_ids = module.networking.private_subnet_ids
@@ -29,4 +30,10 @@ module "monitoring" {
   alb_arn_suffix = module.compute.alb_arn_suffix
   tg_arn_suffix  = module.compute.tg_arn_suffix
   asg_name       = module.compute.asg_name
+}
+module "data" {
+  source             = "./modules/data"
+  project            = var.project
+  private_subnet_ids = module.networking.private_subnet_ids
+  db_sg_id           = module.security.db_sg_id
 }

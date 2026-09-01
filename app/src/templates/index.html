@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="CloudCart — a load-balanced e-commerce storefront on AWS. Cloud Engineer capstone.">
+  <title>CloudCart — Cloud Engineer Capstone</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,600;12..96,700;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap">
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+
+<header>
+  <div class="wrap bar">
+    <a class="brand" href="#top"><span class="mk">C</span><span class="t">CloudCart</span></a>
+    <div class="field">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+      <input id="search" type="search" placeholder="Search products&hellip;" autocomplete="off" aria-label="Search products">
+    </div>
+    <button id="themeBtn" class="icon-btn" aria-label="Toggle colour theme" title="Toggle theme">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <button id="cartBtn" class="icon-btn cart-btn" aria-label="Open cart">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6h15l-1.5 9h-13z"/><path d="M6 6 5 2H2"/><circle cx="9" cy="20" r="1.5"/><circle cx="18" cy="20" r="1.5"/></svg>
+      <span id="cartCount" class="count">0</span>
+    </button>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="wrap hero-grid">
+      <div>
+        <div class="eyebrow">AWS Cloud Engineer Capstone</div>
+        <h1>Commerce built<br><span class="dim">for the cloud.</span></h1>
+        <p>A responsive storefront on Flask and PostgreSQL, served from an auto-scaling group behind a load balancer. Every page tells you which instance answered.</p>
+        <a href="#shop" class="btn">Explore products
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
+        </a>
+      </div>
+      <div class="cluster" aria-hidden="true">
+        <div class="tiles">
+          <div class="t">&#8987;</div><div class="t">&#128094;</div><div class="t">&#129380;</div><div class="t">&#128161;</div>
+        </div>
+        <div class="tag">
+          <small>FEATURED</small>
+          <strong>Pulse Smart Watch</strong>
+          <span>&euro;129.99</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="shop" class="wrap catalog">
+    <div class="sec-head">
+      <div>
+        <div class="eyebrow">Catalog</div>
+        <h2>Shop products</h2>
+      </div>
+      <div id="chips" class="chips" role="group" aria-label="Filter by category"></div>
+    </div>
+    <div id="grid" class="grid" aria-live="polite"></div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap foot">
+    <span><strong>CloudCart</strong> &middot; Cloud Engineer Capstone</span>
+    <span class="stack">Flask &middot; PostgreSQL (RDS) &middot; ALB &middot; Auto Scaling &middot; eu-north-1</span>
+    <span>Application v{{ app_version }}</span>
+  </div>
+</footer>
+
+<div id="overlay" class="overlay"></div>
+
+<aside id="drawer" class="drawer" role="dialog" aria-modal="true" aria-label="Shopping cart" aria-hidden="true">
+  <div class="drawer-head">
+    <h2>Your cart</h2>
+    <button id="closeDrawer" class="x" aria-label="Close cart">&times;</button>
+  </div>
+  <div id="drawerItems" class="drawer-items"></div>
+  <div class="drawer-foot">
+    <div class="sum"><span>Total</span><strong id="drawerTotal">&euro;0.00</strong></div>
+    <button id="checkoutBtn" class="btn full" disabled>Checkout</button>
+  </div>
+</aside>
+
+<div id="modalBg" class="modal-bg">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Checkout">
+    <button id="closeModal" class="x" aria-label="Close checkout">&times;</button>
+    <div id="modalBody">
+      <div class="eyebrow">Checkout</div>
+      <h2>Complete your order</h2>
+      <p class="muted">Demo checkout &mdash; no real payment is taken.</p>
+      <form id="checkoutForm">
+        <label>Name
+          <input id="cName" required placeholder="Your name" autocomplete="name">
+        </label>
+        <label>Email
+          <input id="cEmail" type="email" required placeholder="you@example.com" autocomplete="email">
+        </label>
+        <button class="btn full" type="submit">Place demo order</button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<div id="infra" class="infra" hidden>
+  <span class="dot"></span>
+  <span>served by <code id="infraId">&hellip;</code> <span class="sub" id="infraAz"></span></span>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
