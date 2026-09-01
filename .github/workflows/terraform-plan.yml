@@ -27,4 +27,10 @@ jobs:
       - run: terraform fmt -check -recursive
       - run: terraform init
       - run: terraform validate
+      - name: tfsec
+        uses: aquasecurity/tfsec-action@v1.0.3
+        with:
+          working_directory: terraform
+          additional_args: --minimum-severity HIGH --concise-output
+
       - run: terraform plan -no-color

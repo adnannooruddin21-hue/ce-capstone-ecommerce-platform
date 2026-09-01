@@ -53,6 +53,13 @@ resource "aws_s3_bucket_public_access_block" "artifacts" {
   restrict_public_buckets = true
 }
 
+resource "aws_s3_bucket_server_side_encryption_configuration" "artifacts" {
+  bucket = aws_s3_bucket.artifacts.id
+  rule {
+    apply_server_side_encryption_by_default { sse_algorithm = "AES256" }
+  }
+}
+
 resource "aws_s3_object" "app" {
   bucket = aws_s3_bucket.artifacts.id
   key    = "app-${data.archive_file.app.output_md5}.zip"
@@ -111,11 +118,12 @@ resource "aws_launch_template" "app" {
 
 # ---------- ALB + target group ----------
 resource "aws_lb" "app" {
-  name               = "${var.project}-alb"
-  load_balancer_type = "application"
-  internal           = false
-  security_groups    = [var.alb_sg_id]
-  subnets            = var.public_subnet_ids
+  name                       = "${var.project}-alb"
+  load_balancer_type         = "application"
+  internal                   = false
+  security_groups            = [var.alb_sg_id]
+  subnets                    = var.public_subnet_ids
+  drop_invalid_header_fields = true
 }
 
 resource "aws_lb_target_group" "app" {
@@ -193,4 +201,32 @@ resource "aws_iam_role_policy" "app_ssm_read" {
       }
     ]
   })
+}
+
+resource "aws_autoscaling_policy" "cpu_target" {
+  name                   = "${var.project}-cpu-target-50"
+  autoscaling_group_name = aws_autoscaling_group.app.name
+  policy_type            = "TargetTrackingScaling"
+  target_tracking_configuration {
+    predefined_metric_specification { predefined_metric_type = "ASGAverageCPUUtilization" }
+    target_value = 50
+  }
+}
+
+resource "aws_autoscaling_schedule" "night_in" {
+  scheduled_action_name  = "${var.project}-night-in"
+  autoscaling_group_name = aws_autoscaling_group.app.name
+  min_size               = 1
+  max_size               = 4
+  desired_capacity       = 1
+  recurrence             = "0 22 * * *" # 22:00 UTC daily
+}
+
+resource "aws_autoscaling_schedule" "morning_out" {
+  scheduled_action_name  = "${var.project}-morning-out"
+  autoscaling_group_name = aws_autoscaling_group.app.name
+  min_size               = 3
+  max_size               = 4
+  desired_capacity       = 3
+  recurrence             = "0 6 * * *"
 }
