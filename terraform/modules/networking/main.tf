@@ -73,7 +73,17 @@ resource "aws_instance" "nat" {
   subnet_id              = aws_subnet.public[0].id
   vpc_security_group_ids = [aws_security_group.nat.id]
   source_dest_check      = false
-  tags                   = { Name = "${var.project}-nat" }
+
+  metadata_options {
+    http_tokens   = "required"
+    http_endpoint = "enabled"
+  }
+
+  root_block_device {
+    encrypted = true
+  }
+
+  tags = { Name = "${var.project}-nat" }
 }
 
 resource "aws_eip" "nat" {

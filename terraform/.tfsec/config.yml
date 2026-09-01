@@ -1,0 +1,26 @@
+---
+# Documented tfsec exclusions for the capstone. Each is a deliberate design or
+# Free-Tier decision, cross-referenced in SECURITY.md / docs/decisions/.
+# Fixed instead of excluded: s3 bucket encryption, NAT instance IMDSv2 + encrypted root.
+exclude:
+  # Public web tier is intentional — this is an internet-facing storefront.
+  - aws-elb-alb-not-public
+  - aws-elb-http-not-used          # no ACM cert / domain on Free Tier (ADR 0001); HTTP:80 only
+  - aws-ec2-no-public-ingress-sgr  # ALB security group: 80 from 0.0.0.0/0 by design
+
+  # Egress to the internet is required: NAT instance forwards it, app pulls
+  # packages + reads SSM/CloudWatch, ALB serves responses.
+  - aws-ec2-no-public-egress-sgr
+
+  # Public subnets must assign public IPs (ALB nodes + the NAT instance live there).
+  - aws-ec2-no-public-ip-subnet
+
+  # SSM SecureString + S3 + logs use the AWS-managed KMS key. Customer-managed
+  # keys are $1/key/month — out of scope for a Free-Tier lab (ADR 0001).
+  - aws-s3-encryption-customer-key
+  - aws-cloudwatch-log-group-customer-key
+  - aws-ssm-secret-use-customer-key
+
+  # IAM policies are already scoped to a single resource ARN; the trailing "/*"
+  # (S3 object keys) and ":*" (log streams) are the expected form for those actions.
+  - aws-iam-no-policy-wildcards

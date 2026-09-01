@@ -37,3 +37,9 @@ module "data" {
   private_subnet_ids = module.networking.private_subnet_ids
   db_sg_id           = module.security.db_sg_id
 }
+
+module "governance" {
+  source           = "./modules/governance"
+  project          = var.project
+  recorder_enabled = true # set false Wed after capturing evidence
+}
