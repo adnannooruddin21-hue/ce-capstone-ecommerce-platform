@@ -15,7 +15,7 @@ variable "environment" {
 
 variable "owner" {
   type    = string
-  default = "OWNER"
+  default = "adnan-nooruddin"
 }
 
 variable "instance_type" {
