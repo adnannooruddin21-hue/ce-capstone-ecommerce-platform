@@ -2,6 +2,8 @@
 *.tfstate
 *.tfstate.*
 *.tfplan
+tfplan
+plan.out
 *.auto.tfvars
 *.tfvars
 !example.tfvars
