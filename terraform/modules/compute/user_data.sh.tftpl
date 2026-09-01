@@ -15,6 +15,10 @@ python3 -m venv /opt/app/venv
 # ---- runtime config: pull DB creds + app secret from SSM ----
 ssm() { aws ssm get-parameter --region ${region} --name "$1" --with-decryption --query 'Parameter.Value' --output text; }
 
+dnf install -y amazon-cloudwatch-agent
+/opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl \
+  -a fetch-config -m ec2 -s -c ssm:AmazonCloudWatch-ce-capstone
+
 umask 077
 cat > /etc/catalog.env <<EOF
 APP_VERSION=${app_version}

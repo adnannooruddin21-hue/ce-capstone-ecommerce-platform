@@ -1,0 +1,114 @@
+{
+    "widgets": [
+        {
+            "type": "metric",
+            "x": 0,
+            "y": 0,
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "metrics": [
+                    [ "AWS/ApplicationELB", "RequestCount", "LoadBalancer", "app/ce-capstone-alb/7edc90ef064bf2e0", { "label": "requests", "stat": "Sum" } ],
+                    [ "AWS/ApplicationELB", "HTTPCode_Target_5XX_Count", "LoadBalancer", "app/ce-capstone-alb/7edc90ef064bf2e0", { "label": "5xx", "stat": "Sum" } ]
+                ],
+                "region": "eu-north-1",
+                "stacked": false,
+                "title": "ALB — requests & 5xx",
+                "view": "timeSeries"
+            }
+        },
+        {
+            "type": "metric",
+            "x": 12,
+            "y": 0,
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "metrics": [
+                    [ "AWS/ApplicationELB", "TargetResponseTime", "LoadBalancer", "app/ce-capstone-alb/7edc90ef064bf2e0", { "label": "p50", "stat": "p50" } ],
+                    [ "...", { "label": "p95", "stat": "p95" } ],
+                    [ "...", { "label": "p99", "stat": "p99" } ]
+                ],
+                "region": "eu-north-1",
+                "title": "ALB — target latency (p50 / p95 / p99)",
+                "view": "timeSeries"
+            }
+        },
+        {
+            "type": "metric",
+            "x": 0,
+            "y": 6,
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "metrics": [
+                    [ "AWS/ApplicationELB", "HealthyHostCount", "TargetGroup", "targetgroup/ce-capstone-tg/4dfaf9c26b5adeea", "LoadBalancer", "app/ce-capstone-alb/7edc90ef064bf2e0", { "label": "healthy", "stat": "Average" } ],
+                    [ "AWS/ApplicationELB", "UnHealthyHostCount", "TargetGroup", "targetgroup/ce-capstone-tg/4dfaf9c26b5adeea", "LoadBalancer", "app/ce-capstone-alb/7edc90ef064bf2e0", { "label": "unhealthy", "stat": "Average" } ]
+                ],
+                "region": "eu-north-1",
+                "title": "ALB — host health",
+                "view": "timeSeries"
+            }
+        },
+        {
+            "type": "metric",
+            "x": 12,
+            "y": 6,
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "metrics": [
+                    [ "AWS/EC2", "CPUUtilization", "AutoScalingGroupName", "ce-capstone-asg", { "stat": "Average" } ]
+                ],
+                "region": "eu-north-1",
+                "title": "EC2 — CPU by ASG",
+                "view": "timeSeries",
+                "yAxis": {
+                    "left": {
+                        "max": 100,
+                        "min": 0
+                    }
+                }
+            }
+        },
+        {
+            "type": "metric",
+            "x": 0,
+            "y": 12,
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "metrics": [
+                    [ "CWAgent", "mem_used_percent", "AutoScalingGroupName", "ce-capstone-asg", { "label": "mem %", "stat": "Average" } ],
+                    [ "CWAgent", "disk_used_percent", "AutoScalingGroupName", "ce-capstone-asg", { "label": "disk %", "stat": "Average" } ]
+                ],
+                "region": "eu-north-1",
+                "title": "EC2 — memory & disk (CloudWatch agent)",
+                "view": "timeSeries",
+                "yAxis": {
+                    "left": {
+                        "max": 100,
+                        "min": 0
+                    }
+                }
+            }
+        },
+        {
+            "type": "metric",
+            "x": 12,
+            "y": 12,
+            "width": 12,
+            "height": 6,
+            "properties": {
+                "metrics": [
+                    [ "AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", "ce-capstone-pg", { "label": "CPU %", "stat": "Average" } ],
+                    [ "AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", "ce-capstone-pg", { "label": "connections", "stat": "Average", "yAxis": "right" } ],
+                    [ "AWS/RDS", "FreeableMemory", "DBInstanceIdentifier", "ce-capstone-pg", { "label": "freeable mem (bytes)", "stat": "Average", "yAxis": "right" } ]
+                ],
+                "region": "eu-north-1",
+                "title": "RDS — CPU / connections / freeable memory",
+                "view": "timeSeries"
+            }
+        }
+    ]
+}

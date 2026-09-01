@@ -11,6 +11,8 @@ permissions:
 jobs:
   apply:
     runs-on: ubuntu-latest
+    env:
+      TF_VAR_alarm_email: ${{ secrets.ALARM_EMAIL }}
     defaults:
       run:
         working-directory: terraform

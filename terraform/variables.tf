@@ -27,3 +27,7 @@ variable "app_port" {
   type    = number
   default = 8080
 }
+
+variable "alarm_email" {
+  type = string
+}

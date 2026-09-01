@@ -4,7 +4,7 @@ name: drift-detection
 # plan means the live infrastructure has drifted from the code -> the job fails.
 on:
   schedule:
-    - cron: "0 7 * * *"   # 07:00 UTC daily
+    - cron: "0 7 * * *" # 07:00 UTC daily
   workflow_dispatch:
 
 permissions:
@@ -13,6 +13,8 @@ permissions:
 jobs:
   drift:
     runs-on: ubuntu-latest
+    env:
+      TF_VAR_alarm_email: ${{ secrets.ALARM_EMAIL }}
     defaults:
       run:
         working-directory: terraform
