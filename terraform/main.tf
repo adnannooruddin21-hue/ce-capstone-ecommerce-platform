@@ -22,6 +22,7 @@ module "compute" {
   app_sg_id          = module.security.app_sg_id
   instance_type      = var.instance_type
   app_port           = var.app_port
+  app_version        = "2.0.0"
 }
 
 module "monitoring" {
