@@ -1,0 +1,27 @@
+# Local development only. Production runs gunicorn under systemd on the ASG
+# instances (see terraform/modules/compute/user_data.sh.tftpl).
+services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: cloudcart
+      POSTGRES_USER: cloudcart
+      POSTGRES_PASSWORD: cloudcart
+    ports: ["5432:5432"]
+    volumes: ["pgdata:/var/lib/postgresql/data"]
+
+  app:
+    build: ./src
+    depends_on: [db]
+    environment:
+      DB_HOST: db
+      DB_NAME: cloudcart
+      DB_USER: cloudcart
+      DB_PASSWORD: cloudcart
+      FLASK_SECRET_KEY: local-dev-secret
+      APP_VERSION: 2.0.0-local
+      APP_ENV: development
+    ports: ["5000:5000"]
+
+volumes:
+  pgdata:

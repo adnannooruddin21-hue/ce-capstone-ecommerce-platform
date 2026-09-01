@@ -33,6 +33,45 @@ resource "aws_iam_instance_profile" "app" {
   role = aws_iam_role.app.name
 }
 
+# ---------- Application bundle (zip app/src -> S3, instances pull it) ----------
+data "archive_file" "app" {
+  type        = "zip"
+  source_dir  = "${path.module}/../../../app/src"
+  output_path = "${path.module}/.app_bundle.zip"
+}
+
+resource "aws_s3_bucket" "artifacts" {
+  bucket_prefix = "${var.project}-artifacts-"
+  force_destroy = true
+}
+
+resource "aws_s3_bucket_public_access_block" "artifacts" {
+  bucket                  = aws_s3_bucket.artifacts.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
+}
+
+resource "aws_s3_object" "app" {
+  bucket = aws_s3_bucket.artifacts.id
+  key    = "app-${data.archive_file.app.output_md5}.zip"
+  source = data.archive_file.app.output_path
+  etag   = data.archive_file.app.output_md5
+}
+
+resource "aws_iam_role_policy" "app_artifacts_read" {
+  role = aws_iam_role.app.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect   = "Allow"
+      Action   = ["s3:GetObject"]
+      Resource = "${aws_s3_bucket.artifacts.arn}/*"
+    }]
+  })
+}
+
 # ---------- Launch template ----------
 resource "aws_launch_template" "app" {
   name_prefix   = "${var.project}-app-"
@@ -57,9 +96,11 @@ resource "aws_launch_template" "app" {
   }
 
   user_data = base64encode(templatefile("${path.module}/user_data.sh.tftpl", {
-    app_py      = file("${path.module}/../../../app/src/app.py")
-    app_port    = var.app_port
-    app_version = var.app_version
+    region           = var.region
+    artifacts_bucket = aws_s3_bucket.artifacts.id
+    app_key          = aws_s3_object.app.key
+    app_port         = var.app_port
+    app_version      = var.app_version
   }))
 
   tag_specifications {
@@ -129,4 +170,27 @@ resource "aws_autoscaling_group" "app" {
     value               = "${var.project}-app"
     propagate_at_launch = true
   }
+}
+
+variable "region" { type = string }
+data "aws_caller_identity" "current" {}
+
+resource "aws_iam_role_policy" "app_ssm_read" {
+  role = aws_iam_role.app.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["ssm:GetParameter", "ssm:GetParameters"]
+        Resource = "arn:aws:ssm:${var.region}:${data.aws_caller_identity.current.account_id}:parameter/${var.project}/*"
+      },
+      {
+        Effect    = "Allow"
+        Action    = ["kms:Decrypt"]
+        Resource  = "*"
+        Condition = { StringEquals = { "kms:ViaService" = "ssm.${var.region}.amazonaws.com" } }
+      }
+    ]
+  })
 }
