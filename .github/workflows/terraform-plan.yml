@@ -35,4 +35,9 @@ jobs:
           working_directory: terraform
           additional_args: --minimum-severity HIGH --concise-output
 
-      - run: terraform plan -no-color
+      - run: terraform plan -no-color -out plan.out
+      - run: terraform show -json plan.out > plan.json
+      - name: Policy as Code (Conftest)
+        uses: docker://openpolicyagent/conftest:latest
+        with:
+          args: test --policy policy plan.json

@@ -58,6 +58,24 @@ resource ARN and drop the service wildcards.
   the VPC CIDR.
 - VPC Flow Logs capture all accepted and rejected traffic for later analysis.
 
+## Account-level baseline
+
+Two account-wide defaults are set as code (in `modules/compute`) as
+defence-in-depth, so any resource created *without* explicit settings still
+inherits a safe default:
+
+- `aws_ec2_instance_metadata_defaults` — IMDSv2 required by default for all EC2
+  instances in the region.
+- `aws_s3_account_public_access_block` — S3 Block Public Access enforced at the
+  account level.
+
+Both are redundant with the per-resource settings this stack already applies
+(every launch template requires IMDSv2; every bucket has its own public-access
+block); they exist to close two CIS/Prowler findings and to protect against
+future mistakes. In a production organisation these account-level defaults would
+live in a dedicated account-baseline stack, not in a workload stack — they are
+managed here for the scope and lifetime of the capstone.
+
 ## Secrets management
 
 | Secret | Storage | Access |
