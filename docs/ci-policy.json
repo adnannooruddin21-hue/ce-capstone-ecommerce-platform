@@ -33,6 +33,12 @@
       "Resource": "*"
     },
     {
+      "Sid": "LambdaForProject",
+      "Effect": "Allow",
+      "Action": "lambda:*",
+      "Resource": "arn:aws:lambda:eu-north-1:128529977749:function:ce-capstone-*"
+    },
+    {
       "Sid": "IamForProjectRoles",
       "Effect": "Allow",
       "Action": [
@@ -73,7 +79,8 @@
           "iam:PassedToService": [
             "ec2.amazonaws.com",
             "vpc-flow-logs.amazonaws.com",
-            "config.amazonaws.com"
+            "config.amazonaws.com",
+            "lambda.amazonaws.com"
           ]
         }
       }
