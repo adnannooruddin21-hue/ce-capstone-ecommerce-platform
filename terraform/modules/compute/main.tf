@@ -79,6 +79,12 @@ resource "aws_iam_role_policy" "app_artifacts_read" {
   })
 }
 
+# ---------- Account-level EC2 metadata defaults ----------
+resource "aws_ec2_instance_metadata_defaults" "secure" {
+  http_tokens            = "required"
+  instance_metadata_tags = "disabled"
+}
+
 # ---------- Launch template ----------
 resource "aws_launch_template" "app" {
   name_prefix   = "${var.project}-app-"
@@ -89,8 +95,9 @@ resource "aws_launch_template" "app" {
   vpc_security_group_ids = [var.app_sg_id]
 
   metadata_options {
-    http_tokens   = "required" # IMDSv2 only
-    http_endpoint = "enabled"
+    http_tokens            = "required" # IMDSv2 only
+    http_endpoint          = "enabled"
+    instance_metadata_tags = "disabled"
   }
 
   block_device_mappings {
@@ -182,6 +189,16 @@ resource "aws_autoscaling_group" "app" {
 
 variable "region" { type = string }
 data "aws_caller_identity" "current" {}
+
+# ---------- Account-level S3 Public Access Block ----------
+resource "aws_s3_account_public_access_block" "account" {
+  account_id = data.aws_caller_identity.current.account_id
+
+  block_public_acls       = true
+  ignore_public_acls      = true
+  block_public_policy     = true
+  restrict_public_buckets = true
+}
 
 resource "aws_iam_role_policy" "app_ssm_read" {
   role = aws_iam_role.app.id
