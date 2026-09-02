@@ -1,3 +1,7 @@
+# Governance — an AWS Config recorder scoped to a handful of resource types
+# (behind a recorder_enabled toggle) with its own delivery S3 bucket, plus the
+# managed compliance rules.
+
 variable "project" { type = string }
 variable "recorder_enabled" {
   type    = bool

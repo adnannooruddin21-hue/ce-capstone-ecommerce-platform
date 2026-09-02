@@ -1,3 +1,8 @@
+# Bootstrap — one-time remote-state setup, applied with a local backend before
+# the main stack: the S3 state bucket, the DynamoDB lock table, and the GitHub
+# OIDC provider + deploy role (see ADR 0001 for why CI ultimately uses an IAM
+# user instead).
+
 terraform {
   required_version = ">= 1.7"
   required_providers {

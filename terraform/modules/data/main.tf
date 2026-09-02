@@ -1,3 +1,8 @@
+# Data — RDS PostgreSQL (single-AZ db.t3.micro, storage-encrypted, not publicly
+# accessible) in a private DB subnet group. The master password and the Flask
+# session secret are generated here and stored as SSM SecureString parameters
+# under /ce-capstone/.
+
 variable "project" {
   type = string
 }

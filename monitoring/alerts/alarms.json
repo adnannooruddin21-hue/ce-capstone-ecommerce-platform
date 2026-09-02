@@ -1,0 +1,38 @@
+[
+    {
+        "name": "ce-capstone-alb-5xx-high",
+        "ns": "AWS/ApplicationELB",
+        "metric": "HTTPCode_Target_5XX_Count",
+        "stat": "Sum",
+        "threshold": 5.0,
+        "op": "GreaterThanThreshold",
+        "periods": 2
+    },
+    {
+        "name": "ce-capstone-asg-cpu-high",
+        "ns": "AWS/EC2",
+        "metric": "CPUUtilization",
+        "stat": "Average",
+        "threshold": 75.0,
+        "op": "GreaterThanThreshold",
+        "periods": 3
+    },
+    {
+        "name": "ce-capstone-latency-p95-high",
+        "ns": "AWS/ApplicationELB",
+        "metric": "TargetResponseTime",
+        "stat": "p95",
+        "threshold": 1.5,
+        "op": "GreaterThanThreshold",
+        "periods": 3
+    },
+    {
+        "name": "ce-capstone-unhealthy-hosts",
+        "ns": "AWS/ApplicationELB",
+        "metric": "UnHealthyHostCount",
+        "stat": "Maximum",
+        "threshold": 0.0,
+        "op": "GreaterThanThreshold",
+        "periods": 2
+    }
+]

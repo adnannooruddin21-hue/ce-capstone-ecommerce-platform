@@ -1,3 +1,8 @@
+# Monitoring — one CloudWatch dashboard (ce-capstone-overview), the
+# CloudWatch-agent config parameter, the application log group, and an SNS topic
+# with four alarms (ALB 5xx, unhealthy hosts, p95 latency, ASG CPU) delivered to
+# email.
+
 variable "project" { type = string }
 variable "alb_arn_suffix" { type = string }
 variable "tg_arn_suffix" { type = string }
