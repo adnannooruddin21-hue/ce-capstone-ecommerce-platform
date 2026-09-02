@@ -110,18 +110,140 @@ resource "aws_cloudwatch_log_group" "app" {
 
 variable "alarm_email" { type = string }
 
+variable "enable_alarm_formatter" {
+  type    = bool
+  default = true
+}
+
 resource "aws_sns_topic" "alerts" {
   name              = "${var.project}-alerts"
   kms_master_key_id = "alias/aws/sns" # AWS-managed key, no cost
 }
 
-resource "aws_sns_topic_subscription" "email" {
+locals { actions = [aws_sns_topic.alerts.arn] }
+
+# ------------------------------------------------------------------
+# Alarm delivery
+#
+#   formatter OFF : alarms -> "alerts" -> email            (raw CloudWatch text)
+#   formatter ON  : alarms -> "alerts" -> Lambda
+#                          -> "alerts-email" -> email       (tidy, readable text)
+#
+# Two topics: SNS cannot rewrite a message in place, and a Lambda that
+# published back to its own trigger topic would loop.
+# ------------------------------------------------------------------
+
+resource "aws_sns_topic_subscription" "email_raw" {
+  count     = var.enable_alarm_formatter ? 0 : 1
   topic_arn = aws_sns_topic.alerts.arn
   protocol  = "email"
   endpoint  = var.alarm_email
 }
 
-locals { actions = [aws_sns_topic.alerts.arn] }
+resource "aws_sns_topic" "alerts_email" {
+  count             = var.enable_alarm_formatter ? 1 : 0
+  name              = "${var.project}-alerts-email"
+  kms_master_key_id = "alias/aws/sns"
+}
+
+resource "aws_sns_topic_subscription" "email_formatted" {
+  count     = var.enable_alarm_formatter ? 1 : 0
+  topic_arn = aws_sns_topic.alerts_email[0].arn
+  protocol  = "email"
+  endpoint  = var.alarm_email
+}
+
+data "archive_file" "alarm_formatter" {
+  count       = var.enable_alarm_formatter ? 1 : 0
+  type        = "zip"
+  source_file = "${path.module}/src/alarm_formatter.py"
+  output_path = "${path.module}/.alarm_formatter.zip"
+}
+
+resource "aws_iam_role" "alarm_formatter" {
+  count = var.enable_alarm_formatter ? 1 : 0
+  name  = "${var.project}-alarm-formatter"
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Principal = { Service = "lambda.amazonaws.com" }
+      Action    = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "alarm_formatter" {
+  count = var.enable_alarm_formatter ? 1 : 0
+  name  = "publish-and-log"
+  role  = aws_iam_role.alarm_formatter[0].id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"]
+        Resource = "arn:aws:logs:*:*:*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = "sns:Publish"
+        Resource = aws_sns_topic.alerts_email[0].arn
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["kms:Decrypt", "kms:GenerateDataKey*"]
+        Resource = "*"
+        Condition = {
+          StringEquals = { "kms:ViaService" = "sns.${local.region}.amazonaws.com" }
+        }
+      }
+    ]
+  })
+}
+
+resource "aws_cloudwatch_log_group" "alarm_formatter" {
+  count             = var.enable_alarm_formatter ? 1 : 0
+  name              = "/aws/lambda/${var.project}-alarm-formatter"
+  retention_in_days = 3
+}
+
+resource "aws_lambda_function" "alarm_formatter" {
+  count            = var.enable_alarm_formatter ? 1 : 0
+  function_name    = "${var.project}-alarm-formatter"
+  role             = aws_iam_role.alarm_formatter[0].arn
+  runtime          = "python3.13"
+  handler          = "alarm_formatter.lambda_handler"
+  filename         = data.archive_file.alarm_formatter[0].output_path
+  source_code_hash = data.archive_file.alarm_formatter[0].output_base64sha256
+  timeout          = 10
+  memory_size      = 128
+
+  environment {
+    variables = { TARGET_TOPIC_ARN = aws_sns_topic.alerts_email[0].arn }
+  }
+
+  tracing_config { mode = "PassThrough" }
+
+  depends_on = [aws_cloudwatch_log_group.alarm_formatter]
+}
+
+resource "aws_lambda_permission" "from_sns" {
+  count         = var.enable_alarm_formatter ? 1 : 0
+  statement_id  = "AllowSNSInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.alarm_formatter[0].function_name
+  principal     = "sns.amazonaws.com"
+  source_arn    = aws_sns_topic.alerts.arn
+}
+
+resource "aws_sns_topic_subscription" "to_lambda" {
+  count      = var.enable_alarm_formatter ? 1 : 0
+  topic_arn  = aws_sns_topic.alerts.arn
+  protocol   = "lambda"
+  endpoint   = aws_lambda_function.alarm_formatter[0].arn
+  depends_on = [aws_lambda_permission.from_sns]
+}
 
 resource "aws_cloudwatch_metric_alarm" "alb_5xx" {
   alarm_name          = "${var.project}-alb-5xx-high"

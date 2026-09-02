@@ -26,12 +26,13 @@ module "compute" {
 }
 
 module "monitoring" {
-  source         = "./modules/monitoring"
-  project        = var.project
-  alb_arn_suffix = module.compute.alb_arn_suffix
-  tg_arn_suffix  = module.compute.tg_arn_suffix
-  asg_name       = module.compute.asg_name
-  alarm_email    = var.alarm_email
+  source                 = "./modules/monitoring"
+  project                = var.project
+  alb_arn_suffix         = module.compute.alb_arn_suffix
+  tg_arn_suffix          = module.compute.tg_arn_suffix
+  asg_name               = module.compute.asg_name
+  alarm_email            = var.alarm_email
+  enable_alarm_formatter = true # SNS -> Lambda -> SNS pretty-print of alarm emails
 }
 module "data" {
   source             = "./modules/data"
