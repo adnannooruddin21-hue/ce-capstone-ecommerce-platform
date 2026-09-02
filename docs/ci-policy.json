@@ -124,6 +124,15 @@
         "dynamodb:DescribeTable"
       ],
       "Resource": "arn:aws:dynamodb:eu-north-1:128529977749:table/ce-capstone-tflock"
+    },
+    {
+      "Sid": "AccountBaseline",
+      "Effect": "Allow",
+      "Action": [
+        "s3:GetAccountPublicAccessBlock",
+        "s3:PutAccountPublicAccessBlock"
+      ],
+      "Resource": "*"
     }
   ]
 }
