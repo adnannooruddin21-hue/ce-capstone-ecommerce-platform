@@ -115,9 +115,12 @@ variable "enable_alarm_formatter" {
   default = true
 }
 
+# Not encrypted: CloudWatch Alarms cannot publish to a topic encrypted with the
+# AWS-managed key alias/aws/sns (its key policy can't authorize cloudwatch.amazonaws.com),
+# and a customer-managed KMS key is out of Free-Tier scope. This topic only carries
+# CloudWatch alarm metadata (name, state, reason) — no secrets. See SECURITY.md.
 resource "aws_sns_topic" "alerts" {
-  name              = "${var.project}-alerts"
-  kms_master_key_id = "alias/aws/sns" # AWS-managed key, no cost
+  name = "${var.project}-alerts"
 }
 
 locals { actions = [aws_sns_topic.alerts.arn] }

@@ -20,7 +20,8 @@ exclude:
   - aws-s3-encryption-customer-key
   - aws-cloudwatch-log-group-customer-key
   - aws-ssm-secret-use-customer-key
-  - aws-sns-topic-encryption-use-cmk   # SNS SSE uses alias/aws/sns (AWS-managed)
+  - aws-sns-topic-encryption-use-cmk    # alerts-email topic: SNS SSE uses alias/aws/sns (AWS-managed)
+  - aws-sns-enable-topic-encryption     # alerts topic: unencrypted — CloudWatch Alarms can't use alias/aws/sns, CMK out of scope (SECURITY.md)
 
   # IAM policies are already scoped to a single resource ARN; the trailing "/*"
   # (S3 object keys) and ":*" (log streams) are the expected form for those actions.

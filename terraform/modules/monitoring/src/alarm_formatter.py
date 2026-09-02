@@ -70,4 +70,10 @@ def lambda_handler(event, _context):
         if state == "OK":
             body += "\nRecovery notice - the alarm is back to normal.\n"
 
-        sns.publish(TopicArn=TARGET_TOPIC_ARN, Subject=subject, Message=body)
+        response = sns.publish(
+            TopicArn=TARGET_TOPIC_ARN,
+            Subject=subject,
+            Message=body
+        )
+
+        print(f"Published email notification: {response['MessageId']}")
