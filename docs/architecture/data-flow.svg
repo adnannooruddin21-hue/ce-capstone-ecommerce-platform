@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 470" role="img" aria-label="One request: the browser sends GET slash to the ALB, which picks one of the three app servers; gunicorn runs the Flask app, which queries PostgreSQL and returns the rendered page. Separately, the served-by badge is filled from the instance metadata service, and at first boot each server downloads its code from S3 and its secrets from SSM Parameter Store.">
+  <rect x="0" y="0" width="940" height="470" fill="#fbfaf6"/>
+  <defs>
+    <marker id="fA" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L12 6 L0 12 z" fill="#1f6f8b"/></marker>
+    <marker id="fB" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L12 6 L0 12 z" fill="#8a97a3"/></marker>
+  </defs>
+  <g font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" fill="#233240">
+
+    <text x="40" y="34" font-size="14" font-weight="700">The live request path</text>
+
+    <rect x="40" y="56" width="130" height="56" rx="8" fill="#ffffff" stroke="#233240"/>
+    <text x="105" y="90" text-anchor="middle" font-size="13" font-weight="700">Browser</text>
+
+    <rect x="236" y="56" width="130" height="56" rx="8" fill="#f1ede3" stroke="#8C4FFF" stroke-width="1.5"/>
+    <text x="301" y="90" text-anchor="middle" font-size="13" font-weight="700">Load balancer</text>
+
+    <rect x="432" y="40" width="240" height="88" rx="10" fill="#f1f4f6" stroke="#147EBA" stroke-width="1.3" stroke-dasharray="6 4"/>
+    <text x="552" y="60" text-anchor="middle" font-size="12" font-weight="700" fill="#0f6ba0">one app server</text>
+    <rect x="448" y="70" width="208" height="24" rx="5" fill="#ffffff" stroke="#233240"/><text x="552" y="87" text-anchor="middle" font-size="12">gunicorn (2 workers)</text>
+    <rect x="448" y="98" width="208" height="24" rx="5" fill="#ffffff" stroke="#233240"/><text x="552" y="115" text-anchor="middle" font-size="12">Flask app</text>
+
+    <rect x="740" y="56" width="160" height="56" rx="8" fill="#ffffff" stroke="#3334B9" stroke-width="1.5"/>
+    <text x="820" y="82" text-anchor="middle" font-size="13" font-weight="700">PostgreSQL</text>
+    <text x="820" y="99" text-anchor="middle" font-size="11" fill="#5b6b78">Amazon RDS</text>
+
+    <line x1="170" y1="84" x2="232" y2="84" stroke="#1f6f8b" stroke-width="2.6" marker-end="url(#fA)"/>
+    <text x="201" y="72" text-anchor="middle" font-size="11" fill="#155d75">GET /</text>
+    <line x1="366" y1="84" x2="428" y2="84" stroke="#1f6f8b" stroke-width="2.6" marker-end="url(#fA)"/>
+    <text x="397" y="72" text-anchor="middle" font-size="11" fill="#155d75">picks 1 of 3</text>
+    <line x1="672" y1="84" x2="736" y2="84" stroke="#1f6f8b" stroke-width="2.6" marker-end="url(#fA)"/>
+    <text x="704" y="72" text-anchor="middle" font-size="11" fill="#155d75">SQL query</text>
+    <path d="M740 108 C 620 170, 300 170, 175 112" fill="none" stroke="#1f6f8b" stroke-width="2.2" marker-end="url(#fA)"/>
+    <text x="470" y="182" text-anchor="middle" font-size="11.5" fill="#155d75">rows &#8594; rendered page &#8594; back to the browser</text>
+
+    <text x="40" y="248" font-size="14" font-weight="700">Two things that happen without the shopper</text>
+
+    <rect x="432" y="264" width="240" height="46" rx="8" fill="#ffffff" stroke="#E7157B" stroke-width="1.4"/>
+    <text x="552" y="286" text-anchor="middle" font-size="12.5" font-weight="600">Instance metadata (IMDSv2)</text>
+    <text x="552" y="302" text-anchor="middle" font-size="11" fill="#5b6b78">token-protected, on the server itself</text>
+    <line x1="552" y1="128" x2="552" y2="260" stroke="#8a97a3" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#fB)"/>
+    <text x="564" y="200" font-size="11" fill="#5b6b78">/api/infra reads instance id + AZ &#8594; the &#8220;served by &#8230;&#8221; badge on the page</text>
+
+    <rect x="432" y="352" width="240" height="72" rx="8" fill="#ffffff" stroke="#233240"/>
+    <text x="552" y="374" text-anchor="middle" font-size="12.5" font-weight="700">at first boot, once</text>
+    <text x="552" y="392" text-anchor="middle" font-size="11" fill="#5b6b78">download the app code bundle from S3</text>
+    <text x="552" y="407" text-anchor="middle" font-size="11" fill="#5b6b78">read the DB password from SSM (SecureString)</text>
+    <line x1="552" y1="352" x2="552" y2="314" stroke="#8a97a3" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#fB)"/>
+
+    <rect x="736" y="352" width="164" height="30" rx="6" fill="#f1f4f6" stroke="#7AA116"/><text x="818" y="372" text-anchor="middle" font-size="11.5">Amazon S3</text>
+    <rect x="736" y="392" width="164" height="30" rx="6" fill="#f1f4f6" stroke="#E7157B"/><text x="818" y="412" text-anchor="middle" font-size="11.5">SSM Parameter Store</text>
+    <line x1="672" y1="378" x2="732" y2="370" stroke="#8a97a3" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#fB)"/>
+    <line x1="672" y1="398" x2="732" y2="405" stroke="#8a97a3" stroke-width="1.8" stroke-dasharray="5 3" marker-end="url(#fB)"/>
+  </g>
+</svg>

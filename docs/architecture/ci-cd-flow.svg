@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 470" role="img" aria-label="Deployment flow: you push a branch and open a pull request; a stack of automated checks runs (format and validate, tflint, tfsec security scan, OPA policy, terraform plan); all must pass before the change can merge to the protected main branch; merging triggers terraform apply to AWS. Separately, a nightly job runs terraform plan and alerts if the live infrastructure no longer matches the code.">
+  <rect x="0" y="0" width="940" height="470" fill="#fbfaf6"/>
+  <defs>
+    <marker id="cA" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L12 6 L0 12 z" fill="#1f6f8b"/></marker>
+    <marker id="cB" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L12 6 L0 12 z" fill="#8a97a3"/></marker>
+  </defs>
+  <g font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" fill="#233240">
+
+    <rect x="24" y="170" width="140" height="64" rx="8" fill="#ffffff" stroke="#233240"/>
+    <text x="94" y="198" text-anchor="middle" font-size="13" font-weight="700">You</text>
+    <text x="94" y="216" text-anchor="middle" font-size="11.5" fill="#5b6b78">edit + push a branch</text>
+
+    <rect x="204" y="170" width="150" height="64" rx="8" fill="#ffffff" stroke="#233240"/>
+    <text x="279" y="198" text-anchor="middle" font-size="13" font-weight="700">Pull Request</text>
+    <text x="279" y="216" text-anchor="middle" font-size="11.5" fill="#5b6b78">on GitHub</text>
+
+    <rect x="396" y="52" width="256" height="290" rx="10" fill="#f1f4f6" stroke="#147EBA" stroke-width="1.3" stroke-dasharray="6 4"/>
+    <text x="524" y="76" text-anchor="middle" font-size="12.5" font-weight="700" fill="#0f6ba0">automated checks &#8212; all must pass</text>
+    <rect x="416" y="90" width="216" height="38" rx="6" fill="#ffffff" stroke="#233240"/><text x="524" y="114" text-anchor="middle" font-size="12.5">terraform fmt + validate</text>
+    <rect x="416" y="138" width="216" height="38" rx="6" fill="#ffffff" stroke="#233240"/><text x="524" y="162" text-anchor="middle" font-size="12.5">tflint</text>
+    <rect x="416" y="186" width="216" height="38" rx="6" fill="#ffffff" stroke="#233240"/><text x="524" y="210" text-anchor="middle" font-size="12.5">tfsec &#8212; security scan</text>
+    <rect x="416" y="234" width="216" height="38" rx="6" fill="#ffffff" stroke="#233240"/><text x="524" y="258" text-anchor="middle" font-size="12.5">OPA / Conftest policy</text>
+    <rect x="416" y="282" width="216" height="38" rx="6" fill="#ffffff" stroke="#233240"/><text x="524" y="306" text-anchor="middle" font-size="12.5">terraform plan</text>
+
+    <rect x="708" y="170" width="150" height="64" rx="8" fill="#f1ede3" stroke="#233240"/>
+    <text x="783" y="198" text-anchor="middle" font-size="13" font-weight="700">main branch</text>
+    <text x="783" y="216" text-anchor="middle" font-size="11.5" fill="#5b6b78">protected</text>
+
+    <rect x="688" y="300" width="228" height="60" rx="8" fill="#ffffff" stroke="#233240"/>
+    <text x="802" y="325" text-anchor="middle" font-size="13" font-weight="700">terraform apply &#8594; AWS</text>
+    <text x="802" y="344" text-anchor="middle" font-size="11.5" fill="#5b6b78">runs automatically on merge</text>
+
+    <rect x="204" y="370" width="150" height="62" rx="8" fill="#ffffff" stroke="#233240"/>
+    <text x="279" y="395" text-anchor="middle" font-size="12.5" font-weight="700">nightly job</text>
+    <text x="279" y="414" text-anchor="middle" font-size="11.5" fill="#5b6b78">07:00 UTC daily</text>
+    <rect x="396" y="370" width="256" height="62" rx="8" fill="#ffffff" stroke="#233240"/>
+    <text x="524" y="395" text-anchor="middle" font-size="12.5">terraform plan &#8212; drift check</text>
+    <text x="524" y="414" text-anchor="middle" font-size="11.5" fill="#5b6b78">alerts if the live infra &#8800; the code</text>
+
+    <line x1="164" y1="202" x2="200" y2="202" stroke="#1f6f8b" stroke-width="2.6" marker-end="url(#cA)"/>
+    <line x1="354" y1="202" x2="392" y2="202" stroke="#1f6f8b" stroke-width="2.6" marker-end="url(#cA)"/>
+    <text x="373" y="190" text-anchor="middle" font-size="11" fill="#155d75">opens</text>
+    <line x1="652" y1="202" x2="704" y2="202" stroke="#1f6f8b" stroke-width="2.6" marker-end="url(#cA)"/>
+    <text x="678" y="190" text-anchor="middle" font-size="11" fill="#155d75">merge</text>
+    <line x1="790" y1="234" x2="808" y2="296" stroke="#1f6f8b" stroke-width="2.6" marker-end="url(#cA)"/>
+    <line x1="279" y1="370" x2="279" y2="238" stroke="#8a97a3" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#cB)"/>
+    <line x1="354" y1="401" x2="392" y2="401" stroke="#8a97a3" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#cB)"/>
+  </g>
+</svg>

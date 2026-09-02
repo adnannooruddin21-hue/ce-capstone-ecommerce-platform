@@ -13,5 +13,9 @@ __pycache__/
 plan.out
 plan.json
 
+# macOS
+.DS_Store
+**/.DS_Store
+
 # app bundle produced by data.archive_file
 terraform/modules/compute/.app_bundle.zip

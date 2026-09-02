@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 940 620" role="img" aria-label="Network wiring: the VPC 10.20.0.0/16 has two public and two private subnets across two AZs. The public route table sends traffic to the Internet Gateway; the private route table sends it to the NAT instance. Three security groups are chained: the ALB group accepts the internet, the app group accepts only the ALB group, the database group accepts only the app group.">
+  <rect x="0" y="0" width="940" height="620" fill="#fbfaf6"/>
+  <defs>
+    <marker id="nA" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L12 6 L0 12 z" fill="#1f6f8b"/></marker>
+    <marker id="nB" viewBox="0 0 12 12" refX="10" refY="6" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0 L12 6 L0 12 z" fill="#8a97a3"/></marker>
+  </defs>
+  <g font-family="ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif" fill="#233240">
+
+    <text x="470" y="30" text-anchor="middle" font-size="15" font-weight="700">Amazon VPC &#8212; your private network &#8212; 10.20.0.0/16</text>
+    <rect x="28" y="44" width="884" height="366" rx="10" fill="none" stroke="#248814" stroke-width="2"/>
+
+    <rect x="44" y="66" width="410" height="150" rx="8" fill="#eef6f8" stroke="#147EBA" stroke-width="1.3" stroke-dasharray="6 4"/>
+    <rect x="486" y="66" width="410" height="150" rx="8" fill="#eef6f8" stroke="#147EBA" stroke-width="1.3" stroke-dasharray="6 4"/>
+    <text x="60" y="88" font-size="13" font-weight="700" fill="#0f6ba0">Availability Zone A</text>
+    <text x="502" y="88" font-size="13" font-weight="700" fill="#0f6ba0">Availability Zone B</text>
+
+    <rect x="60" y="100" width="380" height="24" rx="4" fill="#3F8624"/>
+    <text x="72" y="117" font-size="12" fill="#fff" font-weight="600">Public subnet &#183; 10.20.0.0/24</text>
+    <rect x="502" y="100" width="380" height="24" rx="4" fill="#3F8624"/>
+    <text x="514" y="117" font-size="12" fill="#fff" font-weight="600">Public subnet &#183; 10.20.1.0/24</text>
+
+    <g transform="translate(76,138)">
+      <rect x="0" y="0" width="34" height="34" rx="6" fill="#ED7100"/>
+      <rect x="9" y="9" width="12" height="12" fill="none" stroke="#fff" stroke-width="1.6"/>
+      <rect x="14" y="14" width="12" height="12" fill="none" stroke="#fff" stroke-width="1.6"/>
+    </g>
+    <text x="120" y="158" font-size="12.5" font-weight="600">NAT instance</text>
+    <text x="520" y="158" font-size="12" fill="#5b6b78">Load-balancer node</text>
+
+    <rect x="44" y="238" width="410" height="150" rx="8" fill="#f1f4f6" stroke="#147EBA" stroke-width="1.3" stroke-dasharray="6 4"/>
+    <rect x="486" y="238" width="410" height="150" rx="8" fill="#f1f4f6" stroke="#147EBA" stroke-width="1.3" stroke-dasharray="6 4"/>
+    <rect x="60" y="252" width="380" height="24" rx="4" fill="#147EBA"/>
+    <text x="72" y="269" font-size="12" fill="#fff" font-weight="600">Private subnet (app) &#183; 10.20.10.0/24</text>
+    <rect x="502" y="252" width="380" height="24" rx="4" fill="#147EBA"/>
+    <text x="514" y="269" font-size="12" fill="#fff" font-weight="600">Private subnet (app) &#183; 10.20.11.0/24</text>
+    <rect x="76" y="292" width="150" height="34" rx="6" fill="#ffffff" stroke="#ED7100" stroke-width="1.5"/>
+    <text x="151" y="313" text-anchor="middle" font-size="12">app servers</text>
+    <rect x="518" y="292" width="150" height="34" rx="6" fill="#ffffff" stroke="#ED7100" stroke-width="1.5"/>
+    <text x="593" y="313" text-anchor="middle" font-size="12">app servers</text>
+    <rect x="76" y="340" width="592" height="34" rx="6" fill="#ffffff" stroke="#3334B9" stroke-width="1.5"/>
+    <text x="372" y="361" text-anchor="middle" font-size="12">PostgreSQL database (private subnets, both AZs)</text>
+
+    <rect x="392" y="452" width="156" height="46" rx="8" fill="#f1ede3" stroke="#8C4FFF" stroke-width="1.5"/>
+    <text x="470" y="474" text-anchor="middle" font-size="12.5" font-weight="600">Internet Gateway</text>
+    <text x="470" y="489" text-anchor="middle" font-size="11" fill="#5b6b78">the VPC's public exit</text>
+
+    <path d="M245 172 C 300 260, 400 380, 452 448" fill="none" stroke="#8a97a3" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#nB)"/>
+    <text x="300" y="330" font-size="11.5" fill="#5b6b78">public route table &#8594; Internet Gateway</text>
+    <path d="M120 292 C 100 250, 105 200, 118 174" fill="none" stroke="#8a97a3" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#nB)"/>
+    <text x="150" y="240" font-size="11.5" fill="#5b6b78">private route table &#8594; NAT instance</text>
+
+    <text x="28" y="536" font-size="13" font-weight="700">Security groups &#8212; each only trusts the one in front of it</text>
+    <rect x="40" y="548" width="200" height="56" rx="7" fill="#ffffff" stroke="#233240"/>
+    <text x="140" y="571" text-anchor="middle" font-size="13" font-weight="600">alb-sg</text>
+    <text x="140" y="590" text-anchor="middle" font-size="11.5" fill="#5b6b78">allow :80 from anywhere</text>
+    <rect x="370" y="548" width="200" height="56" rx="7" fill="#ffffff" stroke="#233240"/>
+    <text x="470" y="571" text-anchor="middle" font-size="13" font-weight="600">app-sg</text>
+    <text x="470" y="590" text-anchor="middle" font-size="11.5" fill="#5b6b78">allow :8080 from alb-sg only</text>
+    <rect x="700" y="548" width="200" height="56" rx="7" fill="#ffffff" stroke="#233240"/>
+    <text x="800" y="571" text-anchor="middle" font-size="13" font-weight="600">db-sg</text>
+    <text x="800" y="590" text-anchor="middle" font-size="11.5" fill="#5b6b78">allow :5432 from app-sg only</text>
+    <line x1="240" y1="576" x2="366" y2="576" stroke="#1f6f8b" stroke-width="2.4" marker-end="url(#nA)"/>
+    <line x1="570" y1="576" x2="696" y2="576" stroke="#1f6f8b" stroke-width="2.4" marker-end="url(#nA)"/>
+  </g>
+</svg>

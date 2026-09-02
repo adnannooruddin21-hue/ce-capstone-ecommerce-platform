@@ -9,7 +9,7 @@ must run at near-zero cost on an AWS Free Tier account.
 
 ## High-level design
 
-![Architecture overview](docs/architecture/architecture-overview.png)
+![Architecture overview](docs/architecture/architecture-overview.svg)
 
 Three tiers, each isolated by subnet and security group:
 
@@ -20,6 +20,8 @@ Three tiers, each isolated by subnet and security group:
 | **Data** | Private subnets, 2 AZs (subnet group) | RDS PostgreSQL 16, single-AZ, not publicly accessible |
 
 Traffic path: `Internet → ALB (:80) → target group (:8080) → gunicorn → psycopg2 → RDS (:5432)`.
+
+![Network diagram](docs/architecture/network-diagram.svg)
 
 ## Components
 
@@ -123,6 +125,8 @@ Manager Session Manager** (the instance role carries `AmazonSSMManagedInstanceCo
 
 ### CI/CD (`.github/workflows`)
 
+![CI/CD flow](docs/architecture/ci-cd-flow.svg)
+
 - **`terraform-plan.yml`** (on PR) — `fmt -check`, `init`, `validate`, `tfsec`
   (HIGH gate), the OPA policy, `terraform plan`.
 - **`terraform-apply.yml`** (on push to `main`) — `terraform apply`.
@@ -184,6 +188,8 @@ Manager Session Manager** (the instance role carries `AmazonSSMManagedInstanceCo
   migration job is the production form.
 
 ## Application
+
+![Request and data flow](docs/architecture/data-flow.svg)
 
 A Flask storefront (`app/src/app.py`) — deliberately minimal. Endpoints:
 
