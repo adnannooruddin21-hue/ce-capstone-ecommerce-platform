@@ -1,3 +1,7 @@
+# Networking — VPC (10.20.0.0/16), public + private subnets across two AZs, an
+# Internet Gateway, a NAT instance for private-subnet egress, route tables, and
+# VPC flow logs to CloudWatch.
+
 data "aws_availability_zones" "available" {
   state = "available"
 }

@@ -1,3 +1,6 @@
+# Security groups — a chained least-privilege trio: alb-sg (:80 from the
+# internet) -> app-sg (:8080 from alb-sg only) -> db-sg (:5432 from app-sg only).
+
 resource "aws_security_group" "alb" {
   name_prefix = "${var.project}-alb-"
   vpc_id      = var.vpc_id

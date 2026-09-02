@@ -1,3 +1,8 @@
+# Compute — launch template (Amazon Linux 2023, IMDSv2, encrypted root), the
+# ALB + target group, the Auto Scaling Group with its target-tracking policy and
+# night/morning schedules, and delivery of the zipped Flask app via a private S3
+# bucket keyed by content hash.
+
 data "aws_ssm_parameter" "al2023" {
   name = "/aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64"
 }
