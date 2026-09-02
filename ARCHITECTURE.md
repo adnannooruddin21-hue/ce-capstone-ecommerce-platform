@@ -132,6 +132,9 @@ Manager Session Manager** (the instance role carries `AmazonSSMManagedInstanceCo
 - **`terraform-apply.yml`** (on push to `main`) — `terraform apply`.
 - **`drift.yml`** (scheduled, daily) — `terraform plan -detailed-exitcode`;
   exit code 2 (drift) fails the job.
+- **`terratest.yml`** (on demand / module PRs / nightly, **not** a required
+  check) — two Go module-contract tests: a plan-only check of the networking
+  module and a real apply/destroy check of the security-group chain.
 - Branch protection on `main` requires the `plan` check and blocks direct
   pushes. Authentication uses a dedicated `ce-capstone-ci` IAM user
   (see [ADR 0001](docs/decisions/0001-ci-authentication.md)).
@@ -172,7 +175,7 @@ Manager Session Manager** (the instance role carries `AmazonSSMManagedInstanceCo
 | Single-AZ RDS | Free-Tier eligible | Multi-AZ — doubles cost, out of scope |
 | SSM Parameter Store (SecureString) | Free; native Terraform + EC2 support | Secrets Manager — $0.40/secret/month |
 | App bundle via S3 | Multi-file app (templates/static) can't be embedded in user-data | ECR + Docker — more infrastructure for a systemd-based deploy |
-| Drift detection (not Terratest) | Taught in the course; no Go toolchain; no per-run cost | Terratest — see [ADR 0002](docs/decisions/0002-drift-detection-over-terratest.md) |
+| Drift detection as the primary check, plus 2 Terratest module tests | Drift needs no new tooling and catches out-of-band changes; the two module-contract tests are a small, cheap supplement | Full Terratest deploy suite — cost/tooling not worth it, see [ADR 0002](docs/decisions/0002-drift-detection-over-terratest.md) |
 | Static access keys for CI | OIDC federation failed on this account | OIDC — see [ADR 0001](docs/decisions/0001-ci-authentication.md) |
 
 ## Trade-offs and known limitations

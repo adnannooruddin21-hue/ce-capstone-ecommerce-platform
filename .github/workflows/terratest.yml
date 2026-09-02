@@ -1,0 +1,44 @@
+name: terratest
+
+# Module-contract tests (Terratest). Kept OFF the required status checks: it
+# talks to real AWS and can be slow or rate-limited, so it must not block a
+# merge. Runs on demand, on PRs that touch the modules or the tests, and nightly.
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'terraform/modules/**'
+      - 'tests/**'
+      - '.github/workflows/terratest.yml'
+  schedule:
+    - cron: '30 6 * * *'   # 06:30 UTC, ahead of the 07:00 drift job
+
+concurrency:
+  group: terratest-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  terratest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      AWS_REGION: eu-north-1
+      AWS_DEFAULT_REGION: eu-north-1
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.9.8
+          terraform_wrapper: false   # Terratest calls terraform directly
+
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: tests/go.mod
+          cache-dependency-path: tests/go.sum
+
+      - name: go test (terratest)
+        working-directory: tests
+        run: go test ./... -v -timeout 25m

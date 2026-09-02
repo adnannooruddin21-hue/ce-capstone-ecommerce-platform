@@ -52,7 +52,7 @@ Full detail in [ARCHITECTURE.md](ARCHITECTURE.md).
 ├── app/
 │   ├── src/                  Flask storefront (app.py, templates/, static/), requirements.txt
 │   └── docker-compose.yml    local development (app + PostgreSQL)
-├── .github/workflows/        terraform-plan.yml, terraform-apply.yml, drift.yml
+├── .github/workflows/        terraform-plan.yml, terraform-apply.yml, drift.yml, terratest.yml
 ├── policy/                   Conftest / OPA policy enforced on every PR
 ├── monitoring/               dashboard + agent config + alert definitions + Logs Insights queries
 └── docs/
@@ -131,6 +131,7 @@ docker compose up --build
 |---|---|
 | Static | `terraform fmt -check`, `terraform validate`, `tflint`, `tfsec` (HIGH gate) — run on every PR |
 | Policy | Conftest / OPA rules in `policy/` — run on every PR |
+| Module | Terratest in `tests/` (`terratest.yml`, non-blocking) — plan-checks the networking module, apply/destroy-checks the security-group chain |
 | Drift | Scheduled `terraform plan -detailed-exitcode` (`drift.yml`, daily 07:00 UTC) — fails if live infra ≠ code |
 | Functional | `curl $ALB/api/health` → `{"status":"ok","database":"ok"}`; `curl $ALB/api/products` → 8 products; `POST /api/orders` → `201` |
 | Resilience | terminate an instance → the ASG replaces it, traffic keeps flowing |
