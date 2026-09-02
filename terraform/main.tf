@@ -43,5 +43,5 @@ module "data" {
 module "governance" {
   source           = "./modules/governance"
   project          = var.project
-  recorder_enabled = true # set false Wed after capturing evidence
+  recorder_enabled = false # evidence captured 2026-09-02; recorder stopped to stay in Free Tier
 }
