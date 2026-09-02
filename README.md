@@ -16,7 +16,7 @@ cost discipline, all built to run inside the AWS Free Tier.
 
 ## Architecture at a glance
 
-![Architecture overview](docs/architecture/architecture-overview.png)
+![Architecture overview](docs/architecture/architecture-overview.svg)
 
 ```
 Internet
