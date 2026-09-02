@@ -40,4 +40,4 @@ jobs:
       - name: Policy as Code (Conftest)
         uses: docker://openpolicyagent/conftest:latest
         with:
-          args: test --policy policy plan.json
+          args: test --policy policy terraform/plan.json
