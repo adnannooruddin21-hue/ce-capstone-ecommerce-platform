@@ -27,6 +27,7 @@ periodically with Prowler against CIS AWS Benchmark 2.0.
 | `ce-capstone-app-instance` (EC2 instance role) | `ec2.amazonaws.com` | `AmazonSSMManagedInstanceCore`, `CloudWatchAgentServerPolicy`, inline: `s3:GetObject` on the artifacts bucket only, `ssm:GetParameter` on `/ce-capstone/*` only, `kms:Decrypt` conditioned on `kms:ViaService = ssm.eu-north-1.amazonaws.com` | No write access to anything |
 | `ce-capstone-flow-logs` | `vpc-flow-logs.amazonaws.com` | inline: `logs:CreateLogStream` / `PutLogEvents` on the flow-log group only | |
 | `ce-capstone-config` | `config.amazonaws.com` | `service-role/AWS_ConfigRole` + inline `s3:PutObject` to the config bucket | Managed by AWS Config |
+| `ce-capstone-alarm-formatter` (Lambda execution role) | `lambda.amazonaws.com` | inline only: `logs:CreateLogGroup` / `CreateLogStream` / `PutLogEvents`, `sns:Publish` on the `ce-capstone-alerts-email` topic only, `kms:Decrypt` / `GenerateDataKey*` conditioned on `kms:ViaService = sns.eu-north-1.amazonaws.com` | No read of the alarm topic beyond its SNS trigger; cannot publish anywhere else |
 | `ce-capstone-ci` (CI IAM user) | access keys in GitHub secrets | `ce-capstone-ci-deploy` managed policy (`docs/ci-policy.json`) | Scoped **off `AdministratorAccess`** — see below |
 | `ce-capstone-gha-deploy` (OIDC role) | GitHub OIDC | `AdministratorAccess` | **Unused** — OIDC federation failed on this account; kept for a future retry (ADR 0001) |
 
@@ -36,11 +37,12 @@ The CI user (`ce-capstone-ci`) started with `AdministratorAccess` as an
 unblocking measure and was later scoped to `docs/ci-policy.json`:
 
 - Full access to the services Terraform manages: `ec2`, `elasticloadbalancing`,
-  `autoscaling`, `rds`, `cloudwatch`, `logs`, `sns`, `ssm`, `config`.
+  `autoscaling`, `rds`, `cloudwatch`, `logs`, `sns`, `ssm`, `config`; `lambda`
+  scoped to `function:ce-capstone-*`.
 - KMS limited to read / grant / decrypt actions (only AWS-managed keys are used).
 - **IAM scoped to `role/ce-capstone-*` and `instance-profile/ce-capstone-*`
-  only**; `iam:PassRole` further conditioned to the three services that need it
-  (EC2, VPC Flow Logs, Config).
+  only**; `iam:PassRole` further conditioned to the four services that need it
+  (EC2, VPC Flow Logs, Config, Lambda).
 - **S3 scoped to the three project bucket prefixes only**
   (`ce-capstone-tfstate-*`, `ce-capstone-artifacts-*`, `ce-capstone-config-*`).
 - **DynamoDB scoped to the single lock table.**

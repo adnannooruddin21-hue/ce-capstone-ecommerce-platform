@@ -104,14 +104,31 @@ Manager Session Manager** (the instance role carries `AmazonSSMManagedInstanceCo
 - **Log aggregation** — gunicorn access + error logs go to
   `/ce-capstone/app` (3-day retention) via the CloudWatch agent. VPC flow logs
   go to their own group.
-- **Alarms** (4, all → an SNS topic → email):
+- **Alarms** (4):
   | Alarm | Condition |
   |---|---|
   | `alb-5xx-high` | target 5xx count > 5 per minute, 2 periods |
   | `unhealthy-hosts` | unhealthy host count > 0, 2 periods |
   | `latency-p95-high` | target response time p95 > 1.5 s, 3 periods |
   | `asg-cpu-high` | ASG average CPU > 75 %, 3 periods |
-  The SNS topic is encrypted with the AWS-managed key `alias/aws/sns`.
+- **Alarm notification pipeline** — the default CloudWatch alarm email is a wall
+  of JSON, so a small Lambda reformats it:
+
+  ```
+  alarm → SNS "ce-capstone-alerts" → Lambda (alarm_formatter.py)
+        → SNS "ce-capstone-alerts-email" → email
+  ```
+
+  Two topics because SNS can't rewrite a message in place and a Lambda that
+  published back to its trigger topic would loop. The Lambda (`python3.13`,
+  stdlib + `boto3`, no deps) parses the alarm JSON and publishes a short body —
+  alarm name, state, region, reason, time, and a next-step hint keyed off the
+  metric namespace. Behind a `enable_alarm_formatter` toggle. `alerts-email` is
+  encrypted with `alias/aws/sns`; `alerts` is not (see below).
+- **SNS encryption** — `alerts` is left unencrypted because **CloudWatch Alarms
+  cannot publish to a topic encrypted with the AWS-managed key `alias/aws/sns`**
+  and a customer-managed KMS key is out of Free-Tier scope. The topic carries
+  only alarm metadata. See [SECURITY.md](SECURITY.md) *Known risks*.
 
 ### Governance (`modules/governance`)
 
@@ -189,6 +206,10 @@ Manager Session Manager** (the instance role carries `AmazonSSMManagedInstanceCo
   to GitHub's encrypted secret store.
 - **Schema seeding runs per instance** rather than once — idempotent, but a
   migration job is the production form.
+- **`alerts` SNS topic is unencrypted** — CloudWatch Alarms cannot publish to a
+  topic encrypted with the AWS-managed key `alias/aws/sns`, and a customer-managed
+  KMS key is out of Free-Tier scope. The topic carries only alarm metadata; the
+  downstream `alerts-email` topic is encrypted.
 
 ## Application
 

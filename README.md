@@ -47,7 +47,7 @@ Full detail in [ARCHITECTURE.md](ARCHITECTURE.md).
 │       ├── security/         ALB / app / DB security groups
 │       ├── compute/          launch template, ALB, target group, ASG, scaling policies, app S3 bundle
 │       ├── data/             RDS PostgreSQL, DB subnet group, SSM SecureString parameters
-│       ├── monitoring/       CloudWatch dashboard, 4 alarms, SNS topic, log group, agent config
+│       ├── monitoring/       CloudWatch dashboard, 4 alarms, SNS + alarm-formatter Lambda, log group, agent config
 │       └── governance/       AWS Config recorder + 5 managed rules + delivery bucket
 ├── app/
 │   ├── src/                  Flask storefront (app.py, templates/, static/), requirements.txt
@@ -108,7 +108,9 @@ terraform output -raw alb_dns_name
 ```
 
 Confirm the email SNS subscription (AWS sends a confirmation link) so alarms
-can reach you.
+can reach you. Alarm emails are reformatted from raw CloudWatch JSON into a
+short, readable message by a small Lambda (`alarm → SNS → Lambda → SNS →
+email`); the confirmation link is for the `ce-capstone-alerts-email` topic.
 
 ### Ongoing changes
 
