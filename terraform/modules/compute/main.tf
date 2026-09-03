@@ -176,8 +176,10 @@ resource "aws_autoscaling_group" "app" {
   health_check_grace_period = 120
 
   launch_template {
-    id      = aws_launch_template.app.id
-    version = "$Latest"
+    id = aws_launch_template.app.id
+    # Concrete version (not "$Latest") so a new launch-template version produces a
+    # real diff on this ASG, which is what triggers the rolling instance_refresh.
+    version = aws_launch_template.app.latest_version
   }
 
   instance_refresh {
