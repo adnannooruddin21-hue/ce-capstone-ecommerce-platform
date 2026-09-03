@@ -1,11 +1,18 @@
 import os
 import socket
+import threading
 from decimal import Decimal
 
 import requests
 import psycopg2
 from psycopg2.extras import RealDictCursor
 from flask import Flask, jsonify, render_template, request
+
+try:
+    import boto3
+    from botocore.config import Config as BotoConfig
+except ImportError:  # local dev without boto3 installed
+    boto3 = None
 
 app = Flask(__name__)
 app.secret_key = os.getenv("FLASK_SECRET_KEY", "dev-only-change-me")
@@ -115,6 +122,56 @@ def imds(path):
         return resp.text
     except Exception:
         return "local-dev"
+
+
+# --- application custom metrics (CloudWatch) ------------------------------
+METRIC_NAMESPACE = "CloudCart/App"
+_cw_client = None
+_cw_lock = threading.Lock()
+
+
+def _cloudwatch():
+    """Lazily build a bounded CloudWatch client. Returns None off-instance or
+    when boto3 is unavailable (local dev), so callers can safely no-op."""
+    global _cw_client
+    if boto3 is None:
+        return None
+    if _cw_client is None:
+        with _cw_lock:
+            if _cw_client is None:
+                region = imds("placement/region")
+                if region == "local-dev":
+                    return None
+                _cw_client = boto3.client(
+                    "cloudwatch",
+                    region_name=region,
+                    config=BotoConfig(
+                        connect_timeout=1, read_timeout=2,
+                        retries={"max_attempts": 1},
+                    ),
+                )
+    return _cw_client
+
+
+def _put_metrics(items):
+    client = _cloudwatch()
+    if client is None:
+        return
+    try:
+        client.put_metric_data(
+            Namespace=METRIC_NAMESPACE,
+            MetricData=[
+                {"MetricName": n, "Value": float(v), "Unit": u} for n, v, u in items
+            ],
+        )
+    except Exception:
+        app.logger.warning("custom metric publish failed", exc_info=False)
+
+
+def publish_metrics(items):
+    """Fire-and-forget: emit custom metrics without adding latency to the
+    request or ever raising into it. `items` is a list of (name, value, unit)."""
+    threading.Thread(target=_put_metrics, args=(list(items),), daemon=True).start()
 
 
 @app.route("/")
@@ -228,6 +285,7 @@ def create_order():
     try:
         conn = db_connection()
     except Exception:
+        publish_metrics([("CheckoutFailures", 1, "Count")])
         return jsonify(error="Checkout is temporarily unavailable (database tier not reachable)"), 503
 
     cur = conn.cursor(cursor_factory=RealDictCursor)
@@ -266,6 +324,10 @@ def create_order():
             cur.execute("UPDATE products SET stock = stock - %s WHERE id = %s", (qty, pid))
 
         conn.commit()
+        publish_metrics([
+            ("OrdersPlaced", 1, "Count"),
+            ("OrderRevenue", float(total), "None"),
+        ])
         return jsonify(
             success=True,
             order_id=f"CC-{order_id:06d}",
@@ -278,6 +340,7 @@ def create_order():
     except Exception:
         conn.rollback()
         app.logger.exception("Order creation failed")
+        publish_metrics([("CheckoutFailures", 1, "Count")])
         return jsonify(error="Could not create order"), 500
     finally:
         cur.close()
@@ -301,6 +364,12 @@ try:
     init_db()
 except Exception:
     app.logger.exception("Database init failed at startup; app will still start")
+
+# Prime the CloudWatch client so the first order isn't slowed by IMDS lookups.
+try:
+    _cloudwatch()
+except Exception:
+    app.logger.warning("CloudWatch client priming failed", exc_info=False)
 
 
 if __name__ == "__main__":

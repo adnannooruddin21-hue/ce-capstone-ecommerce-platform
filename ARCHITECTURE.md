@@ -99,18 +99,25 @@ Manager Session Manager** (the instance role carries `AmazonSSMManagedInstanceCo
 
 - **One CloudWatch dashboard** (`ce-capstone-overview`) — ALB requests & 5xx,
   target latency p50/p95/p99, healthy vs unhealthy hosts, EC2 CPU by ASG,
-  memory & disk from the CloudWatch agent, and RDS CPU / connections / freeable
-  memory.
+  memory & disk from the CloudWatch agent, RDS CPU / connections / freeable
+  memory, and app custom metrics (see below).
+- **Custom metrics** — the Flask app publishes business metrics to the
+  `CloudCart/App` namespace via `PutMetricData`: `OrdersPlaced`, `OrderRevenue`
+  on a successful checkout and `CheckoutFailures` when the database tier is
+  unreachable or an order errors. Publishing is fire-and-forget on a daemon
+  thread, wrapped in `try/except`, so CloudWatch never adds latency to or breaks
+  a checkout. The instance role is scoped to this one namespace.
 - **Log aggregation** — gunicorn access + error logs go to
   `/ce-capstone/app` (3-day retention) via the CloudWatch agent. VPC flow logs
   go to their own group.
-- **Alarms** (4):
+- **Alarms** (5):
   | Alarm | Condition |
   |---|---|
   | `alb-5xx-high` | target 5xx count > 5 per minute, 2 periods |
   | `unhealthy-hosts` | unhealthy host count > 0, 2 periods |
   | `latency-p95-high` | target response time p95 > 1.5 s, 3 periods |
   | `asg-cpu-high` | ASG average CPU > 75 %, 3 periods |
+  | `checkout-failures` | any `CloudCart/App` `CheckoutFailures` in a 5-min window |
 - **Alarm notification pipeline** — the default CloudWatch alarm email is a wall
   of JSON, so a small Lambda reformats it:
 

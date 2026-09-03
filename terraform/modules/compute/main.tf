@@ -225,6 +225,21 @@ resource "aws_iam_role_policy" "app_ssm_read" {
   })
 }
 
+# The app publishes business metrics (orders, revenue, checkout failures).
+# PutMetricData has no resource-level permissions, so it is scoped by namespace.
+resource "aws_iam_role_policy" "app_metrics_write" {
+  role = aws_iam_role.app.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [{
+      Effect    = "Allow"
+      Action    = ["cloudwatch:PutMetricData"]
+      Resource  = "*"
+      Condition = { StringEquals = { "cloudwatch:namespace" = "CloudCart/App" } }
+    }]
+  })
+}
+
 resource "aws_autoscaling_policy" "cpu_target" {
   name                   = "${var.project}-cpu-target-50"
   autoscaling_group_name = aws_autoscaling_group.app.name
