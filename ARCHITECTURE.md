@@ -97,20 +97,19 @@ Manager Session Manager** (the instance role carries `AmazonSSMManagedInstanceCo
 
 ### Observability (`modules/monitoring`)
 
-- **One executive CloudWatch dashboard** (`ce-capstone-overview`) — nine
-  numbered sections that read top-to-bottom as a story: *01 Executive Overview*
-  (an "Overall System Health" gauge + a live-alarm status panel + KPI gauges for
-  availability, error rate, P95 latency, traffic, healthy servers and monthly
-  spend), *02 Application Experience*, *03 Infrastructure Health*, *04 Auto
-  Scaling & Resilience*, *05 Database Health*, *06 Reliability & Alarms*, *07
-  Security & Governance*, *08 AWS Cost & FinOps*, *09 Technical Details*. Gauges
-  use a green/amber/red traffic-light scale with thresholds derived from the
-  app and infrastructure (documented in
+- **One executive CloudWatch dashboard** (`ce-capstone-overview`, ~20 widgets) —
+  four numbered sections that read top-to-bottom as a story: *01 Executive
+  Overview* (an "Overall System Health" gauge + a live-alarm status panel + KPI
+  gauges/numbers for availability, error rate, P95 latency, traffic, healthy
+  servers and monthly spend — the whole "is it OK?" answer on one screen),
+  *02 Application & Users*, *03 Infrastructure & Scaling*, *04 Database Health*.
+  Gauges use a green/amber/red traffic-light scale with thresholds derived from
+  the app and infrastructure (documented in
   [`monitoring/dashboards/THRESHOLDS.md`](monitoring/dashboards/THRESHOLDS.md)).
   Availability, error rate, P95, database-storage-used and the health score are
   CloudWatch metric-math expressions over live metrics — no synthetic data. The
-  ASG publishes group capacity metrics (`enabled_metrics`) so section 04 can
-  chart running vs desired vs min/max against CPU. The cost panels query
+  ASG publishes group capacity metrics (`enabled_metrics`) so section 03 can
+  chart running vs desired vs min/max against CPU. The Monthly Spend KPI queries
   `us-east-1` because `AWS/Billing` only publishes there.
 - **Custom metrics** — the Flask app publishes business metrics to the
   `CloudCart/App` namespace via `PutMetricData`: `OrdersPlaced`, `OrderRevenue`
