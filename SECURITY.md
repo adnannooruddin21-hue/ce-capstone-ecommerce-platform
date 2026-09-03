@@ -24,7 +24,7 @@ periodically with Prowler against CIS AWS Benchmark 2.0.
 
 | Principal | Trust | Permissions | Notes |
 |---|---|---|---|
-| `ce-capstone-app-instance` (EC2 instance role) | `ec2.amazonaws.com` | `AmazonSSMManagedInstanceCore`, `CloudWatchAgentServerPolicy`, inline: `s3:GetObject` on the artifacts bucket only, `ssm:GetParameter` on `/ce-capstone/*` only, `kms:Decrypt` conditioned on `kms:ViaService = ssm.eu-north-1.amazonaws.com` | No write access to anything |
+| `ce-capstone-app-instance` (EC2 instance role) | `ec2.amazonaws.com` | `AmazonSSMManagedInstanceCore`, `CloudWatchAgentServerPolicy`, inline: `s3:GetObject` on the artifacts bucket only, `ssm:GetParameter` on `/ce-capstone/*` only, `kms:Decrypt` conditioned on `kms:ViaService = ssm.eu-north-1.amazonaws.com`, `cloudwatch:PutMetricData` conditioned on `cloudwatch:namespace = CloudCart/App` | Only write is custom metrics into one namespace |
 | `ce-capstone-flow-logs` | `vpc-flow-logs.amazonaws.com` | inline: `logs:CreateLogStream` / `PutLogEvents` on the flow-log group only | |
 | `ce-capstone-config` | `config.amazonaws.com` | `service-role/AWS_ConfigRole` + inline `s3:PutObject` to the config bucket | Managed by AWS Config |
 | `ce-capstone-alarm-formatter` (Lambda execution role) | `lambda.amazonaws.com` | inline only: `logs:CreateLogGroup` / `CreateLogStream` / `PutLogEvents`, `sns:Publish` on the `ce-capstone-alerts-email` topic only, `kms:Decrypt` / `GenerateDataKey*` conditioned on `kms:ViaService = sns.eu-north-1.amazonaws.com` | No read of the alarm topic beyond its SNS trigger; cannot publish anywhere else |

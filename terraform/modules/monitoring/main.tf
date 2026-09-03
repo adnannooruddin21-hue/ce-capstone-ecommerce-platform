@@ -92,6 +92,19 @@ resource "aws_cloudwatch_dashboard" "main" {
             ["AWS/RDS", "FreeableMemory", "DBInstanceIdentifier", local.db_id, { stat = "Average", label = "freeable mem (bytes)", yAxis = "right" }]
           ]
         }
+      },
+      {
+        type = "metric", x = 0, y = 18, width = 12, height = 6,
+        properties = {
+          title  = "App — orders & checkout failures (custom metrics)",
+          region = local.region,
+          view   = "timeSeries",
+          metrics = [
+            ["CloudCart/App", "OrdersPlaced", { stat = "Sum", label = "orders" }],
+            ["CloudCart/App", "CheckoutFailures", { stat = "Sum", label = "checkout failures" }],
+            ["CloudCart/App", "OrderRevenue", { stat = "Sum", label = "revenue", yAxis = "right" }]
+          ]
+        }
       }
     ]
   })
@@ -301,6 +314,20 @@ resource "aws_cloudwatch_metric_alarm" "asg_cpu" { # bonus 4th
   comparison_operator = "GreaterThanThreshold"
   threshold           = 75
   dimensions          = { AutoScalingGroupName = var.asg_name }
+  alarm_actions       = local.actions
+  treat_missing_data  = "notBreaching"
+}
+
+# Fires on any failed checkout in a 5-minute window (app custom metric).
+resource "aws_cloudwatch_metric_alarm" "checkout_failures" {
+  alarm_name          = "${var.project}-checkout-failures"
+  namespace           = "CloudCart/App"
+  metric_name         = "CheckoutFailures"
+  statistic           = "Sum"
+  period              = 300
+  evaluation_periods  = 1
+  comparison_operator = "GreaterThanThreshold"
+  threshold           = 0
   alarm_actions       = local.actions
   treat_missing_data  = "notBreaching"
 }
