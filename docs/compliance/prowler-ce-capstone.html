@@ -1,0 +1,2777 @@
+<!DOCTYPE html>
+    <html lang="en">
+    <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <!-- Required meta tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+    <style>
+        .read-more {color: #00f;}
+
+        .bg-success-custom {background-color: #98dea7 !important;}
+
+        .bg-danger {background-color: #f28484 !important;}
+    </style>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+        integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
+    <!-- https://datatables.net/download/index with jQuery, DataTables, Buttons, SearchPanes, and Select //-->
+    <link rel="stylesheet" type="text/css"
+        href="https://cdn.datatables.net/v/dt/jqc-1.12.4/dt-1.10.25/b-1.7.1/sp-1.4.0/sl-1.3.3/datatables.min.css" />
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+        integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+    <style>
+        .show-read-more .more-text {display: none;}
+
+        .dataTable {font-size: 14px;}
+
+        .container-fluid {font-size: 14px;}
+
+        .float-left { float: left !important; max-width: 100%; }
+    </style>
+    <title>Prowler - The Handy Cloud Security Tool</title>
+    </head>
+    <body>
+    <div class="container-fluid">
+        <div class="row mt-3">
+        <div class="col-md-4">
+            <a href="https://github.com/prowler-cloud/prowler/"><img class="float-left card-img-left mt-4 mr-4 ml-4"
+                        src=https://raw.githubusercontent.com/prowler-cloud/prowler/dc7d2d5aeb92fdf12e8604f42ef6472cd3e8e889/docs/img/prowler-logo-black.png
+                        alt="prowler-logo"
+                        style="width: 15rem; height:auto;"/></a>
+            <div class="card">
+            <div class="card-header">
+                Report Information
+            </div>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item">
+                <div class="row">
+                    <div class="col-md-auto">
+                    <b>Version:</b> 5.40.0
+                    </div>
+                </div>
+                </li>
+                <li class="list-group-item">
+                <b>Parameters used:</b> aws --region eu-north-1 --compliance cis_2.0_aws --resource-tag Project=ce-capstone -M csv html json-ocsf -o docs/compliance -F prowler-ce-capstone
+                </li>
+                <li class="list-group-item">
+                <b>Date:</b> 2026-09-03T17:54:35.978487
+                </li>
+            </ul>
+            </div>
+        </div>
+                <div class="col-md-2">
+                    <div class="card">
+                        <div class="card-header">
+                            AWS Assessment Summary
+                        </div>
+                        <ul class="list-group list-group-flush">
+                            <li class="list-group-item">
+                                <b>AWS Account:</b> 128529977749
+                            </li>
+                            <li class="list-group-item">
+                                <b>AWS-CLI Profile:</b> default
+                            </li>
+                            <li class="list-group-item">
+                                <b>Audited Regions:</b> eu-north-1
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                <div class="card">
+                    <div class="card-header">
+                        AWS Credentials
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <b>User Id:</b> AIDAR33H32GK5PZVRFWB3
+                            </li>
+                            <li class="list-group-item">
+                                <b>Caller Identity ARN:</b> arn:aws:iam::128529977749:user/AdnanTest
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            <div class="col-md-2">
+            <div class="card">
+                <div class="card-header">
+                    Assessment Overview
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item">
+                        <b>Total Findings:</b> 33
+                    </li>
+                    <li class="list-group-item">
+                        <b>Passed:</b> 21
+                    </li>
+                    <li class="list-group-item">
+                        <b>Passed (Muted):</b> 0
+                    </li>
+                    <li class="list-group-item">
+                        <b>Failed:</b> 12
+                    </li>
+                    <li class="list-group-item">
+                        <b>Failed (Muted):</b> 0
+                    </li>
+                    <li class="list-group-item">
+                        <b>Total Resources:</b> 11
+                    </li>
+                </ul>
+            </div>
+        </div>
+        </div>
+        </div>
+        <div class="row-mt-3">
+        <div class="col-md-12">
+            <table class="table compact stripe row-border ordering" id="findingsTable" data-order='[[ 5, "asc" ]]' data-page-length='100'>
+            <thead class="thead-light">
+                <tr>
+                    <th scope="col">Status</th>
+                    <th scope="col">Severity</th>
+                    <th scope="col">Service Name</th>
+                    <th scope="col">Region</th>
+                    <th style="width:20%" scope="col">Check ID</th>
+                    <th style="width:20%" scope="col">Check Title</th>
+                    <th scope="col">Resource ID</th>
+                    <th scope="col">Resource Tags</th>
+                    <th scope="col">Status Extended</th>
+                    <th scope="col">Risk</th>
+                    <th scope="col">Recommendation</th>
+                    <th scope="col">Compliance</th>
+                </tr>
+            </thead>
+            <tbody>
+                        <tr class="table-danger">
+                            <td>FAIL</td>
+                            <td>medium</td>
+                            <td>cloudwatch</td>
+                            <td>eu-north-1</td>
+                            <td>cloudwatch<wbr />_changes<wbr />_to<wbr />_network<wbr />_acls<wbr />_alarm<wbr />_configured</td>
+                            <td>CloudWatch log metric filter and alarm exist for Network ACL (NACL) change events</td>
+                            <td>arn:aws:logs:eu-north-1:128529977749:log-group</td>
+                            <td></td>
+                            <td>No CloudWatch log groups found with metric filters or alarms associated.</td>
+                            <td><p class="show-read-more">Absent monitoring of <strong>NACL changes</strong> reduces detection of policy tampering, risking loss of <strong>confidentiality</strong> (opened ingress/egress), degraded network <strong>integrity</strong> (lateral movement, bypassed segmentation), and reduced <strong>availability</strong> (traffic blackholes or lockouts).</p></td>
+                            <td><p class="show-read-more">Implement a CloudWatch Logs metric filter and alarm for NACL change events from CloudTrail and route alerts to responders. Enforce <strong>least privilege</strong> on NACL management, require <strong>change control</strong>, and use <strong>defense in depth</strong> with configuration monitoring and flow logs to validate and monitor network posture.</p> <a class="read-more" href="https://hub.prowler.com/check/cloudwatch_changes_to_network_acls_alarm_configured"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CIS-7.0: 5.11
+
+&#x2022;SOC2: cc_5_2, cc_7_2, cc_7_3, cc_7_4
+
+&#x2022;CIS-1.4: 4.11
+
+&#x2022;CIS-1.5: 4.11
+
+&#x2022;MITRE-ATTACK: T1496
+
+&#x2022;ISO27001-2013: A.12.4.D
+
+&#x2022;KISA-ISMS-P-2023: 2.9.4, 2.10.1, 2.10.2, 2.11.3
+
+&#x2022;C5-2025: OIS-04.03B, OIS-04.01AC, OIS-04.02AC, HR-03.02AC, AM-09.03AC, OPS-11.02AC, OPS-13.03AC, OPS-26.05B, OPS-26.01AS, OPS-26.06B, PSS-04.01B
+
+&#x2022;HIPAA: 164_308_a_6_i
+
+&#x2022;CIS-2.0: 4.11
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.9.4, 2.10.1, 2.10.2, 2.11.3
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC04-BP04
+
+&#x2022;NIST-CSF-2.0: ra_5, cm_1, dp_4
+
+&#x2022;CIS-5.0: 4.11
+
+&#x2022;NIST-800-171-Revision-2: 3_6_1, 3_6_2, 3_12_4
+
+&#x2022;NIST-800-53-Revision-4: ac_2_4, au_6_1, au_6_3, au_7_1, ca_7, ir_4_1, si_4_2, si_4_4, si_4_5, si_4
+
+&#x2022;NIST-800-53-Revision-5: au_6_1, au_6_5, au_12_3, au_14_a, au_14_b, ca_2_2, ca_7, ca_7_b, pm_14_a_1, pm_14_b, pm_31, sc_36_1_a, si_2_a, si_4_12, si_5_1, si_5_b
+
+&#x2022;CIS-3.0: 4.11
+
+&#x2022;CIS-6.0: 5.11
+
+&#x2022;NIST-CSF-1.1: ae_5, cm_2, cm_5, cp_4, ra_5
+
+&#x2022;CCC-v2025.10: CCC.Core.CN09.AR03, CCC.Core.CN04.AR01
+
+&#x2022;SecNumCloud-3.2: 12.9
+
+&#x2022;FFIEC: d5-dr-de-b-1, d5-dr-de-b-3
+
+&#x2022;ProwlerThreatScore-1.0: 3.3.12
+
+&#x2022;ISO27001-2022: A.8.15, A.8.16
+
+&#x2022;AWS-AI-Security-Framework-1.0: AISF-DETECT-05
+
+&#x2022;FedRamp-Moderate-Revision-4: ac-2-4, au-6-1-3, au-7-1, ca-7-a-b, ir-4-1, ir-4-1, si-4-2, si-4-4, si-4-5, si-4-a-b-c
+
+&#x2022;FedRAMP-Low-Revision-4: ac-2, ca-7, ir-4
+
+&#x2022;CIS-4.0.1: 4.11
+
+&#x2022;NIS2: 2.2.3, 3.2.3.a, 3.2.3.c, 3.2.3.f, 6.4.1
+
+&#x2022;FedRAMP-20x-KSI-Low-25.05C: ksi-cmt
+</p></td>
+                        </tr>
+                        
+                        <tr class="table-danger">
+                            <td>FAIL</td>
+                            <td>medium</td>
+                            <td>cloudwatch</td>
+                            <td>eu-north-1</td>
+                            <td>cloudwatch<wbr />_changes<wbr />_to<wbr />_network<wbr />_gateways<wbr />_alarm<wbr />_configured</td>
+                            <td>CloudWatch Logs metric filter and alarm exist for changes to network gateways</td>
+                            <td>arn:aws:logs:eu-north-1:128529977749:log-group</td>
+                            <td></td>
+                            <td>No CloudWatch log groups found with metric filters or alarms associated.</td>
+                            <td><p class="show-read-more">Without this monitoring, gateway changes can expose private networks to the Internet or break connectivity. Adversaries or mistakes can enable data exfiltration, bypass network inspection, and trigger outages via deletions or detachments, impacting <strong>confidentiality</strong> and <strong>availability</strong>.</p></td>
+                            <td><p class="show-read-more">Send CloudTrail to CloudWatch Logs and create a metric filter for the listed gateway events with an alarm that notifies responders. Enforce <strong>least privilege</strong> for gateway modifications, require change approvals, and route alerts to monitored channels as part of <strong>defense in depth</strong>.</p> <a class="read-more" href="https://hub.prowler.com/check/cloudwatch_changes_to_network_gateways_alarm_configured"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CIS-7.0: 5.12
+
+&#x2022;SOC2: cc_5_2, cc_7_2, cc_7_3, cc_7_4
+
+&#x2022;CIS-1.4: 4.12
+
+&#x2022;CIS-1.5: 4.12
+
+&#x2022;MITRE-ATTACK: T1496
+
+&#x2022;ISO27001-2013: A.12.4.C
+
+&#x2022;KISA-ISMS-P-2023: 2.9.4, 2.10.1, 2.10.2, 2.11.3
+
+&#x2022;C5-2025: OIS-04.03B, OIS-04.01AC, OIS-04.02AC, HR-03.02AC, AM-09.03AC, OPS-11.02AC, OPS-13.03AC, OPS-26.05B, OPS-26.01AS, OPS-26.06B, COS-03.02B, PSS-04.01B
+
+&#x2022;HIPAA: 164_308_a_6_i
+
+&#x2022;CIS-2.0: 4.12
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.9.4, 2.10.1, 2.10.2, 2.11.3
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC04-BP04
+
+&#x2022;NIST-CSF-2.0: ra_5, ae_2, ae_3, cm_1, dp_4
+
+&#x2022;CIS-5.0: 4.12
+
+&#x2022;NIST-800-171-Revision-2: 3_6_1, 3_6_2, 3_12_4
+
+&#x2022;NIST-800-53-Revision-4: ac_2_4, au_6_1, au_6_3, au_7_1, ca_7, ir_4_1, si_4_2, si_4_4, si_4_5, si_4
+
+&#x2022;NIST-800-53-Revision-5: au_6_1, au_6_5, au_12_3, au_14_a, au_14_b, ca_2_2, ca_7, ca_7_b, pm_14_a_1, pm_14_b, pm_31, sc_36_1_a, si_2_a, si_4_12, si_5_1, si_5_b
+
+&#x2022;CIS-3.0: 4.12
+
+&#x2022;CIS-6.0: 5.12
+
+&#x2022;NIST-CSF-1.1: ae_5, cm_2, cm_5, cp_4, ra_5
+
+&#x2022;CCC-v2025.10: CCC.Core.CN09.AR03, CCC.Core.CN04.AR01
+
+&#x2022;SecNumCloud-3.2: 12.9
+
+&#x2022;FFIEC: d5-dr-de-b-1, d5-dr-de-b-3
+
+&#x2022;ProwlerThreatScore-1.0: 3.3.13
+
+&#x2022;ISO27001-2022: A.8.15, A.8.16
+
+&#x2022;FedRamp-Moderate-Revision-4: ac-2-4, au-6-1-3, au-7-1, ca-7-a-b, ir-4-1, ir-4-1, si-4-2, si-4-4, si-4-5, si-4-a-b-c
+
+&#x2022;FedRAMP-Low-Revision-4: ir-4
+
+&#x2022;CIS-4.0.1: 4.12
+
+&#x2022;NIS2: 2.2.3, 3.2.3.a, 3.2.3.c, 3.2.3.f, 3.2.4, 6.4.1
+
+&#x2022;FedRAMP-20x-KSI-Low-25.05C: ksi-cmt
+</p></td>
+                        </tr>
+                        
+                        <tr class="table-danger">
+                            <td>FAIL</td>
+                            <td>medium</td>
+                            <td>cloudwatch</td>
+                            <td>eu-north-1</td>
+                            <td>cloudwatch<wbr />_changes<wbr />_to<wbr />_network<wbr />_route<wbr />_tables<wbr />_alarm<wbr />_configured</td>
+                            <td>Account monitors VPC route table changes with a CloudWatch Logs metric filter and alarm</td>
+                            <td>arn:aws:logs:eu-north-1:128529977749:log-group</td>
+                            <td></td>
+                            <td>No CloudWatch log groups found with metric filters or alarms associated.</td>
+                            <td><p class="show-read-more">Without monitoring of <strong>route table changes</strong>, unauthorized or accidental edits can redirect traffic, bypass inspection, or blackhole routes, impacting <strong>confidentiality</strong> (exfiltration), <strong>integrity</strong> (tampered paths), and <strong>availability</strong> (outages from misrouted traffic).</p></td>
+                            <td><p class="show-read-more">Implement a <strong>CloudWatch Logs metric filter and alarm</strong> on CloudTrail for these route table events and notify responders. Enforce <strong>least privilege</strong> for route modifications, require <strong>change control</strong>, and apply <strong>defense in depth</strong> with VPC Flow Logs and guardrails to prevent and quickly contain unsafe routing changes.</p> <a class="read-more" href="https://hub.prowler.com/check/cloudwatch_changes_to_network_route_tables_alarm_configured"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CIS-7.0: 5.13
+
+&#x2022;SOC2: cc_5_2, cc_7_2, cc_7_3, cc_7_4
+
+&#x2022;CIS-1.4: 4.13
+
+&#x2022;CIS-1.5: 4.13
+
+&#x2022;MITRE-ATTACK: T1496
+
+&#x2022;ISO27001-2013: A.12.4.B
+
+&#x2022;KISA-ISMS-P-2023: 2.9.4, 2.10.1, 2.10.2, 2.11.3
+
+&#x2022;C5-2025: OIS-04.03B, OIS-04.01AC, OIS-04.02AC, HR-03.02AC, AM-09.03AC, OPS-13.03AC, OPS-26.06B, COS-03.02B, PSS-04.01B
+
+&#x2022;HIPAA: 164_308_a_6_i
+
+&#x2022;CIS-2.0: 4.13
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.9.4, 2.10.1, 2.10.2, 2.11.3
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC04-BP04
+
+&#x2022;NIST-CSF-2.0: ae_2, ae_3, cm_1, dp_4
+
+&#x2022;CIS-5.0: 4.13
+
+&#x2022;NIST-800-171-Revision-2: 3_6_1, 3_6_2, 3_12_4
+
+&#x2022;NIST-800-53-Revision-4: ac_2_4, au_6_1, au_6_3, au_7_1, ca_7, ir_4_1, si_4_2, si_4_4, si_4_5, si_4
+
+&#x2022;NIST-800-53-Revision-5: au_6_1, au_6_5, au_12_3, au_14_a, au_14_b, ca_2_2, ca_7, ca_7_b, pm_14_a_1, pm_14_b, pm_31, sc_36_1_a, si_2_a, si_4_12, si_5_1, si_5_b
+
+&#x2022;CIS-3.0: 4.13
+
+&#x2022;CIS-6.0: 5.13
+
+&#x2022;NIST-CSF-1.1: ae_5, cm_2, cm_5, cp_4, ra_5
+
+&#x2022;CCC-v2025.10: CCC.Core.CN09.AR03, CCC.Core.CN04.AR01
+
+&#x2022;SecNumCloud-3.2: 12.9
+
+&#x2022;FFIEC: d5-dr-de-b-1, d5-dr-de-b-3
+
+&#x2022;ProwlerThreatScore-1.0: 3.3.14
+
+&#x2022;FedRamp-Moderate-Revision-4: ac-2-4, au-6-1-3, au-7-1, ca-7-a-b, ir-4-1, ir-4-1, si-4-2, si-4-4, si-4-5, si-4-a-b-c
+
+&#x2022;FedRAMP-Low-Revision-4: ir-4
+
+&#x2022;CIS-4.0.1: 4.13
+
+&#x2022;NIS2: 2.2.3, 3.2.3.a, 3.2.3.f, 3.2.4, 6.4.1
+
+&#x2022;FedRAMP-20x-KSI-Low-25.05C: ksi-cmt
+</p></td>
+                        </tr>
+                        
+                        <tr class="table-danger">
+                            <td>FAIL</td>
+                            <td>medium</td>
+                            <td>cloudwatch</td>
+                            <td>eu-north-1</td>
+                            <td>cloudwatch<wbr />_changes<wbr />_to<wbr />_vpcs<wbr />_alarm<wbr />_configured</td>
+                            <td>AWS account has a CloudWatch Logs metric filter and alarm for VPC changes</td>
+                            <td>arn:aws:logs:eu-north-1:128529977749:log-group</td>
+                            <td></td>
+                            <td>No CloudWatch log groups found with metric filters or alarms associated.</td>
+                            <td><p class="show-read-more">Without alerting on VPC changes, unauthorized or accidental edits to routes, peering, or attributes can go unnoticed, exposing private networks and enabling data exfiltration (C), lateral movement and traffic tampering (I), and outages from misrouted or bridged networks (A).</p></td>
+                            <td><p class="show-read-more">Create a CloudWatch Logs metric filter and alarm on CloudTrail for critical <strong>VPC change events</strong>, and notify responders. Apply <strong>least privilege</strong> to network changes, require change approvals, and use <strong>defense in depth</strong> (segmentation, route controls) to prevent and contain unauthorized modifications.</p> <a class="read-more" href="https://hub.prowler.com/check/cloudwatch_changes_to_vpcs_alarm_configured"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CIS-7.0: 5.14
+
+&#x2022;SOC2: cc_5_2, cc_7_2, cc_7_3, cc_7_4
+
+&#x2022;CIS-1.4: 4.14
+
+&#x2022;CIS-1.5: 4.14
+
+&#x2022;MITRE-ATTACK: T1496
+
+&#x2022;ISO27001-2013: A.12.4.A
+
+&#x2022;KISA-ISMS-P-2023: 2.9.4, 2.10.1, 2.10.2, 2.11.3
+
+&#x2022;C5-2025: OIS-04.03B, OIS-04.01AC, OIS-04.02AC, HR-03.02AC, AM-09.03AC, OPS-11.02AC, OPS-13.03AC, OPS-26.05B, OPS-26.01AS, OPS-26.06B, COS-03.02B, PSS-04.01B
+
+&#x2022;HIPAA: 164_308_a_6_i
+
+&#x2022;CIS-2.0: 4.14
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.9.4, 2.10.1, 2.10.2, 2.11.3
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC04-BP04
+
+&#x2022;NIST-CSF-2.0: ra_5, ae_2, cm_1
+
+&#x2022;CIS-5.0: 4.14
+
+&#x2022;NIST-800-171-Revision-2: 3_6_1, 3_6_2, 3_12_4
+
+&#x2022;NIST-800-53-Revision-4: ac_2_4, au_6_1, au_6_3, au_7_1, ca_7, ir_4_1, si_4_2, si_4_4, si_4_5, si_4
+
+&#x2022;NIST-800-53-Revision-5: au_6_1, au_6_5, au_12_3, au_14_a, au_14_b, ca_2_2, ca_7, ca_7_b, pm_14_a_1, pm_14_b, pm_31, sc_36_1_a, si_2_a, si_4_12, si_5_1, si_5_b
+
+&#x2022;CIS-3.0: 4.14
+
+&#x2022;CIS-6.0: 5.14
+
+&#x2022;NIST-CSF-1.1: ae_5, cm_2, cm_5, cp_4, ra_5
+
+&#x2022;CCC-v2025.10: CCC.Core.CN09.AR03, CCC.Core.CN04.AR01
+
+&#x2022;SecNumCloud-3.2: 12.9
+
+&#x2022;FFIEC: d5-dr-de-b-1, d5-dr-de-b-3
+
+&#x2022;ProwlerThreatScore-1.0: 3.3.15
+
+&#x2022;ISO27001-2022: A.8.15, A.8.16, A.8.20, A.8.21, A.8.22
+
+&#x2022;AWS-AI-Security-Framework-1.0: AISF-DETECT-05
+
+&#x2022;FedRamp-Moderate-Revision-4: ac-2-4, au-6-1-3, au-7-1, ca-7-a-b, ir-4-1, ir-4-1, si-4-2, si-4-4, si-4-5, si-4-a-b-c
+
+&#x2022;FedRAMP-Low-Revision-4: ir-4
+
+&#x2022;CIS-4.0.1: 4.14
+
+&#x2022;NIS2: 2.2.3, 3.2.3.c, 3.2.3.f, 3.2.4, 6.4.1
+
+&#x2022;FedRAMP-20x-KSI-Low-25.05C: ksi-cmt
+</p></td>
+                        </tr>
+                        
+                        <tr class="table-danger">
+                            <td>FAIL</td>
+                            <td>medium</td>
+                            <td>cloudwatch</td>
+                            <td>eu-north-1</td>
+                            <td>cloudwatch<wbr />_log<wbr />_metric<wbr />_filter<wbr />_and<wbr />_alarm<wbr />_for<wbr />_aws<wbr />_config<wbr />_configuration<wbr />_changes<wbr />_enabled</td>
+                            <td>CloudWatch Logs metric filter and alarm exist for AWS Config configuration changes</td>
+                            <td>arn:aws:logs:eu-north-1:128529977749:log-group</td>
+                            <td></td>
+                            <td>No CloudWatch log groups found with metric filters or alarms associated.</td>
+                            <td><p class="show-read-more">Without alerting on <strong>AWS Config changes</strong>, actions like <code>StopConfigurationRecorder</code> or <code>DeleteDeliveryChannel</code> can silently suspend recording and delivery.<br />
+<br />
+This degrades the <strong>integrity</strong> and <strong>availability</strong> of configuration audit data, enabling undetected changes and delaying incident response.</p></td>
+                            <td><p class="show-read-more">Create a <strong>CloudWatch Logs metric filter and alarm</strong> for <code>config.amazonaws.com</code> events (<code>StopConfigurationRecorder</code>, <code>DeleteDeliveryChannel</code>, <code>PutDeliveryChannel</code>, <code>PutConfigurationRecorder</code>). Route CloudTrail to Logs, notify responders, and enforce <strong>least privilege</strong> and <strong>separation of duties</strong> on Config changes to prevent abuse.</p> <a class="read-more" href="https://hub.prowler.com/check/cloudwatch_log_metric_filter_and_alarm_for_aws_config_configuration_changes_enabled"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CIS-7.0: 5.9
+
+&#x2022;SOC2: cc_5_2
+
+&#x2022;CIS-1.4: 4.9
+
+&#x2022;CIS-1.5: 4.9
+
+&#x2022;MITRE-ATTACK: T1496
+
+&#x2022;GDPR: article_25
+
+&#x2022;ISO27001-2013: A.12.4.F
+
+&#x2022;KISA-ISMS-P-2023: 2.10.1, 2.10.2, 2.11.3
+
+&#x2022;C5-2025: OIS-04.03B, OIS-04.01AC, OIS-04.02AC, HR-03.02AC, AM-01.01AC, AM-09.03AC, OPS-11.02AC, OPS-13.03AC, OPS-26.05B, OPS-26.01AS, OPS-26.06B, PSS-04.01B
+
+&#x2022;CIS-2.0: 4.9
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.10.1, 2.10.2, 2.11.3
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC04-BP04
+
+&#x2022;NIST-CSF-2.0: ov_3, ra_5, ip_8, pt_1, ae_1, ae_2, ae_3, cm_1, cm_7, dp_4
+
+&#x2022;CIS-5.0: 4.9
+
+&#x2022;CIS-3.0: 4.9
+
+&#x2022;CIS-6.0: 5.9
+
+&#x2022;NIST-CSF-1.1: cm_2, ra_5, sc_4
+
+&#x2022;CCC-v2025.10: CCC.Core.CN04.AR01
+
+&#x2022;SecNumCloud-3.2: 12.9
+
+&#x2022;ProwlerThreatScore-1.0: 3.3.10
+
+&#x2022;ISO27001-2022: A.8.15, A.8.16
+
+&#x2022;CIS-4.0.1: 4.9
+
+&#x2022;NIS2: 2.2.3, 3.2.3.c, 3.2.3.f, 3.2.3.g, 3.5.4, 7.2.b
+
+&#x2022;FedRAMP-20x-KSI-Low-25.05C: ksi-cmt
+</p></td>
+                        </tr>
+                        
+                        <tr class="table-danger">
+                            <td>FAIL</td>
+                            <td>medium</td>
+                            <td>cloudwatch</td>
+                            <td>eu-north-1</td>
+                            <td>cloudwatch<wbr />_log<wbr />_metric<wbr />_filter<wbr />_and<wbr />_alarm<wbr />_for<wbr />_cloudtrail<wbr />_configuration<wbr />_changes<wbr />_enabled</td>
+                            <td>CloudWatch Logs metric filter and alarm exist for CloudTrail configuration changes</td>
+                            <td>arn:aws:logs:eu-north-1:128529977749:log-group</td>
+                            <td></td>
+                            <td>No CloudWatch log groups found with metric filters or alarms associated.</td>
+                            <td><p class="show-read-more">Absent this monitoring, logging can be stopped or altered without notice, eroding visibility.<br />
+<br />
+That enables covert activity and data exfiltration without audit evidence, harming confidentiality, the integrity of records, and the availability of reliable logs for detection and forensics.</p></td>
+                            <td><p class="show-read-more">Implement a <strong>metric filter</strong> for trail configuration events and a linked <strong>alarm</strong> that notifies response channels.<br />
+<br />
+Apply <strong>least privilege</strong> and <strong>separation of duties</strong> for trail changes, add <strong>defense in depth</strong> with centralized logging and validation, and regularly test that alerts fire.</p> <a class="read-more" href="https://hub.prowler.com/check/cloudwatch_log_metric_filter_and_alarm_for_cloudtrail_configuration_changes_enabled"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CISA: your-data-2
+
+&#x2022;CIS-7.0: 5.5
+
+&#x2022;SOC2: cc_5_2
+
+&#x2022;CIS-1.4: 4.5
+
+&#x2022;CIS-1.5: 4.5
+
+&#x2022;MITRE-ATTACK: T1496
+
+&#x2022;GDPR: article_25
+
+&#x2022;ISO27001-2013: A.12.4.J
+
+&#x2022;KISA-ISMS-P-2023: 2.10.1, 2.10.2, 2.11.3
+
+&#x2022;C5-2025: OIS-04.03B, OIS-04.01AC, OIS-04.02AC, HR-03.02AC, AM-01.01AC, AM-09.03AC, OPS-11.02AC, OPS-13.03AC, OPS-26.05B, OPS-26.01AS, OPS-26.06B, SIM-03.07B, COM-04.01AC, PSS-04.01B
+
+&#x2022;CIS-2.0: 4.5
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.10.1, 2.10.2, 2.11.3
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC04-BP04
+
+&#x2022;NIST-CSF-2.0: ov_3, ra_5, ip_8, pt_1, ae_1, ae_2, ae_3, cm_1, cm_3, cm_7, dp_4
+
+&#x2022;CIS-5.0: 4.5
+
+&#x2022;AWS-Account-Security-Onboarding: Critical alert on cloudtrail settings changes
+
+&#x2022;CIS-3.0: 4.5
+
+&#x2022;ENS-RD2022: op.exp.8.aws.ct.2, op.exp.8.r1.aws.ct.2, op.exp.8.r1.aws.ct.3
+
+&#x2022;CIS-6.0: 5.5
+
+&#x2022;NIST-CSF-1.1: cm_2, ra_5, sc_4
+
+&#x2022;CCC-v2025.10: CCC.Core.CN09.AR02, CCC.Core.CN09.AR03, CCC.Core.CN04.AR01, CCC.AuditLog.CN03.AR01, CCC.Logging.CN07.AR01, CCC.LB.CN04.AR01
+
+&#x2022;SecNumCloud-3.2: 12.9
+
+&#x2022;ProwlerThreatScore-1.0: 3.3.6
+
+&#x2022;ISO27001-2022: A.8.15, A.8.16
+
+&#x2022;CIS-4.0.1: 4.5
+
+&#x2022;NIS2: 2.2.3, 3.2.3.c, 3.2.3.f, 3.2.3.g, 3.2.4, 3.5.4, 7.2.b
+
+&#x2022;FedRAMP-20x-KSI-Low-25.05C: ksi-cmt
+</p></td>
+                        </tr>
+                        
+                        <tr class="table-danger">
+                            <td>FAIL</td>
+                            <td>medium</td>
+                            <td>cloudwatch</td>
+                            <td>eu-north-1</td>
+                            <td>cloudwatch<wbr />_log<wbr />_metric<wbr />_filter<wbr />_for<wbr />_s3<wbr />_bucket<wbr />_policy<wbr />_changes</td>
+                            <td>CloudWatch log metric filter and alarm exist for S3 bucket policy changes</td>
+                            <td>arn:aws:logs:eu-north-1:128529977749:log-group</td>
+                            <td></td>
+                            <td>No CloudWatch log groups found with metric filters or alarms associated.</td>
+                            <td><p class="show-read-more">Without alerting on S3 policy and ACL changes, unauthorized modifications can go unnoticed, weakening <strong>confidentiality</strong> and <strong>integrity</strong>. Misuse could expose buckets publicly, grant write/delete access, or alter replication paths, enabling data exfiltration and destructive actions.</p></td>
+                            <td><p class="show-read-more">Establish and maintain <strong>metric filters</strong> and <strong>alarms</strong> for S3 bucket policy, ACL, CORS, lifecycle, and replication changes. Route alerts to monitored channels and integrate with SIEM. Enforce <strong>least privilege</strong>, require change reviews, and use <strong>defense in depth</strong> to prevent and quickly detect unsafe bucket policy changes.</p> <a class="read-more" href="https://hub.prowler.com/check/cloudwatch_log_metric_filter_for_s3_bucket_policy_changes"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CIS-7.0: 5.8
+
+&#x2022;SOC2: cc_5_2
+
+&#x2022;CIS-1.4: 4.8
+
+&#x2022;CIS-1.5: 4.8
+
+&#x2022;MITRE-ATTACK: T1496
+
+&#x2022;GDPR: article_25
+
+&#x2022;ISO27001-2013: A.12.4.G
+
+&#x2022;KISA-ISMS-P-2023: 2.10.1, 2.10.2, 2.11.3
+
+&#x2022;C5-2025: OIS-04.03B, OIS-04.01AC, OIS-04.02AC, HR-03.02AC, AM-01.01AC, AM-09.03AC, OPS-11.02AC, OPS-26.05B, OPS-26.01AS, OPS-26.06B, PSS-04.01B
+
+&#x2022;CIS-2.0: 4.8
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.10.1, 2.10.2, 2.11.3
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC04-BP04
+
+&#x2022;NIST-CSF-2.0: pt_1, ae_1, ae_2, cm_7
+
+&#x2022;CIS-5.0: 4.8
+
+&#x2022;CIS-3.0: 4.8
+
+&#x2022;CIS-6.0: 5.8
+
+&#x2022;NIST-CSF-1.1: cm_2, ra_5, sc_4
+
+&#x2022;CCC-v2025.10: CCC.Core.CN04.AR01, CCC.AuditLog.CN03.AR02
+
+&#x2022;SecNumCloud-3.2: 12.9
+
+&#x2022;ProwlerThreatScore-1.0: 3.3.9
+
+&#x2022;ISO27001-2022: A.8.15, A.8.16
+
+&#x2022;CIS-4.0.1: 4.8
+
+&#x2022;NIS2: 2.2.3, 3.2.3.b, 3.2.3.c, 3.2.3.f, 3.2.3.g, 3.5.4, 7.2.b
+
+&#x2022;FedRAMP-20x-KSI-Low-25.05C: ksi-cmt
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>high</td>
+                            <td>ec2</td>
+                            <td>eu-north-1</td>
+                            <td>ec2<wbr />_instance<wbr />_account<wbr />_imdsv2<wbr />_enabled</td>
+                            <td>IMDSv2 is required by default for EC2 instances at the account level</td>
+                            <td>arn:aws:ec2:eu-north-1:128529977749:account</td>
+                            <td></td>
+                            <td>IMDSv2 is enabled by default for EC2 instances.</td>
+                            <td><p class="show-read-more">Without a default of <strong>IMDSv2</strong>, new instances may enable <strong>IMDSv1</strong>, exposing metadata via simple HTTP. SSRF or proxy misconfigs can steal <strong>temporary IAM credentials</strong>, enabling data exfiltration (confidentiality), unauthorized API changes (integrity), and lateral movement that can disrupt services (availability).</p></td>
+                            <td><p class="show-read-more">Enforce <strong>IMDSv2</strong> at the account level in every Region by setting <code>http_tokens</code> to <code>required</code>. Add guardrails with <strong>SCP/IAM conditions</strong>. Standardize AMIs and launch templates to require tokens, validate workload compatibility, and apply <strong>least privilege</strong> to instance roles for defense in depth. <em>For containers</em>, prefer hop limit <code>2</code>.</p> <a class="read-more" href="https://hub.prowler.com/check/ec2_instance_account_imdsv2_enabled"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;KISA-ISMS-P-2023: 2.6.2, 2.10.2
+
+&#x2022;C5-2025: OPS-25.01B
+
+&#x2022;CIS-2.0: 5.6
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.6.2, 2.10.2
+
+&#x2022;ISO27001-2022: A.8.20, A.8.21, A.8.22
+
+&#x2022;NIS2: 6.7.2.i
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>high</td>
+                            <td>ec2</td>
+                            <td>eu-north-1</td>
+                            <td>ec2<wbr />_instance<wbr />_imdsv2<wbr />_enabled</td>
+                            <td>EC2 instance requires IMDSv2 or has the instance metadata service disabled</td>
+                            <td>arn:aws:ec2:eu-north-1:128529977749:instance/i-0a1a91d21f2f18c72</td>
+                            <td>
+&#x2022;ManagedBy=terraform
+
+&#x2022;Environment=prod
+
+&#x2022;Name=ce-capstone-nat
+
+&#x2022;Project=ce-capstone
+
+&#x2022;Owner=adnan-nooruddin
+</td>
+                            <td>EC2 Instance i-0a1a91d21f2f18c72 has IMDSv2 enabled and required.</td>
+                            <td><p class="show-read-more">Permitting <strong>IMDSv1</strong> or optional tokens lets SSRF or compromised workloads retrieve <strong>temporary IAM credentials</strong>, impacting confidentiality and integrity. Stolen role creds can drive <strong>privilege escalation</strong>, unauthorized data access, and lateral movement across AWS resources.</p></td>
+                            <td><p class="show-read-more">Apply defense in depth:<br />
+- Require <strong>IMDSv2</strong> tokens on all instances (<code>http_tokens: required</code>)<br />
+- Disable metadata where not needed (<code>http_endpoint: disabled</code>)<br />
+- Minimize hop limit to <code>1</code> when feasible<br />
+- Update SDKs/apps for IMDSv2<br />
+- Restrict instance profile permissions (least privilege)<br />
+- Block metadata access from untrusted workloads</p> <a class="read-more" href="https://hub.prowler.com/check/ec2_instance_imdsv2_enabled"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CIS-7.0: 6.7
+
+&#x2022;SOC2: cc_7_2
+
+&#x2022;MITRE-ATTACK: T1552
+
+&#x2022;AWS-Foundational-Security-Best-Practices: EC2.8
+
+&#x2022;KISA-ISMS-P-2023: 2.6.2, 2.10.2
+
+&#x2022;CIS-2.0: 5.6
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.6.2, 2.10.2
+
+&#x2022;GxP-21-CFR-Part-11: 11.10-d, 11.10-g
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC03-BP01, SEC06-BP01
+
+&#x2022;NIST-CSF-2.0: ac_3
+
+&#x2022;CIS-5.0: 5.7
+
+&#x2022;NIST-800-171-Revision-2: 3_12_4
+
+&#x2022;PCI-4.0: 8.2.8.4
+
+&#x2022;NIST-800-53-Revision-4: ac_6, ca_7, si_4_2, si_4
+
+&#x2022;NIST-800-53-Revision-5: ac_2_6, ac_3, ac_3_3, ac_3_3_a, ac_3_3_b_1, ac_3_3_b_2, ac_3_3_b_3, ac_3_3_b_4, ac_3_3_b_5, ac_3_3_c, ac_3_4, ac_3_4_a, ac_3_4_b, ac_3_4_c, ac_3_4_d, ac_3_4_e, ac_3_7, ac_3_8, ac_3_12_a, ac_3_13, ac_3_15_a, ac_3_15_b, ac_4_28, ac_6, ac_24, cm_5_1_a, mp_2, sc_23_3
+
+&#x2022;CIS-3.0: 5.6
+
+&#x2022;CIS-6.0: 6.7
+
+&#x2022;NIST-CSF-1.1: cm_2, cm_5, cp_4, cp_5, ra_5, sc_4
+
+&#x2022;ProwlerThreatScore-1.0: 4.1.2
+
+&#x2022;ISO27001-2022: A.8.20, A.8.21, A.8.22
+
+&#x2022;FedRamp-Moderate-Revision-4: ac-3, ac-6, ca-7-a-b, si-4-2, si-4-4, si-4-5, si-4-a-b-c
+
+&#x2022;FedRAMP-Low-Revision-4: ac-3, ca-7
+
+&#x2022;CIS-4.0.1: 5.7
+
+&#x2022;NIS2: 6.7.2.i
+
+&#x2022;FedRAMP-20x-KSI-Low-25.05C: ksi-cna
+</p></td>
+                        </tr>
+                        
+                        <tr class="table-danger">
+                            <td>FAIL</td>
+                            <td>medium</td>
+                            <td>ec2</td>
+                            <td>eu-north-1</td>
+                            <td>ec2<wbr />_instance<wbr />_profile<wbr />_attached</td>
+                            <td>EC2 instance is associated with an IAM instance profile role</td>
+                            <td>arn:aws:ec2:eu-north-1:128529977749:instance/i-0a1a91d21f2f18c72</td>
+                            <td>
+&#x2022;ManagedBy=terraform
+
+&#x2022;Environment=prod
+
+&#x2022;Name=ce-capstone-nat
+
+&#x2022;Project=ce-capstone
+
+&#x2022;Owner=adnan-nooruddin
+</td>
+                            <td>EC2 Instance i-0a1a91d21f2f18c72 not associated with an Instance Profile Role.</td>
+                            <td><p class="show-read-more">Without an instance profile, apps often rely on long-term access keys on the host. Exposed keys can be used from anywhere to read data, alter resources, or disrupt services, impacting confidentiality, integrity, and availability. Keys may persist in AMIs, images, or logs, hindering rotation and amplifying blast radius.</p></td>
+                            <td><p class="show-read-more">Attach an <strong>IAM instance profile</strong> to every instance and grant only permissions each workload requires (<strong>least privilege</strong>). Eliminate static keys on hosts; use <strong>temporary credentials</strong> with automatic rotation. Separate roles per application, enforce <strong>separation of duties</strong>, and limit who can assign roles (govern via <code>iam:PassRole</code>). Monitor role usage for anomalies.</p> <a class="read-more" href="https://hub.prowler.com/check/ec2_instance_profile_attached"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CIS-7.0: 2.16
+
+&#x2022;CIS-1.4: 1.18
+
+&#x2022;CIS-1.5: 1.18
+
+&#x2022;KISA-ISMS-P-2023: 2.5.1, 2.5.6, 2.10.2
+
+&#x2022;C5-2025: HR-01.01B, AM-03.01B, IAM-01.01B, IAM-01.04B, IAM-03.03B, IAM-08.02B, IAM-10.01B, IAM-10.02B, PSS-09.01AC
+
+&#x2022;CIS-2.0: 1.18
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.5.1, 2.5.6, 2.10.2
+
+&#x2022;GxP-21-CFR-Part-11: 11.10-d, 11.10-g
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC03-BP01, SEC03-BP02, SEC06-BP04, SEC06-BP05
+
+&#x2022;CIS-5.0: 1.17
+
+&#x2022;NIST-800-171-Revision-2: 3_1_1, 3_1_2
+
+&#x2022;PCI-4.0: 7.2.1.5, 7.2.2.5, 7.2.5.3, 7.3.1.3, 7.3.2.3, 7.3.3.3, 8.2.7.3, 8.2.8.5, 8.3.4.3
+
+&#x2022;NIST-800-53-Revision-5: ac_3, cm_5_1_a, cm_6_a
+
+&#x2022;CIS-3.0: 1.18
+
+&#x2022;CIS-6.0: 2.17
+
+&#x2022;FFIEC: d3-pc-am-b-1
+
+&#x2022;ProwlerThreatScore-1.0: 1.2.4
+
+&#x2022;ISO27001-2022: A.8.2, A.8.20, A.8.21, A.8.22
+
+&#x2022;CIS-4.0.1: 1.18
+
+&#x2022;NIS2: 11.1.1, 11.2.2.d
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>critical</td>
+                            <td>ec2</td>
+                            <td>eu-north-1</td>
+                            <td>ec2<wbr />_securitygroup<wbr />_allow<wbr />_ingress<wbr />_from<wbr />_internet<wbr />_to<wbr />_all<wbr />_ports</td>
+                            <td>Security group does not have all ports open to the Internet</td>
+                            <td>arn:aws:ec2:eu-north-1:128529977749:security-group/sg-004d1060824dafc6d</td>
+                            <td>
+&#x2022;Name=ce-capstone-app-sg
+
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;Project=ce-capstone
+
+&#x2022;Environment=prod
+
+&#x2022;ManagedBy=terraform
+</td>
+                            <td>Security group ce-capstone-app-20260831143453433000000008 (sg-004d1060824dafc6d) does not have all ports open to the Internet.</td>
+                            <td><p class="show-read-more">Opening every port to the Internet enables broad scanning and exploit attempts, leading to <strong>unauthorized access</strong>, <strong>remote code execution</strong>, and <strong>data exfiltration</strong>, with easier lateral movement into the VPC. Confidentiality, integrity, and availability are all at risk.</p></td>
+                            <td><p class="show-read-more">Enforce <strong>least privilege</strong> on ingress: allow only required ports from trusted sources, avoid <code>0.0.0.0/0</code> and <code>::/0</code>. Prefer private access (VPN, bastion, or Session Manager), use security group references, and layer <strong>defense in depth</strong> with network ACLs. Periodically review and remove unused rules.</p> <a class="read-more" href="https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_all_ports"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CISA: your-systems-3, your-data-2
+
+&#x2022;CIS-7.0: 6.3, 6.4
+
+&#x2022;SOC2: cc_6_6
+
+&#x2022;CIS-1.4: 5.2
+
+&#x2022;CIS-1.5: 5.2, 5.3
+
+&#x2022;MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046
+
+&#x2022;KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.4, 2.6.6, 2.10.2
+
+&#x2022;C5-2025: PI-01.01AC
+
+&#x2022;CIS-2.0: 5.2, 5.3
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.4, 2.6.6, 2.10.2
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03
+
+&#x2022;NIST-CSF-2.0: ac_3, ac_5, ds_5, ip_1, pt_4
+
+&#x2022;CIS-5.0: 5.3, 5.4
+
+&#x2022;CIS-3.0: 5.2, 5.3
+
+&#x2022;ENS-RD2022: mp.com.1.aws.sg.2
+
+&#x2022;CIS-6.0: 6.3, 6.4
+
+&#x2022;AWS-Foundational-Technical-Review: NETSEC-001
+
+&#x2022;CCC-v2025.10: CCC.Core.CN01.AR02, CCC.Core.CN05.AR01, CCC.Core.CN05.AR05
+
+&#x2022;SecNumCloud-3.2: 13.2
+
+&#x2022;PCI-3.2.1: 1.1, 1.1.4, 1.1.4.c, 1.2, 1.2.1, 1.2.1.a, 1.2.1.b, 1.2.1.c, 1.2.3, 1.2.3.b, 1.3, 1.3.2, 1.3.5
+
+&#x2022;ProwlerThreatScore-1.0: 2.1.4
+
+&#x2022;ISO27001-2022: A.8.20, A.8.21, A.8.22
+
+&#x2022;CIS-4.0.1: 5.3, 5.4
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>critical</td>
+                            <td>ec2</td>
+                            <td>eu-north-1</td>
+                            <td>ec2<wbr />_securitygroup<wbr />_allow<wbr />_ingress<wbr />_from<wbr />_internet<wbr />_to<wbr />_all<wbr />_ports</td>
+                            <td>Security group does not have all ports open to the Internet</td>
+                            <td>arn:aws:ec2:eu-north-1:128529977749:security-group/sg-0ab21fe0bf7823fec</td>
+                            <td>
+&#x2022;Environment=prod
+
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;Project=ce-capstone
+
+&#x2022;Name=ce-capstone-db-sg
+
+&#x2022;ManagedBy=terraform
+</td>
+                            <td>Security group ce-capstone-db-20260831143455943400000009 (sg-0ab21fe0bf7823fec) does not have all ports open to the Internet.</td>
+                            <td><p class="show-read-more">Opening every port to the Internet enables broad scanning and exploit attempts, leading to <strong>unauthorized access</strong>, <strong>remote code execution</strong>, and <strong>data exfiltration</strong>, with easier lateral movement into the VPC. Confidentiality, integrity, and availability are all at risk.</p></td>
+                            <td><p class="show-read-more">Enforce <strong>least privilege</strong> on ingress: allow only required ports from trusted sources, avoid <code>0.0.0.0/0</code> and <code>::/0</code>. Prefer private access (VPN, bastion, or Session Manager), use security group references, and layer <strong>defense in depth</strong> with network ACLs. Periodically review and remove unused rules.</p> <a class="read-more" href="https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_all_ports"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CISA: your-systems-3, your-data-2
+
+&#x2022;CIS-7.0: 6.3, 6.4
+
+&#x2022;SOC2: cc_6_6
+
+&#x2022;CIS-1.4: 5.2
+
+&#x2022;CIS-1.5: 5.2, 5.3
+
+&#x2022;MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046
+
+&#x2022;KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.4, 2.6.6, 2.10.2
+
+&#x2022;C5-2025: PI-01.01AC
+
+&#x2022;CIS-2.0: 5.2, 5.3
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.4, 2.6.6, 2.10.2
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03
+
+&#x2022;NIST-CSF-2.0: ac_3, ac_5, ds_5, ip_1, pt_4
+
+&#x2022;CIS-5.0: 5.3, 5.4
+
+&#x2022;CIS-3.0: 5.2, 5.3
+
+&#x2022;ENS-RD2022: mp.com.1.aws.sg.2
+
+&#x2022;CIS-6.0: 6.3, 6.4
+
+&#x2022;AWS-Foundational-Technical-Review: NETSEC-001
+
+&#x2022;CCC-v2025.10: CCC.Core.CN01.AR02, CCC.Core.CN05.AR01, CCC.Core.CN05.AR05
+
+&#x2022;SecNumCloud-3.2: 13.2
+
+&#x2022;PCI-3.2.1: 1.1, 1.1.4, 1.1.4.c, 1.2, 1.2.1, 1.2.1.a, 1.2.1.b, 1.2.1.c, 1.2.3, 1.2.3.b, 1.3, 1.3.2, 1.3.5
+
+&#x2022;ProwlerThreatScore-1.0: 2.1.4
+
+&#x2022;ISO27001-2022: A.8.20, A.8.21, A.8.22
+
+&#x2022;CIS-4.0.1: 5.3, 5.4
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>critical</td>
+                            <td>ec2</td>
+                            <td>eu-north-1</td>
+                            <td>ec2<wbr />_securitygroup<wbr />_allow<wbr />_ingress<wbr />_from<wbr />_internet<wbr />_to<wbr />_all<wbr />_ports</td>
+                            <td>Security group does not have all ports open to the Internet</td>
+                            <td>arn:aws:ec2:eu-north-1:128529977749:security-group/sg-0ae6dc99a169add31</td>
+                            <td>
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;Environment=prod
+
+&#x2022;ManagedBy=terraform
+
+&#x2022;Name=ce-capstone-alb-sg
+
+&#x2022;Project=ce-capstone
+</td>
+                            <td>Security group ce-capstone-alb-20260831143450720000000006 (sg-0ae6dc99a169add31) does not have all ports open to the Internet.</td>
+                            <td><p class="show-read-more">Opening every port to the Internet enables broad scanning and exploit attempts, leading to <strong>unauthorized access</strong>, <strong>remote code execution</strong>, and <strong>data exfiltration</strong>, with easier lateral movement into the VPC. Confidentiality, integrity, and availability are all at risk.</p></td>
+                            <td><p class="show-read-more">Enforce <strong>least privilege</strong> on ingress: allow only required ports from trusted sources, avoid <code>0.0.0.0/0</code> and <code>::/0</code>. Prefer private access (VPN, bastion, or Session Manager), use security group references, and layer <strong>defense in depth</strong> with network ACLs. Periodically review and remove unused rules.</p> <a class="read-more" href="https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_all_ports"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CISA: your-systems-3, your-data-2
+
+&#x2022;CIS-7.0: 6.3, 6.4
+
+&#x2022;SOC2: cc_6_6
+
+&#x2022;CIS-1.4: 5.2
+
+&#x2022;CIS-1.5: 5.2, 5.3
+
+&#x2022;MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046
+
+&#x2022;KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.4, 2.6.6, 2.10.2
+
+&#x2022;C5-2025: PI-01.01AC
+
+&#x2022;CIS-2.0: 5.2, 5.3
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.4, 2.6.6, 2.10.2
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03
+
+&#x2022;NIST-CSF-2.0: ac_3, ac_5, ds_5, ip_1, pt_4
+
+&#x2022;CIS-5.0: 5.3, 5.4
+
+&#x2022;CIS-3.0: 5.2, 5.3
+
+&#x2022;ENS-RD2022: mp.com.1.aws.sg.2
+
+&#x2022;CIS-6.0: 6.3, 6.4
+
+&#x2022;AWS-Foundational-Technical-Review: NETSEC-001
+
+&#x2022;CCC-v2025.10: CCC.Core.CN01.AR02, CCC.Core.CN05.AR01, CCC.Core.CN05.AR05
+
+&#x2022;SecNumCloud-3.2: 13.2
+
+&#x2022;PCI-3.2.1: 1.1, 1.1.4, 1.1.4.c, 1.2, 1.2.1, 1.2.1.a, 1.2.1.b, 1.2.1.c, 1.2.3, 1.2.3.b, 1.3, 1.3.2, 1.3.5
+
+&#x2022;ProwlerThreatScore-1.0: 2.1.4
+
+&#x2022;ISO27001-2022: A.8.20, A.8.21, A.8.22
+
+&#x2022;CIS-4.0.1: 5.3, 5.4
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>critical</td>
+                            <td>ec2</td>
+                            <td>eu-north-1</td>
+                            <td>ec2<wbr />_securitygroup<wbr />_allow<wbr />_ingress<wbr />_from<wbr />_internet<wbr />_to<wbr />_all<wbr />_ports</td>
+                            <td>Security group does not have all ports open to the Internet</td>
+                            <td>arn:aws:ec2:eu-north-1:128529977749:security-group/sg-0f559018c82176a2b</td>
+                            <td>
+&#x2022;ManagedBy=terraform
+
+&#x2022;Name=ce-capstone-nat-sg
+
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;Project=ce-capstone
+
+&#x2022;Environment=prod
+</td>
+                            <td>Security group ce-capstone-nat-20260831143450716100000005 (sg-0f559018c82176a2b) does not have all ports open to the Internet.</td>
+                            <td><p class="show-read-more">Opening every port to the Internet enables broad scanning and exploit attempts, leading to <strong>unauthorized access</strong>, <strong>remote code execution</strong>, and <strong>data exfiltration</strong>, with easier lateral movement into the VPC. Confidentiality, integrity, and availability are all at risk.</p></td>
+                            <td><p class="show-read-more">Enforce <strong>least privilege</strong> on ingress: allow only required ports from trusted sources, avoid <code>0.0.0.0/0</code> and <code>::/0</code>. Prefer private access (VPN, bastion, or Session Manager), use security group references, and layer <strong>defense in depth</strong> with network ACLs. Periodically review and remove unused rules.</p> <a class="read-more" href="https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_all_ports"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CISA: your-systems-3, your-data-2
+
+&#x2022;CIS-7.0: 6.3, 6.4
+
+&#x2022;SOC2: cc_6_6
+
+&#x2022;CIS-1.4: 5.2
+
+&#x2022;CIS-1.5: 5.2, 5.3
+
+&#x2022;MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046
+
+&#x2022;KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.4, 2.6.6, 2.10.2
+
+&#x2022;C5-2025: PI-01.01AC
+
+&#x2022;CIS-2.0: 5.2, 5.3
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.4, 2.6.6, 2.10.2
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03
+
+&#x2022;NIST-CSF-2.0: ac_3, ac_5, ds_5, ip_1, pt_4
+
+&#x2022;CIS-5.0: 5.3, 5.4
+
+&#x2022;CIS-3.0: 5.2, 5.3
+
+&#x2022;ENS-RD2022: mp.com.1.aws.sg.2
+
+&#x2022;CIS-6.0: 6.3, 6.4
+
+&#x2022;AWS-Foundational-Technical-Review: NETSEC-001
+
+&#x2022;CCC-v2025.10: CCC.Core.CN01.AR02, CCC.Core.CN05.AR01, CCC.Core.CN05.AR05
+
+&#x2022;SecNumCloud-3.2: 13.2
+
+&#x2022;PCI-3.2.1: 1.1, 1.1.4, 1.1.4.c, 1.2, 1.2.1, 1.2.1.a, 1.2.1.b, 1.2.1.c, 1.2.3, 1.2.3.b, 1.3, 1.3.2, 1.3.5
+
+&#x2022;ProwlerThreatScore-1.0: 2.1.4
+
+&#x2022;ISO27001-2022: A.8.20, A.8.21, A.8.22
+
+&#x2022;CIS-4.0.1: 5.3, 5.4
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>high</td>
+                            <td>ec2</td>
+                            <td>eu-north-1</td>
+                            <td>ec2<wbr />_securitygroup<wbr />_allow<wbr />_ingress<wbr />_from<wbr />_internet<wbr />_to<wbr />_tcp<wbr />_port<wbr />_22</td>
+                            <td>Security group does not allow ingress from 0.0.0.0/0 or ::/0 to TCP port 22 (SSH)</td>
+                            <td>arn:aws:ec2:eu-north-1:128529977749:security-group/sg-004d1060824dafc6d</td>
+                            <td>
+&#x2022;Name=ce-capstone-app-sg
+
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;Project=ce-capstone
+
+&#x2022;Environment=prod
+
+&#x2022;ManagedBy=terraform
+</td>
+                            <td>Security group ce-capstone-app-20260831143453433000000008 (sg-004d1060824dafc6d) does not have SSH port 22 open to the Internet.</td>
+                            <td><p class="show-read-more">Exposed <strong>SSH</strong> invites Internet-scale <strong>brute force</strong> and <strong>credential stuffing</strong>. A successful login grants <strong>remote shell</strong>, enabling data theft (confidentiality), code or config tampering (integrity), and cryptomining or service disruption (availability), plus <strong>lateral movement</strong> within the environment.</p></td>
+                            <td><p class="show-read-more">Apply <strong>least privilege</strong> to SSH:<br />
+- Disallow <code>0.0.0.0/0</code> and <code>::/0</code>; allow only trusted IPs or VPN ranges<br />
+- Prefer <strong>private access</strong> via bastion hosts or AWS Systems Manager Session Manager<br />
+- Enforce <strong>key-based auth</strong>, disable passwords, rotate keys<br />
+- Add <strong>network segmentation</strong> and monitoring for <strong>defense in depth</strong></p> <a class="read-more" href="https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_22"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CISA: your-systems-3, your-data-2
+
+&#x2022;CIS-7.0: 6.3, 6.4
+
+&#x2022;SOC2: cc_6_6, cc_7_2
+
+&#x2022;CIS-1.4: 5.2
+
+&#x2022;CIS-1.5: 5.2, 5.3
+
+&#x2022;MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046
+
+&#x2022;AWS-Foundational-Security-Best-Practices: EC2.13
+
+&#x2022;ISO27001-2013: A.12.6.C, A.13.1.C
+
+&#x2022;KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.6, 2.10.2
+
+&#x2022;C5-2025: PI-01.01AC
+
+&#x2022;HIPAA: 164_308_a_1_ii_b, 164_312_e_1
+
+&#x2022;CIS-2.0: 5.2, 5.3
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.6, 2.10.2
+
+&#x2022;GxP-21-CFR-Part-11: 11.10-d, 11.10-g
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03
+
+&#x2022;NIST-CSF-2.0: ac_3
+
+&#x2022;CIS-5.0: 5.3, 5.4
+
+&#x2022;NIST-800-171-Revision-2: 3_1_1, 3_1_2, 3_1_3, 3_1_14, 3_1_20, 3_4_7, 3_13_1, 3_13_2, 3_13_5, 3_13_6
+
+&#x2022;PCI-4.0: 1.2.8.17, 1.3.1.19, 1.3.2.19, 1.4.2.18, 1.5.1.17, A1.1.3.17
+
+&#x2022;NIST-800-53-Revision-4: ac_4, sc_7_3, sc_7
+
+&#x2022;NIST-800-53-Revision-5: ac_17_b, ac_17_1, ac_17_9, ac_17_10, cm_9_b, sc_7_7, sc_7_11, sc_7_12, sc_7_16, sc_7_21, sc_7_24_b, sc_7_25, sc_7_26, sc_7_27, sc_7_28, sc_7_a, sc_7_c
+
+&#x2022;CIS-3.0: 5.2, 5.3
+
+&#x2022;CIS-6.0: 6.3, 6.4
+
+&#x2022;AWS-Foundational-Technical-Review: NETSEC-001
+
+&#x2022;NIST-CSF-1.1: ae_1, ac_3, ac_5, ds_7, pt_4
+
+&#x2022;AWS-Audit-Manager-Control-Tower-Guardrails: 2.0.2
+
+&#x2022;CCC-v2025.10: CCC.Core.CN01.AR02
+
+&#x2022;SecNumCloud-3.2: 13.2
+
+&#x2022;RBI-Cyber-Security-Framework: annex_i_5_1, annex_i_7_3
+
+&#x2022;FFIEC: d3-pc-am-b-10, d3-pc-im-b-1, d3-pc-im-b-2, d3-pc-im-b-6, d4-c-co-b-2
+
+&#x2022;PCI-3.2.1: 1.2, 1.2.1, 1.2.1.a, 1.2.1.b, 1.2.1.c, 1.3, 1.3.1, 2.2, 2.2.2
+
+&#x2022;ProwlerThreatScore-1.0: 2.1.4, 2.1.7
+
+&#x2022;ISO27001-2022: A.8.20, A.8.21, A.8.22
+
+&#x2022;FedRamp-Moderate-Revision-4: ac-4, ac-17-1, cm-2, sc-4, sc-7-3, sc-7
+
+&#x2022;FedRAMP-Low-Revision-4: ac-17, cm-2, sc-7
+
+&#x2022;CIS-4.0.1: 5.3, 5.4
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>high</td>
+                            <td>ec2</td>
+                            <td>eu-north-1</td>
+                            <td>ec2<wbr />_securitygroup<wbr />_allow<wbr />_ingress<wbr />_from<wbr />_internet<wbr />_to<wbr />_tcp<wbr />_port<wbr />_22</td>
+                            <td>Security group does not allow ingress from 0.0.0.0/0 or ::/0 to TCP port 22 (SSH)</td>
+                            <td>arn:aws:ec2:eu-north-1:128529977749:security-group/sg-0ab21fe0bf7823fec</td>
+                            <td>
+&#x2022;Environment=prod
+
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;Project=ce-capstone
+
+&#x2022;Name=ce-capstone-db-sg
+
+&#x2022;ManagedBy=terraform
+</td>
+                            <td>Security group ce-capstone-db-20260831143455943400000009 (sg-0ab21fe0bf7823fec) does not have SSH port 22 open to the Internet.</td>
+                            <td><p class="show-read-more">Exposed <strong>SSH</strong> invites Internet-scale <strong>brute force</strong> and <strong>credential stuffing</strong>. A successful login grants <strong>remote shell</strong>, enabling data theft (confidentiality), code or config tampering (integrity), and cryptomining or service disruption (availability), plus <strong>lateral movement</strong> within the environment.</p></td>
+                            <td><p class="show-read-more">Apply <strong>least privilege</strong> to SSH:<br />
+- Disallow <code>0.0.0.0/0</code> and <code>::/0</code>; allow only trusted IPs or VPN ranges<br />
+- Prefer <strong>private access</strong> via bastion hosts or AWS Systems Manager Session Manager<br />
+- Enforce <strong>key-based auth</strong>, disable passwords, rotate keys<br />
+- Add <strong>network segmentation</strong> and monitoring for <strong>defense in depth</strong></p> <a class="read-more" href="https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_22"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CISA: your-systems-3, your-data-2
+
+&#x2022;CIS-7.0: 6.3, 6.4
+
+&#x2022;SOC2: cc_6_6, cc_7_2
+
+&#x2022;CIS-1.4: 5.2
+
+&#x2022;CIS-1.5: 5.2, 5.3
+
+&#x2022;MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046
+
+&#x2022;AWS-Foundational-Security-Best-Practices: EC2.13
+
+&#x2022;ISO27001-2013: A.12.6.C, A.13.1.C
+
+&#x2022;KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.6, 2.10.2
+
+&#x2022;C5-2025: PI-01.01AC
+
+&#x2022;HIPAA: 164_308_a_1_ii_b, 164_312_e_1
+
+&#x2022;CIS-2.0: 5.2, 5.3
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.6, 2.10.2
+
+&#x2022;GxP-21-CFR-Part-11: 11.10-d, 11.10-g
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03
+
+&#x2022;NIST-CSF-2.0: ac_3
+
+&#x2022;CIS-5.0: 5.3, 5.4
+
+&#x2022;NIST-800-171-Revision-2: 3_1_1, 3_1_2, 3_1_3, 3_1_14, 3_1_20, 3_4_7, 3_13_1, 3_13_2, 3_13_5, 3_13_6
+
+&#x2022;PCI-4.0: 1.2.8.17, 1.3.1.19, 1.3.2.19, 1.4.2.18, 1.5.1.17, A1.1.3.17
+
+&#x2022;NIST-800-53-Revision-4: ac_4, sc_7_3, sc_7
+
+&#x2022;NIST-800-53-Revision-5: ac_17_b, ac_17_1, ac_17_9, ac_17_10, cm_9_b, sc_7_7, sc_7_11, sc_7_12, sc_7_16, sc_7_21, sc_7_24_b, sc_7_25, sc_7_26, sc_7_27, sc_7_28, sc_7_a, sc_7_c
+
+&#x2022;CIS-3.0: 5.2, 5.3
+
+&#x2022;CIS-6.0: 6.3, 6.4
+
+&#x2022;AWS-Foundational-Technical-Review: NETSEC-001
+
+&#x2022;NIST-CSF-1.1: ae_1, ac_3, ac_5, ds_7, pt_4
+
+&#x2022;AWS-Audit-Manager-Control-Tower-Guardrails: 2.0.2
+
+&#x2022;CCC-v2025.10: CCC.Core.CN01.AR02
+
+&#x2022;SecNumCloud-3.2: 13.2
+
+&#x2022;RBI-Cyber-Security-Framework: annex_i_5_1, annex_i_7_3
+
+&#x2022;FFIEC: d3-pc-am-b-10, d3-pc-im-b-1, d3-pc-im-b-2, d3-pc-im-b-6, d4-c-co-b-2
+
+&#x2022;PCI-3.2.1: 1.2, 1.2.1, 1.2.1.a, 1.2.1.b, 1.2.1.c, 1.3, 1.3.1, 2.2, 2.2.2
+
+&#x2022;ProwlerThreatScore-1.0: 2.1.4, 2.1.7
+
+&#x2022;ISO27001-2022: A.8.20, A.8.21, A.8.22
+
+&#x2022;FedRamp-Moderate-Revision-4: ac-4, ac-17-1, cm-2, sc-4, sc-7-3, sc-7
+
+&#x2022;FedRAMP-Low-Revision-4: ac-17, cm-2, sc-7
+
+&#x2022;CIS-4.0.1: 5.3, 5.4
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>high</td>
+                            <td>ec2</td>
+                            <td>eu-north-1</td>
+                            <td>ec2<wbr />_securitygroup<wbr />_allow<wbr />_ingress<wbr />_from<wbr />_internet<wbr />_to<wbr />_tcp<wbr />_port<wbr />_22</td>
+                            <td>Security group does not allow ingress from 0.0.0.0/0 or ::/0 to TCP port 22 (SSH)</td>
+                            <td>arn:aws:ec2:eu-north-1:128529977749:security-group/sg-0ae6dc99a169add31</td>
+                            <td>
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;Environment=prod
+
+&#x2022;ManagedBy=terraform
+
+&#x2022;Name=ce-capstone-alb-sg
+
+&#x2022;Project=ce-capstone
+</td>
+                            <td>Security group ce-capstone-alb-20260831143450720000000006 (sg-0ae6dc99a169add31) does not have SSH port 22 open to the Internet.</td>
+                            <td><p class="show-read-more">Exposed <strong>SSH</strong> invites Internet-scale <strong>brute force</strong> and <strong>credential stuffing</strong>. A successful login grants <strong>remote shell</strong>, enabling data theft (confidentiality), code or config tampering (integrity), and cryptomining or service disruption (availability), plus <strong>lateral movement</strong> within the environment.</p></td>
+                            <td><p class="show-read-more">Apply <strong>least privilege</strong> to SSH:<br />
+- Disallow <code>0.0.0.0/0</code> and <code>::/0</code>; allow only trusted IPs or VPN ranges<br />
+- Prefer <strong>private access</strong> via bastion hosts or AWS Systems Manager Session Manager<br />
+- Enforce <strong>key-based auth</strong>, disable passwords, rotate keys<br />
+- Add <strong>network segmentation</strong> and monitoring for <strong>defense in depth</strong></p> <a class="read-more" href="https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_22"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CISA: your-systems-3, your-data-2
+
+&#x2022;CIS-7.0: 6.3, 6.4
+
+&#x2022;SOC2: cc_6_6, cc_7_2
+
+&#x2022;CIS-1.4: 5.2
+
+&#x2022;CIS-1.5: 5.2, 5.3
+
+&#x2022;MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046
+
+&#x2022;AWS-Foundational-Security-Best-Practices: EC2.13
+
+&#x2022;ISO27001-2013: A.12.6.C, A.13.1.C
+
+&#x2022;KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.6, 2.10.2
+
+&#x2022;C5-2025: PI-01.01AC
+
+&#x2022;HIPAA: 164_308_a_1_ii_b, 164_312_e_1
+
+&#x2022;CIS-2.0: 5.2, 5.3
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.6, 2.10.2
+
+&#x2022;GxP-21-CFR-Part-11: 11.10-d, 11.10-g
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03
+
+&#x2022;NIST-CSF-2.0: ac_3
+
+&#x2022;CIS-5.0: 5.3, 5.4
+
+&#x2022;NIST-800-171-Revision-2: 3_1_1, 3_1_2, 3_1_3, 3_1_14, 3_1_20, 3_4_7, 3_13_1, 3_13_2, 3_13_5, 3_13_6
+
+&#x2022;PCI-4.0: 1.2.8.17, 1.3.1.19, 1.3.2.19, 1.4.2.18, 1.5.1.17, A1.1.3.17
+
+&#x2022;NIST-800-53-Revision-4: ac_4, sc_7_3, sc_7
+
+&#x2022;NIST-800-53-Revision-5: ac_17_b, ac_17_1, ac_17_9, ac_17_10, cm_9_b, sc_7_7, sc_7_11, sc_7_12, sc_7_16, sc_7_21, sc_7_24_b, sc_7_25, sc_7_26, sc_7_27, sc_7_28, sc_7_a, sc_7_c
+
+&#x2022;CIS-3.0: 5.2, 5.3
+
+&#x2022;CIS-6.0: 6.3, 6.4
+
+&#x2022;AWS-Foundational-Technical-Review: NETSEC-001
+
+&#x2022;NIST-CSF-1.1: ae_1, ac_3, ac_5, ds_7, pt_4
+
+&#x2022;AWS-Audit-Manager-Control-Tower-Guardrails: 2.0.2
+
+&#x2022;CCC-v2025.10: CCC.Core.CN01.AR02
+
+&#x2022;SecNumCloud-3.2: 13.2
+
+&#x2022;RBI-Cyber-Security-Framework: annex_i_5_1, annex_i_7_3
+
+&#x2022;FFIEC: d3-pc-am-b-10, d3-pc-im-b-1, d3-pc-im-b-2, d3-pc-im-b-6, d4-c-co-b-2
+
+&#x2022;PCI-3.2.1: 1.2, 1.2.1, 1.2.1.a, 1.2.1.b, 1.2.1.c, 1.3, 1.3.1, 2.2, 2.2.2
+
+&#x2022;ProwlerThreatScore-1.0: 2.1.4, 2.1.7
+
+&#x2022;ISO27001-2022: A.8.20, A.8.21, A.8.22
+
+&#x2022;FedRamp-Moderate-Revision-4: ac-4, ac-17-1, cm-2, sc-4, sc-7-3, sc-7
+
+&#x2022;FedRAMP-Low-Revision-4: ac-17, cm-2, sc-7
+
+&#x2022;CIS-4.0.1: 5.3, 5.4
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>high</td>
+                            <td>ec2</td>
+                            <td>eu-north-1</td>
+                            <td>ec2<wbr />_securitygroup<wbr />_allow<wbr />_ingress<wbr />_from<wbr />_internet<wbr />_to<wbr />_tcp<wbr />_port<wbr />_22</td>
+                            <td>Security group does not allow ingress from 0.0.0.0/0 or ::/0 to TCP port 22 (SSH)</td>
+                            <td>arn:aws:ec2:eu-north-1:128529977749:security-group/sg-0f559018c82176a2b</td>
+                            <td>
+&#x2022;ManagedBy=terraform
+
+&#x2022;Name=ce-capstone-nat-sg
+
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;Project=ce-capstone
+
+&#x2022;Environment=prod
+</td>
+                            <td>Security group ce-capstone-nat-20260831143450716100000005 (sg-0f559018c82176a2b) does not have SSH port 22 open to the Internet.</td>
+                            <td><p class="show-read-more">Exposed <strong>SSH</strong> invites Internet-scale <strong>brute force</strong> and <strong>credential stuffing</strong>. A successful login grants <strong>remote shell</strong>, enabling data theft (confidentiality), code or config tampering (integrity), and cryptomining or service disruption (availability), plus <strong>lateral movement</strong> within the environment.</p></td>
+                            <td><p class="show-read-more">Apply <strong>least privilege</strong> to SSH:<br />
+- Disallow <code>0.0.0.0/0</code> and <code>::/0</code>; allow only trusted IPs or VPN ranges<br />
+- Prefer <strong>private access</strong> via bastion hosts or AWS Systems Manager Session Manager<br />
+- Enforce <strong>key-based auth</strong>, disable passwords, rotate keys<br />
+- Add <strong>network segmentation</strong> and monitoring for <strong>defense in depth</strong></p> <a class="read-more" href="https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_22"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CISA: your-systems-3, your-data-2
+
+&#x2022;CIS-7.0: 6.3, 6.4
+
+&#x2022;SOC2: cc_6_6, cc_7_2
+
+&#x2022;CIS-1.4: 5.2
+
+&#x2022;CIS-1.5: 5.2, 5.3
+
+&#x2022;MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046
+
+&#x2022;AWS-Foundational-Security-Best-Practices: EC2.13
+
+&#x2022;ISO27001-2013: A.12.6.C, A.13.1.C
+
+&#x2022;KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.6, 2.10.2
+
+&#x2022;C5-2025: PI-01.01AC
+
+&#x2022;HIPAA: 164_308_a_1_ii_b, 164_312_e_1
+
+&#x2022;CIS-2.0: 5.2, 5.3
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.6, 2.10.2
+
+&#x2022;GxP-21-CFR-Part-11: 11.10-d, 11.10-g
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03
+
+&#x2022;NIST-CSF-2.0: ac_3
+
+&#x2022;CIS-5.0: 5.3, 5.4
+
+&#x2022;NIST-800-171-Revision-2: 3_1_1, 3_1_2, 3_1_3, 3_1_14, 3_1_20, 3_4_7, 3_13_1, 3_13_2, 3_13_5, 3_13_6
+
+&#x2022;PCI-4.0: 1.2.8.17, 1.3.1.19, 1.3.2.19, 1.4.2.18, 1.5.1.17, A1.1.3.17
+
+&#x2022;NIST-800-53-Revision-4: ac_4, sc_7_3, sc_7
+
+&#x2022;NIST-800-53-Revision-5: ac_17_b, ac_17_1, ac_17_9, ac_17_10, cm_9_b, sc_7_7, sc_7_11, sc_7_12, sc_7_16, sc_7_21, sc_7_24_b, sc_7_25, sc_7_26, sc_7_27, sc_7_28, sc_7_a, sc_7_c
+
+&#x2022;CIS-3.0: 5.2, 5.3
+
+&#x2022;CIS-6.0: 6.3, 6.4
+
+&#x2022;AWS-Foundational-Technical-Review: NETSEC-001
+
+&#x2022;NIST-CSF-1.1: ae_1, ac_3, ac_5, ds_7, pt_4
+
+&#x2022;AWS-Audit-Manager-Control-Tower-Guardrails: 2.0.2
+
+&#x2022;CCC-v2025.10: CCC.Core.CN01.AR02
+
+&#x2022;SecNumCloud-3.2: 13.2
+
+&#x2022;RBI-Cyber-Security-Framework: annex_i_5_1, annex_i_7_3
+
+&#x2022;FFIEC: d3-pc-am-b-10, d3-pc-im-b-1, d3-pc-im-b-2, d3-pc-im-b-6, d4-c-co-b-2
+
+&#x2022;PCI-3.2.1: 1.2, 1.2.1, 1.2.1.a, 1.2.1.b, 1.2.1.c, 1.3, 1.3.1, 2.2, 2.2.2
+
+&#x2022;ProwlerThreatScore-1.0: 2.1.4, 2.1.7
+
+&#x2022;ISO27001-2022: A.8.20, A.8.21, A.8.22
+
+&#x2022;FedRamp-Moderate-Revision-4: ac-4, ac-17-1, cm-2, sc-4, sc-7-3, sc-7
+
+&#x2022;FedRAMP-Low-Revision-4: ac-17, cm-2, sc-7
+
+&#x2022;CIS-4.0.1: 5.3, 5.4
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>high</td>
+                            <td>ec2</td>
+                            <td>eu-north-1</td>
+                            <td>ec2<wbr />_securitygroup<wbr />_allow<wbr />_ingress<wbr />_from<wbr />_internet<wbr />_to<wbr />_tcp<wbr />_port<wbr />_3389</td>
+                            <td>Security group does not allow ingress from the Internet to TCP port 3389 (RDP)</td>
+                            <td>arn:aws:ec2:eu-north-1:128529977749:security-group/sg-004d1060824dafc6d</td>
+                            <td>
+&#x2022;Name=ce-capstone-app-sg
+
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;Project=ce-capstone
+
+&#x2022;Environment=prod
+
+&#x2022;ManagedBy=terraform
+</td>
+                            <td>Security group ce-capstone-app-20260831143453433000000008 (sg-004d1060824dafc6d) does not have Microsoft RDP port 3389 open to the Internet.</td>
+                            <td><p class="show-read-more"><strong>Internet-exposed RDP</strong> enables brute force and credential stuffing and increases the chance of <strong>remote code execution</strong> via RDP flaws.<br />
+<br />
+Adversaries can gain interactive access, exfiltrate data (<strong>confidentiality</strong>), tamper with systems (<strong>integrity</strong>), and trigger ransomware or service disruption (<strong>availability</strong>).</p></td>
+                            <td><p class="show-read-more">Apply <strong>least privilege</strong>: disallow <code>0.0.0.0/0</code> and <code>::/0</code> to <code>3389</code>; permit only specific IPs or private networks.<br />
+<br />
+Prefer <strong>Session Manager</strong>, VPN, or a hardened bastion with MFA and just-in-time access. Use private subnets and add <strong>defense in depth</strong> with network controls and monitoring.</p> <a class="read-more" href="https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_3389"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CIS-7.0: 6.3, 6.4
+
+&#x2022;SOC2: cc_6_6
+
+&#x2022;CIS-1.4: 5.2
+
+&#x2022;CIS-1.5: 5.2, 5.3
+
+&#x2022;MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046
+
+&#x2022;AWS-Foundational-Security-Best-Practices: EC2.14
+
+&#x2022;ISO27001-2013: A.12.6.B, A.13.1.B
+
+&#x2022;KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.6, 2.10.2
+
+&#x2022;C5-2025: PI-01.01AC
+
+&#x2022;CIS-2.0: 5.2, 5.3
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.6, 2.10.2
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03
+
+&#x2022;NIST-CSF-2.0: ac_3, ac_5
+
+&#x2022;CIS-5.0: 5.3, 5.4
+
+&#x2022;CIS-3.0: 5.2, 5.3
+
+&#x2022;CIS-6.0: 6.3, 6.4
+
+&#x2022;AWS-Foundational-Technical-Review: NETSEC-001
+
+&#x2022;AWS-Audit-Manager-Control-Tower-Guardrails: 2.0.1
+
+&#x2022;SecNumCloud-3.2: 13.2
+
+&#x2022;RBI-Cyber-Security-Framework: annex_i_1_3
+
+&#x2022;ProwlerThreatScore-1.0: 2.1.4, 2.1.7
+
+&#x2022;ISO27001-2022: A.8.20, A.8.21, A.8.22
+
+&#x2022;CIS-4.0.1: 5.3, 5.4
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>high</td>
+                            <td>ec2</td>
+                            <td>eu-north-1</td>
+                            <td>ec2<wbr />_securitygroup<wbr />_allow<wbr />_ingress<wbr />_from<wbr />_internet<wbr />_to<wbr />_tcp<wbr />_port<wbr />_3389</td>
+                            <td>Security group does not allow ingress from the Internet to TCP port 3389 (RDP)</td>
+                            <td>arn:aws:ec2:eu-north-1:128529977749:security-group/sg-0ab21fe0bf7823fec</td>
+                            <td>
+&#x2022;Environment=prod
+
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;Project=ce-capstone
+
+&#x2022;Name=ce-capstone-db-sg
+
+&#x2022;ManagedBy=terraform
+</td>
+                            <td>Security group ce-capstone-db-20260831143455943400000009 (sg-0ab21fe0bf7823fec) does not have Microsoft RDP port 3389 open to the Internet.</td>
+                            <td><p class="show-read-more"><strong>Internet-exposed RDP</strong> enables brute force and credential stuffing and increases the chance of <strong>remote code execution</strong> via RDP flaws.<br />
+<br />
+Adversaries can gain interactive access, exfiltrate data (<strong>confidentiality</strong>), tamper with systems (<strong>integrity</strong>), and trigger ransomware or service disruption (<strong>availability</strong>).</p></td>
+                            <td><p class="show-read-more">Apply <strong>least privilege</strong>: disallow <code>0.0.0.0/0</code> and <code>::/0</code> to <code>3389</code>; permit only specific IPs or private networks.<br />
+<br />
+Prefer <strong>Session Manager</strong>, VPN, or a hardened bastion with MFA and just-in-time access. Use private subnets and add <strong>defense in depth</strong> with network controls and monitoring.</p> <a class="read-more" href="https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_3389"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CIS-7.0: 6.3, 6.4
+
+&#x2022;SOC2: cc_6_6
+
+&#x2022;CIS-1.4: 5.2
+
+&#x2022;CIS-1.5: 5.2, 5.3
+
+&#x2022;MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046
+
+&#x2022;AWS-Foundational-Security-Best-Practices: EC2.14
+
+&#x2022;ISO27001-2013: A.12.6.B, A.13.1.B
+
+&#x2022;KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.6, 2.10.2
+
+&#x2022;C5-2025: PI-01.01AC
+
+&#x2022;CIS-2.0: 5.2, 5.3
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.6, 2.10.2
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03
+
+&#x2022;NIST-CSF-2.0: ac_3, ac_5
+
+&#x2022;CIS-5.0: 5.3, 5.4
+
+&#x2022;CIS-3.0: 5.2, 5.3
+
+&#x2022;CIS-6.0: 6.3, 6.4
+
+&#x2022;AWS-Foundational-Technical-Review: NETSEC-001
+
+&#x2022;AWS-Audit-Manager-Control-Tower-Guardrails: 2.0.1
+
+&#x2022;SecNumCloud-3.2: 13.2
+
+&#x2022;RBI-Cyber-Security-Framework: annex_i_1_3
+
+&#x2022;ProwlerThreatScore-1.0: 2.1.4, 2.1.7
+
+&#x2022;ISO27001-2022: A.8.20, A.8.21, A.8.22
+
+&#x2022;CIS-4.0.1: 5.3, 5.4
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>high</td>
+                            <td>ec2</td>
+                            <td>eu-north-1</td>
+                            <td>ec2<wbr />_securitygroup<wbr />_allow<wbr />_ingress<wbr />_from<wbr />_internet<wbr />_to<wbr />_tcp<wbr />_port<wbr />_3389</td>
+                            <td>Security group does not allow ingress from the Internet to TCP port 3389 (RDP)</td>
+                            <td>arn:aws:ec2:eu-north-1:128529977749:security-group/sg-0ae6dc99a169add31</td>
+                            <td>
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;Environment=prod
+
+&#x2022;ManagedBy=terraform
+
+&#x2022;Name=ce-capstone-alb-sg
+
+&#x2022;Project=ce-capstone
+</td>
+                            <td>Security group ce-capstone-alb-20260831143450720000000006 (sg-0ae6dc99a169add31) does not have Microsoft RDP port 3389 open to the Internet.</td>
+                            <td><p class="show-read-more"><strong>Internet-exposed RDP</strong> enables brute force and credential stuffing and increases the chance of <strong>remote code execution</strong> via RDP flaws.<br />
+<br />
+Adversaries can gain interactive access, exfiltrate data (<strong>confidentiality</strong>), tamper with systems (<strong>integrity</strong>), and trigger ransomware or service disruption (<strong>availability</strong>).</p></td>
+                            <td><p class="show-read-more">Apply <strong>least privilege</strong>: disallow <code>0.0.0.0/0</code> and <code>::/0</code> to <code>3389</code>; permit only specific IPs or private networks.<br />
+<br />
+Prefer <strong>Session Manager</strong>, VPN, or a hardened bastion with MFA and just-in-time access. Use private subnets and add <strong>defense in depth</strong> with network controls and monitoring.</p> <a class="read-more" href="https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_3389"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CIS-7.0: 6.3, 6.4
+
+&#x2022;SOC2: cc_6_6
+
+&#x2022;CIS-1.4: 5.2
+
+&#x2022;CIS-1.5: 5.2, 5.3
+
+&#x2022;MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046
+
+&#x2022;AWS-Foundational-Security-Best-Practices: EC2.14
+
+&#x2022;ISO27001-2013: A.12.6.B, A.13.1.B
+
+&#x2022;KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.6, 2.10.2
+
+&#x2022;C5-2025: PI-01.01AC
+
+&#x2022;CIS-2.0: 5.2, 5.3
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.6, 2.10.2
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03
+
+&#x2022;NIST-CSF-2.0: ac_3, ac_5
+
+&#x2022;CIS-5.0: 5.3, 5.4
+
+&#x2022;CIS-3.0: 5.2, 5.3
+
+&#x2022;CIS-6.0: 6.3, 6.4
+
+&#x2022;AWS-Foundational-Technical-Review: NETSEC-001
+
+&#x2022;AWS-Audit-Manager-Control-Tower-Guardrails: 2.0.1
+
+&#x2022;SecNumCloud-3.2: 13.2
+
+&#x2022;RBI-Cyber-Security-Framework: annex_i_1_3
+
+&#x2022;ProwlerThreatScore-1.0: 2.1.4, 2.1.7
+
+&#x2022;ISO27001-2022: A.8.20, A.8.21, A.8.22
+
+&#x2022;CIS-4.0.1: 5.3, 5.4
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>high</td>
+                            <td>ec2</td>
+                            <td>eu-north-1</td>
+                            <td>ec2<wbr />_securitygroup<wbr />_allow<wbr />_ingress<wbr />_from<wbr />_internet<wbr />_to<wbr />_tcp<wbr />_port<wbr />_3389</td>
+                            <td>Security group does not allow ingress from the Internet to TCP port 3389 (RDP)</td>
+                            <td>arn:aws:ec2:eu-north-1:128529977749:security-group/sg-0f559018c82176a2b</td>
+                            <td>
+&#x2022;ManagedBy=terraform
+
+&#x2022;Name=ce-capstone-nat-sg
+
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;Project=ce-capstone
+
+&#x2022;Environment=prod
+</td>
+                            <td>Security group ce-capstone-nat-20260831143450716100000005 (sg-0f559018c82176a2b) does not have Microsoft RDP port 3389 open to the Internet.</td>
+                            <td><p class="show-read-more"><strong>Internet-exposed RDP</strong> enables brute force and credential stuffing and increases the chance of <strong>remote code execution</strong> via RDP flaws.<br />
+<br />
+Adversaries can gain interactive access, exfiltrate data (<strong>confidentiality</strong>), tamper with systems (<strong>integrity</strong>), and trigger ransomware or service disruption (<strong>availability</strong>).</p></td>
+                            <td><p class="show-read-more">Apply <strong>least privilege</strong>: disallow <code>0.0.0.0/0</code> and <code>::/0</code> to <code>3389</code>; permit only specific IPs or private networks.<br />
+<br />
+Prefer <strong>Session Manager</strong>, VPN, or a hardened bastion with MFA and just-in-time access. Use private subnets and add <strong>defense in depth</strong> with network controls and monitoring.</p> <a class="read-more" href="https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_3389"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CIS-7.0: 6.3, 6.4
+
+&#x2022;SOC2: cc_6_6
+
+&#x2022;CIS-1.4: 5.2
+
+&#x2022;CIS-1.5: 5.2, 5.3
+
+&#x2022;MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046
+
+&#x2022;AWS-Foundational-Security-Best-Practices: EC2.14
+
+&#x2022;ISO27001-2013: A.12.6.B, A.13.1.B
+
+&#x2022;KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.6, 2.10.2
+
+&#x2022;C5-2025: PI-01.01AC
+
+&#x2022;CIS-2.0: 5.2, 5.3
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.6, 2.10.2
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03
+
+&#x2022;NIST-CSF-2.0: ac_3, ac_5
+
+&#x2022;CIS-5.0: 5.3, 5.4
+
+&#x2022;CIS-3.0: 5.2, 5.3
+
+&#x2022;CIS-6.0: 6.3, 6.4
+
+&#x2022;AWS-Foundational-Technical-Review: NETSEC-001
+
+&#x2022;AWS-Audit-Manager-Control-Tower-Guardrails: 2.0.1
+
+&#x2022;SecNumCloud-3.2: 13.2
+
+&#x2022;RBI-Cyber-Security-Framework: annex_i_1_3
+
+&#x2022;ProwlerThreatScore-1.0: 2.1.4, 2.1.7
+
+&#x2022;ISO27001-2022: A.8.20, A.8.21, A.8.22
+
+&#x2022;CIS-4.0.1: 5.3, 5.4
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>medium</td>
+                            <td>rds</td>
+                            <td>eu-north-1</td>
+                            <td>rds<wbr />_instance<wbr />_minor<wbr />_version<wbr />_upgrade<wbr />_enabled</td>
+                            <td>RDS instance has minor version upgrade enabled</td>
+                            <td>arn:aws:rds:eu-north-1:128529977749:db:ce-capstone-pg</td>
+                            <td>
+&#x2022;Project=ce-capstone
+
+&#x2022;Environment=prod
+
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;ManagedBy=terraform
+</td>
+                            <td>RDS Instance ce-capstone-pg has minor version upgrade enabled.</td>
+                            <td><p class="show-read-more">Without automatic minor upgrades, databases miss <strong>security patches</strong>, leaving known vulnerabilities exploitable and risking <strong>unauthorized data access</strong>. Unapplied fixes can cause <strong>data corruption</strong> and outages, harming <strong>integrity</strong> and <strong>availability</strong>.</p></td>
+                            <td><p class="show-read-more">Enable <code>auto_minor_version_upgrade</code> on RDS instances so minor releases are applied promptly. Use maintenance windows and stage testing to limit impact. Follow <strong>defense in depth</strong> and <strong>least privilege</strong>; keep reliable backups and Multi-AZ to preserve continuity if upgrades require rollback.</p> <a class="read-more" href="https://hub.prowler.com/check/rds_instance_minor_version_upgrade_enabled"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CISA: your-systems-2, booting-up-thing-to-do-first-3
+
+&#x2022;CIS-7.0: 3.2.2
+
+&#x2022;CIS-1.5: 2.3.2
+
+&#x2022;MITRE-ATTACK: T1190
+
+&#x2022;AWS-Foundational-Security-Best-Practices: RDS.13
+
+&#x2022;KISA-ISMS-P-2023: 2.10.2, 2.10.8
+
+&#x2022;CIS-2.0: 2.3.2
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.10.2, 2.10.8
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC06-BP01
+
+&#x2022;CIS-5.0: 2.2.2
+
+&#x2022;ASD-Essential-Eight-Nov 2023: E8-1.6
+
+&#x2022;PCI-4.0: 6.3.3.10
+
+&#x2022;CIS-3.0: 2.3.2
+
+&#x2022;CIS-6.0: 3.2.2
+
+&#x2022;RBI-Cyber-Security-Framework: annex_i_6
+
+&#x2022;FFIEC: d3-cc-pm-b-1, d3-cc-pm-b-3
+
+&#x2022;CIS-4.0.1: 2.2.2
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>critical</td>
+                            <td>rds</td>
+                            <td>eu-north-1</td>
+                            <td>rds<wbr />_instance<wbr />_no<wbr />_public<wbr />_access</td>
+                            <td>RDS instance is not publicly exposed to the Internet</td>
+                            <td>arn:aws:rds:eu-north-1:128529977749:db:ce-capstone-pg</td>
+                            <td>
+&#x2022;Project=ce-capstone
+
+&#x2022;Environment=prod
+
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;ManagedBy=terraform
+</td>
+                            <td>RDS Instance ce-capstone-pg is not publicly accessible.</td>
+                            <td><p class="show-read-more">An internet-reachable database invites:<br />
+- Brute-force and vulnerability probing, risking <strong>availability</strong> and <strong>integrity</strong><br />
+- Unauthorized queries and dumps leading to <strong>confidentiality</strong> loss<br />
+<br />
+Compromise can enable <strong>lateral movement</strong> and persistence within the VPC.</p></td>
+                            <td><p class="show-read-more">Keep databases private by applying <strong>least privilege</strong> at the network layer:<br />
+- Set <code>PubliclyAccessible</code> to <code>false</code><br />
+- Place instances in private subnets<br />
+- Deny <code>0.0.0.0/0</code> and <code>::/0</code> on the DB port<br />
+- Expose access via private endpoints, VPN, or an application tier/DB proxy<br />
+<br />
+Adopt <strong>defense in depth</strong> with monitoring and strong auth.</p> <a class="read-more" href="https://hub.prowler.com/check/rds_instance_no_public_access"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CISA: your-systems-3, your-data-2
+
+&#x2022;CIS-7.0: 3.2.3
+
+&#x2022;SOC2: cc_6_2
+
+&#x2022;CIS-1.5: 2.3.3
+
+&#x2022;MITRE-ATTACK: T1530
+
+&#x2022;AWS-Foundational-Security-Best-Practices: RDS.2
+
+&#x2022;ISO27001-2013: A.12.6.I, A.13.1.H
+
+&#x2022;KISA-ISMS-P-2023: 2.6.1, 2.6.4, 2.10.2
+
+&#x2022;C5-2025: PS-03.02B, IAM-10.01B, COS-02.01B
+
+&#x2022;HIPAA: 164_308_a_3_i, 164_312_a_1
+
+&#x2022;CIS-2.0: 2.3.3
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.6.1, 2.6.4, 2.10.2
+
+&#x2022;GxP-21-CFR-Part-11: 11.10-d, 11.10-g, 11.10-k
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC03-BP07
+
+&#x2022;NIST-CSF-2.0: ac_3
+
+&#x2022;CIS-5.0: 2.2.3
+
+&#x2022;NIST-800-171-Revision-2: 3_1_1, 3_1_2, 3_1_3, 3_1_14, 3_13_1, 3_13_2, 3_13_5
+
+&#x2022;PCI-4.0: 1.2.8.28, 1.3.1.31, 1.3.2.31, 1.4.2.29, 1.5.1.28, 10.3.2.15, 3.5.1.3.20, A1.1.2.11, A1.1.3.28, A3.4.1.13
+
+&#x2022;NIST-800-53-Revision-4: ac_4, ac_6, ac_21, sc_7_3, sc_7
+
+&#x2022;NIST-800-53-Revision-5: ac_2_6, ac_3, ac_3_7, ac_4_21, ac_6, ac_17_b, ac_17_1, ac_17_4_a, ac_17_9, ac_17_10, mp_2, sc_7_2, sc_7_3, sc_7_7, sc_7_9_a, sc_7_11, sc_7_12, sc_7_16, sc_7_20, sc_7_21, sc_7_24_b, sc_7_25, sc_7_26, sc_7_27, sc_7_28, sc_7_a, sc_7_b, sc_7_c, sc_25
+
+&#x2022;CIS-3.0: 2.3.3
+
+&#x2022;CIS-6.0: 3.2.3
+
+&#x2022;NIST-CSF-1.1: ac_3, ac_5, ds_5, ip_8, pt_4
+
+&#x2022;AWS-Audit-Manager-Control-Tower-Guardrails: 4.0.1, 4.1.1
+
+&#x2022;SecNumCloud-3.2: 9.7
+
+&#x2022;RBI-Cyber-Security-Framework: annex_i_1_3
+
+&#x2022;FFIEC: d3-pc-im-b-1
+
+&#x2022;PCI-3.2.1: 1.2, 1.2.1, 1.2.1.a, 1.2.1.b, 1.2.1.c, 1.3, 1.3.1, 1.3.2, 1.3.4, 1.3.6, 2.2, 2.2.2, 7.2, 7.2.1
+
+&#x2022;ProwlerThreatScore-1.0: 2.2.4
+
+&#x2022;ISO27001-2022: A.8.1
+
+&#x2022;FedRamp-Moderate-Revision-4: ac-3, ac-4, ac-6, ac-17-1, ac-21-b, cm-2, sc-4, sc-7-3, sc-7
+
+&#x2022;FedRAMP-Low-Revision-4: ac-3, ac-17, cm-2, sc-7
+
+&#x2022;CIS-4.0.1: 2.2.3
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>high</td>
+                            <td>rds</td>
+                            <td>eu-north-1</td>
+                            <td>rds<wbr />_instance<wbr />_storage<wbr />_encrypted</td>
+                            <td>RDS DB instance storage is encrypted at rest</td>
+                            <td>arn:aws:rds:eu-north-1:128529977749:db:ce-capstone-pg</td>
+                            <td>
+&#x2022;Project=ce-capstone
+
+&#x2022;Environment=prod
+
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;ManagedBy=terraform
+</td>
+                            <td>RDS Instance ce-capstone-pg is encrypted.</td>
+                            <td><p class="show-read-more">Without <strong>encryption at rest</strong>, database files, snapshots, and automated backups remain in plaintext. An attacker with access to copied snapshots, compromised backups, or underlying storage can read sensitive data, causing loss of <strong>confidentiality</strong> and enabling large-scale exfiltration.</p></td>
+                            <td><p class="show-read-more">Enable <strong>encryption at rest</strong> for all RDS instances. Prefer <strong>customer-managed KMS keys</strong> to control rotation and fine-grained access, applying <strong>least privilege</strong> and <strong>defense in depth</strong>. Restrict key usage, monitor key activity, and manage key lifecycle. Migrate unencrypted instances via encrypted snapshot copy and restore.</p> <a class="read-more" href="https://hub.prowler.com/check/rds_instance_storage_encrypted"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CISA: your-systems-3, your-data-1, your-data-2
+
+&#x2022;CIS-7.0: 3.2.1
+
+&#x2022;SOC2: pi_1_5
+
+&#x2022;CIS-1.4: 2.3.1
+
+&#x2022;CIS-1.5: 2.3.1
+
+&#x2022;MITRE-ATTACK: T1119, T1530
+
+&#x2022;GDPR: article_32
+
+&#x2022;AWS-Foundational-Security-Best-Practices: RDS.3
+
+&#x2022;ISO27001-2013: A.10.1.A
+
+&#x2022;KISA-ISMS-P-2023: 2.7.1, 2.10.2
+
+&#x2022;C5-2025: OIS-08.02B, CRY-01.02AC, CRY-05.01AC, PSS-12.02B
+
+&#x2022;HIPAA: 164_308_a_1_ii_b, 164_308_a_4_ii_a, 164_312_a_2_iv, 164_312_e_2_ii
+
+&#x2022;CIS-2.0: 2.3.1
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.7.1, 2.10.2
+
+&#x2022;GxP-21-CFR-Part-11: 11.10-c, 11.30
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC08-BP02
+
+&#x2022;GxP-EU-Annex-11: 7.1-data-storage-damage-protection
+
+&#x2022;NIST-CSF-2.0: ds_1
+
+&#x2022;CIS-5.0: 2.2.1
+
+&#x2022;NIST-800-171-Revision-2: 3_13_11, 3_13_16
+
+&#x2022;PCI-4.0: 3.5.1.27, 8.3.2.44
+
+&#x2022;NIST-800-53-Revision-4: sc_28
+
+&#x2022;NIST-800-53-Revision-5: au_9_3, cp_9_d, cp_9_8, sc_8_3, sc_8_4, sc_13_a, sc_28_1, si_19_4
+
+&#x2022;CIS-3.0: 2.3.1
+
+&#x2022;ENS-RD2022: mp.si.2.aws.rds.1
+
+&#x2022;CIS-6.0: 3.2.1
+
+&#x2022;NIST-CSF-1.1: ds_1
+
+&#x2022;AWS-Audit-Manager-Control-Tower-Guardrails: 5.0.1
+
+&#x2022;CCC-v2025.10: CCC.Core.CN02.AR01
+
+&#x2022;SecNumCloud-3.2: 10.1
+
+&#x2022;RBI-Cyber-Security-Framework: annex_i_1_3
+
+&#x2022;FFIEC: d3-pc-am-b-12
+
+&#x2022;PCI-3.2.1: 3.4, 3.4.1, 3.4.1.a, 3.4.1.c, 3.4.a, 3.4.b, 8.2, 8.2.1, 8.2.1.a
+
+&#x2022;ProwlerThreatScore-1.0: 4.2.2
+
+&#x2022;ISO27001-2022: A.8.11, A.8.24
+
+&#x2022;AWS-AI-Security-Framework-1.0: AISF-INFRA-05
+
+&#x2022;FedRamp-Moderate-Revision-4: sc-28
+
+&#x2022;CIS-4.0.1: 2.2.1
+
+&#x2022;FedRAMP-20x-KSI-Low-25.05C: ksi-svc
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>high</td>
+                            <td>rds</td>
+                            <td>eu-north-1</td>
+                            <td>rds<wbr />_instance<wbr />_transport<wbr />_encrypted</td>
+                            <td>RDS instance or cluster enforces SSL/TLS encryption for client connections</td>
+                            <td>arn:aws:rds:eu-north-1:128529977749:db:ce-capstone-pg</td>
+                            <td>
+&#x2022;Project=ce-capstone
+
+&#x2022;Environment=prod
+
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;ManagedBy=terraform
+</td>
+                            <td>RDS Instance ce-capstone-pg connections use SSL encryption.</td>
+                            <td><p class="show-read-more">Without enforced <strong>TLS</strong>, clients can connect or downgrade to plaintext, exposing credentials and queries to interception. Adversaries can perform <strong>MITM</strong>, steal secrets, and tamper traffic, undermining <strong>confidentiality</strong> and <strong>integrity</strong> and enabling reuse of captured database credentials.</p></td>
+                            <td><p class="show-read-more">Enforce transport encryption at the database layer:<br />
+- Enable <code>rds.force_ssl=1</code> or <code>require_secure_transport</code> in parameter groups<br />
+- Configure clients to require certificate validation and prevent fallback<br />
+- Use current TLS versions and trusted CAs<br />
+- Prefer private network access as <strong>defense in depth</strong></p> <a class="read-more" href="https://hub.prowler.com/check/rds_instance_transport_encrypted"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CIS-1.4: 2.3.1
+
+&#x2022;CIS-1.5: 2.3.1
+
+&#x2022;MITRE-ATTACK: T1040, T1530
+
+&#x2022;AWS-Foundational-Security-Best-Practices: RDS.38, RDS.39
+
+&#x2022;KISA-ISMS-P-2023: 2.7.1, 2.10.2
+
+&#x2022;C5-2025: OPS-31.01B, IAM-07.03B, CRY-01.02AC, CRY-05.01AC, PSS-12.02B
+
+&#x2022;CIS-2.0: 2.3.1
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.7.1, 2.10.2
+
+&#x2022;NIST-CSF-2.0: ds_2
+
+&#x2022;AWS-Audit-Manager-Control-Tower-Guardrails: 5.0.1
+
+&#x2022;CCC-v2025.10: CCC.Core.CN01.AR01
+
+&#x2022;SecNumCloud-3.2: 10.2
+
+&#x2022;ISO27001-2022: A.8.24
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>high</td>
+                            <td>s3</td>
+                            <td>eu-north-1</td>
+                            <td>s3<wbr />_account<wbr />_level<wbr />_public<wbr />_access<wbr />_blocks</td>
+                            <td>S3 account-level Block Public Access ignores public ACLs and restricts public buckets</td>
+                            <td>arn:aws:s3:eu-north-1:128529977749:account</td>
+                            <td></td>
+                            <td>Block Public Access is configured for the account 128529977749.</td>
+                            <td><p class="show-read-more">Absent these settings, <strong>public ACLs</strong> and broad bucket policies may grant internet or cross-account access. This risks:<br />
+- Confidentiality: bulk data exfiltration<br />
+- Integrity: object overwrite/tampering<br />
+- Availability: malicious deletions or malware hosting, triggering takedowns</p></td>
+                            <td><p class="show-read-more">Turn on account-level <strong>Block Public Access</strong> (prefer enabling all four: <code>block_public_acls</code>, <code>ignore_public_acls</code>, <code>block_public_policy</code>, <code>restrict_public_buckets</code>) to enforce least privilege. For legitimate access, use private buckets with <strong>CloudFront</strong>, VPC endpoints, or presigned URLs. Regularly review policies with IAM Access Analyzer.</p> <a class="read-more" href="https://hub.prowler.com/check/s3_account_level_public_access_blocks"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CISA: your-systems-3, your-data-2
+
+&#x2022;CIS-7.0: 3.1.4
+
+&#x2022;CIS-1.4: 2.1.5
+
+&#x2022;CIS-1.5: 2.1.5
+
+&#x2022;MITRE-ATTACK: T1530
+
+&#x2022;AWS-Foundational-Security-Best-Practices: S3.1
+
+&#x2022;KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.10.2
+
+&#x2022;C5-2025: PS-03.02B, IAM-10.01B, COS-02.01B
+
+&#x2022;HIPAA: 164_308_a_1_ii_b, 164_308_a_3_i
+
+&#x2022;CIS-2.0: 2.1.4
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.10.2
+
+&#x2022;GxP-21-CFR-Part-11: 11.10-d, 11.10-g
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC03-BP07
+
+&#x2022;NIST-CSF-2.0: ac_3
+
+&#x2022;CIS-5.0: 2.1.4
+
+&#x2022;NIST-800-171-Revision-2: 3_1_1, 3_1_2, 3_1_3, 3_1_14, 3_1_20, 3_3_8, 3_4_6, 3_13_2, 3_13_5
+
+&#x2022;PCI-4.0: 1.2.8.31, 1.2.8.32, 1.3.1.35, 1.3.1.36, 1.3.2.35, 1.3.2.36, 1.4.2.33, 1.4.2.34, 1.5.1.31, 1.5.1.32, 10.3.2.19, 10.3.2.20, 3.5.1.3.24, 3.5.1.3.25, A1.1.2.15, A1.1.2.16, A1.1.3.31, A1.1.3.32, A3.4.1.17, A3.4.1.18
+
+&#x2022;NIST-800-53-Revision-4: sc_7_3, sc_7
+
+&#x2022;NIST-800-53-Revision-5: ac_2_6, ac_3, ac_3_7, ac_4_21, ac_6, ac_17_b, ac_17_1, ac_17_4_a, ac_17_9, ac_17_10, cm_6_a, cm_9_b, mp_2, sc_7_2, sc_7_3, sc_7_7, sc_7_9_a, sc_7_11, sc_7_12, sc_7_16, sc_7_20, sc_7_21, sc_7_24_b, sc_7_25, sc_7_26, sc_7_27, sc_7_28, sc_7_a, sc_7_b, sc_7_c, sc_25
+
+&#x2022;AWS-Account-Security-Onboarding: S3 Block Public Access
+
+&#x2022;CIS-3.0: 2.1.4
+
+&#x2022;CIS-6.0: 3.1.4
+
+&#x2022;NIST-CSF-1.1: ac_3, ac_5, ds_5, ip_8, pt_3
+
+&#x2022;AWS-Audit-Manager-Control-Tower-Guardrails: 4.1.1
+
+&#x2022;CCC-v2025.10: CCC.Core.CN05.AR01, CCC.Logging.CN05.AR01, CCC.Logging.CN05.AR02
+
+&#x2022;SecNumCloud-3.2: 9.7
+
+&#x2022;RBI-Cyber-Security-Framework: annex_i_1_3
+
+&#x2022;FFIEC: d3-pc-im-b-1
+
+&#x2022;PCI-3.2.1: 1.3, 2.2, 2.2.2, 7.2, 7.2.1
+
+&#x2022;ISO27001-2022: A.8.1
+
+&#x2022;AWS-AI-Security-Framework-1.0: AISF-DATA-04
+
+&#x2022;FedRamp-Moderate-Revision-4: ac-3, ac-6, ac-17-1, ac-21-b, cm-2, sc-4, sc-7-3, sc-7
+
+&#x2022;FedRAMP-Low-Revision-4: ac-3, ac-17, cm-2, sc-7
+
+&#x2022;CIS-4.0.1: 2.1.4
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>high</td>
+                            <td>s3</td>
+                            <td>eu-north-1</td>
+                            <td>s3<wbr />_bucket<wbr />_level<wbr />_public<wbr />_access<wbr />_block</td>
+                            <td>S3 bucket has Block Public Access with IgnorePublicAcls and RestrictPublicBuckets enabled at bucket or account level</td>
+                            <td>arn:aws:s3:::ce-capstone-artifacts-20260901081024819300000002</td>
+                            <td>
+&#x2022;Project=ce-capstone
+
+&#x2022;Environment=prod
+
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;ManagedBy=terraform
+</td>
+                            <td>Block Public Access is configured for the S3 Bucket ce-capstone-artifacts-20260901081024819300000002.</td>
+                            <td><p class="show-read-more">Absent <strong>S3 Block Public Access</strong>, public ACLs or broad policies can grant Internet or cross-account access.<br />
+- Data disclosure (confidentiality)<br />
+- Object overwrite or uploads (integrity)<br />
+- Deletion or outages from misuse (availability)</p></td>
+                            <td><p class="show-read-more">Enable <strong>Block Public Access</strong> at account and bucket levels with <code>block_public_acls</code>, <code>ignore_public_acls</code>, <code>block_public_policy</code>, and <code>restrict_public_buckets</code> set to <code>true</code>. Apply <strong>least privilege</strong> and <strong>defense in depth</strong>. <em>If public access is required</em>, narrowly scope policies to fixed principals and conditions.</p> <a class="read-more" href="https://hub.prowler.com/check/s3_bucket_level_public_access_block"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CIS-7.0: 3.1.4
+
+&#x2022;CIS-1.4: 2.1.5
+
+&#x2022;CIS-1.5: 2.1.5
+
+&#x2022;MITRE-ATTACK: T1530
+
+&#x2022;AWS-Foundational-Security-Best-Practices: S3.8
+
+&#x2022;KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.10.2
+
+&#x2022;C5-2025: PS-03.02B, IAM-10.01B, COS-02.01B
+
+&#x2022;CIS-2.0: 2.1.4
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.10.2
+
+&#x2022;NIST-CSF-2.0: ac_3
+
+&#x2022;CIS-5.0: 2.1.4
+
+&#x2022;AWS-Account-Security-Onboarding: S3 Block Public Access
+
+&#x2022;CIS-3.0: 2.1.4
+
+&#x2022;CIS-6.0: 3.1.4
+
+&#x2022;AWS-Foundational-Technical-Review: S3-001
+
+&#x2022;CCC-v2025.10: CCC.Logging.CN05.AR01
+
+&#x2022;SecNumCloud-3.2: 9.7
+
+&#x2022;AWS-AI-Security-Framework-1.0: AISF-DATA-04
+
+&#x2022;CIS-4.0.1: 2.1.4
+</p></td>
+                        </tr>
+                        
+                        <tr class="p-3 mb-2 bg-success-custom">
+                            <td>PASS</td>
+                            <td>high</td>
+                            <td>s3</td>
+                            <td>eu-north-1</td>
+                            <td>s3<wbr />_bucket<wbr />_level<wbr />_public<wbr />_access<wbr />_block</td>
+                            <td>S3 bucket has Block Public Access with IgnorePublicAcls and RestrictPublicBuckets enabled at bucket or account level</td>
+                            <td>arn:aws:s3:::ce-capstone-config-128529977749</td>
+                            <td>
+&#x2022;Project=ce-capstone
+
+&#x2022;Environment=prod
+
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;ManagedBy=terraform
+</td>
+                            <td>Block Public Access is configured for the S3 Bucket ce-capstone-config-128529977749.</td>
+                            <td><p class="show-read-more">Absent <strong>S3 Block Public Access</strong>, public ACLs or broad policies can grant Internet or cross-account access.<br />
+- Data disclosure (confidentiality)<br />
+- Object overwrite or uploads (integrity)<br />
+- Deletion or outages from misuse (availability)</p></td>
+                            <td><p class="show-read-more">Enable <strong>Block Public Access</strong> at account and bucket levels with <code>block_public_acls</code>, <code>ignore_public_acls</code>, <code>block_public_policy</code>, and <code>restrict_public_buckets</code> set to <code>true</code>. Apply <strong>least privilege</strong> and <strong>defense in depth</strong>. <em>If public access is required</em>, narrowly scope policies to fixed principals and conditions.</p> <a class="read-more" href="https://hub.prowler.com/check/s3_bucket_level_public_access_block"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CIS-7.0: 3.1.4
+
+&#x2022;CIS-1.4: 2.1.5
+
+&#x2022;CIS-1.5: 2.1.5
+
+&#x2022;MITRE-ATTACK: T1530
+
+&#x2022;AWS-Foundational-Security-Best-Practices: S3.8
+
+&#x2022;KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.10.2
+
+&#x2022;C5-2025: PS-03.02B, IAM-10.01B, COS-02.01B
+
+&#x2022;CIS-2.0: 2.1.4
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.10.2
+
+&#x2022;NIST-CSF-2.0: ac_3
+
+&#x2022;CIS-5.0: 2.1.4
+
+&#x2022;AWS-Account-Security-Onboarding: S3 Block Public Access
+
+&#x2022;CIS-3.0: 2.1.4
+
+&#x2022;CIS-6.0: 3.1.4
+
+&#x2022;AWS-Foundational-Technical-Review: S3-001
+
+&#x2022;CCC-v2025.10: CCC.Logging.CN05.AR01
+
+&#x2022;SecNumCloud-3.2: 9.7
+
+&#x2022;AWS-AI-Security-Framework-1.0: AISF-DATA-04
+
+&#x2022;CIS-4.0.1: 2.1.4
+</p></td>
+                        </tr>
+                        
+                        <tr class="table-danger">
+                            <td>FAIL</td>
+                            <td>medium</td>
+                            <td>s3</td>
+                            <td>eu-north-1</td>
+                            <td>s3<wbr />_bucket<wbr />_no<wbr />_mfa<wbr />_delete</td>
+                            <td>S3 bucket has MFA Delete enabled</td>
+                            <td>arn:aws:s3:::ce-capstone-artifacts-20260901081024819300000002</td>
+                            <td>
+&#x2022;Project=ce-capstone
+
+&#x2022;Environment=prod
+
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;ManagedBy=terraform
+</td>
+                            <td>S3 Bucket ce-capstone-artifacts-20260901081024819300000002 has MFA Delete disabled.</td>
+                            <td><p class="show-read-more">Without <strong>MFA Delete</strong>, a compromised or over-privileged identity can irrevocably purge object history or change versioning.<br />
+<br />
+This erases recovery points, degrading data <strong>availability</strong>, weakening <strong>integrity</strong>, and increasing the blast radius of account compromise or ransomware.</p></td>
+                            <td><p class="show-read-more">Enable <strong>MFA Delete</strong> on sensitive, versioned buckets so permanent deletions and <code>Versioning</code> changes require a second factor. Apply <strong>least privilege</strong> to restrict version purge actions, enforce <strong>change control</strong>, and combine with <strong>Object Lock</strong> or immutable backups for defense in depth.</p> <a class="read-more" href="https://hub.prowler.com/check/s3_bucket_no_mfa_delete"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CIS-7.0: 3.1.2
+
+&#x2022;CIS-1.4: 2.1.3
+
+&#x2022;CIS-1.5: 2.1.3
+
+&#x2022;MITRE-ATTACK: T1485
+
+&#x2022;AWS-Foundational-Security-Best-Practices: S3.20
+
+&#x2022;KISA-ISMS-P-2023: 2.5.3, 2.10.2
+
+&#x2022;C5-2025: AM-07.02B, OPS-16.01B, IAM-04.06B, IAM-09.02B, IAM-09.01AC, PSS-05.01B, PSS-07.02B
+
+&#x2022;CIS-2.0: 2.1.2
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.5.3, 2.10.2
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP02
+
+&#x2022;CIS-5.0: 2.1.2
+
+&#x2022;PCI-4.0: 10.3.2.22, 3.5.1.3.27, 8.4.1.5, 8.4.2.5, 8.4.3.5, A1.1.2.18, A3.4.1.20
+
+&#x2022;CIS-3.0: 2.1.2
+
+&#x2022;CIS-6.0: 3.1.2
+
+&#x2022;CCC-v2025.10: CCC.ObjStor.CN07.AR01, CCC.ObjStor.CN07.AR02, CCC.ObjStor.CN07.AR03
+
+&#x2022;ProwlerThreatScore-1.0: 2.2.1
+
+&#x2022;CIS-4.0.1: 2.1.2
+
+&#x2022;NIS2: 11.7.2
+</p></td>
+                        </tr>
+                        
+                        <tr class="table-danger">
+                            <td>FAIL</td>
+                            <td>medium</td>
+                            <td>s3</td>
+                            <td>eu-north-1</td>
+                            <td>s3<wbr />_bucket<wbr />_no<wbr />_mfa<wbr />_delete</td>
+                            <td>S3 bucket has MFA Delete enabled</td>
+                            <td>arn:aws:s3:::ce-capstone-config-128529977749</td>
+                            <td>
+&#x2022;Project=ce-capstone
+
+&#x2022;Environment=prod
+
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;ManagedBy=terraform
+</td>
+                            <td>S3 Bucket ce-capstone-config-128529977749 has MFA Delete disabled.</td>
+                            <td><p class="show-read-more">Without <strong>MFA Delete</strong>, a compromised or over-privileged identity can irrevocably purge object history or change versioning.<br />
+<br />
+This erases recovery points, degrading data <strong>availability</strong>, weakening <strong>integrity</strong>, and increasing the blast radius of account compromise or ransomware.</p></td>
+                            <td><p class="show-read-more">Enable <strong>MFA Delete</strong> on sensitive, versioned buckets so permanent deletions and <code>Versioning</code> changes require a second factor. Apply <strong>least privilege</strong> to restrict version purge actions, enforce <strong>change control</strong>, and combine with <strong>Object Lock</strong> or immutable backups for defense in depth.</p> <a class="read-more" href="https://hub.prowler.com/check/s3_bucket_no_mfa_delete"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CIS-7.0: 3.1.2
+
+&#x2022;CIS-1.4: 2.1.3
+
+&#x2022;CIS-1.5: 2.1.3
+
+&#x2022;MITRE-ATTACK: T1485
+
+&#x2022;AWS-Foundational-Security-Best-Practices: S3.20
+
+&#x2022;KISA-ISMS-P-2023: 2.5.3, 2.10.2
+
+&#x2022;C5-2025: AM-07.02B, OPS-16.01B, IAM-04.06B, IAM-09.02B, IAM-09.01AC, PSS-05.01B, PSS-07.02B
+
+&#x2022;CIS-2.0: 2.1.2
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.5.3, 2.10.2
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP02
+
+&#x2022;CIS-5.0: 2.1.2
+
+&#x2022;PCI-4.0: 10.3.2.22, 3.5.1.3.27, 8.4.1.5, 8.4.2.5, 8.4.3.5, A1.1.2.18, A3.4.1.20
+
+&#x2022;CIS-3.0: 2.1.2
+
+&#x2022;CIS-6.0: 3.1.2
+
+&#x2022;CCC-v2025.10: CCC.ObjStor.CN07.AR01, CCC.ObjStor.CN07.AR02, CCC.ObjStor.CN07.AR03
+
+&#x2022;ProwlerThreatScore-1.0: 2.2.1
+
+&#x2022;CIS-4.0.1: 2.1.2
+
+&#x2022;NIS2: 11.7.2
+</p></td>
+                        </tr>
+                        
+                        <tr class="table-danger">
+                            <td>FAIL</td>
+                            <td>medium</td>
+                            <td>s3</td>
+                            <td>eu-north-1</td>
+                            <td>s3<wbr />_bucket<wbr />_secure<wbr />_transport<wbr />_policy</td>
+                            <td>S3 bucket policy denies requests over insecure transport</td>
+                            <td>arn:aws:s3:::ce-capstone-artifacts-20260901081024819300000002</td>
+                            <td>
+&#x2022;Project=ce-capstone
+
+&#x2022;Environment=prod
+
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;ManagedBy=terraform
+</td>
+                            <td>S3 Bucket ce-capstone-artifacts-20260901081024819300000002 does not have a bucket policy, thus it allows HTTP requests.</td>
+                            <td><p class="show-read-more">HTTP access exposes object data and auth details to <strong>eavesdropping</strong> and <strong>man-in-the-middle</strong> attacks. Captured <strong>pre-signed URLs</strong> can be replayed to exfiltrate data. Traffic can be intercepted or altered, undermining <strong>confidentiality</strong> and <strong>integrity</strong> of S3 content.</p></td>
+                            <td><p class="show-read-more">Enforce <strong>HTTPS-only</strong> access with a bucket policy that denies requests when <code>aws:SecureTransport=false</code>.<br />
+<br />
+Prefer <strong>private access</strong> (VPC endpoints or CloudFront with TLS), avoid S3 website endpoints, apply <strong>least privilege</strong>, use short-lived HTTPS <strong>pre-signed URLs</strong>, and monitor logs for insecure access attempts.</p> <a class="read-more" href="https://hub.prowler.com/check/s3_bucket_secure_transport_policy"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CISA: your-systems-3, your-data-2
+
+&#x2022;CIS-7.0: 3.1.1
+
+&#x2022;CIS-1.4: 2.1.2
+
+&#x2022;CIS-1.5: 2.1.2
+
+&#x2022;MITRE-ATTACK: T1040
+
+&#x2022;GDPR: article_32
+
+&#x2022;AWS-Foundational-Security-Best-Practices: S3.5
+
+&#x2022;KISA-ISMS-P-2023: 2.7.1, 2.10.2
+
+&#x2022;HIPAA: 164_308_a_1_ii_b, 164_312_a_2_iv, 164_312_c_1, 164_312_c_2, 164_312_e_1, 164_312_e_2_i, 164_312_e_2_ii
+
+&#x2022;CIS-2.0: 2.1.1
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.7.1, 2.10.2
+
+&#x2022;GxP-21-CFR-Part-11: 11.10-c, 11.30
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC09-BP02
+
+&#x2022;NIST-CSF-2.0: ds_2, pt_4
+
+&#x2022;CIS-5.0: 2.1.1
+
+&#x2022;NIST-800-171-Revision-2: 3_1_13, 3_5_10, 3_13_1, 3_13_5, 3_13_8, 3_13_11, 3_13_16
+
+&#x2022;PCI-4.0: 1.2.5.15, 2.2.5.15, 2.2.7.19, 4.2.1.1.27, 4.2.1.19, 8.3.2.49
+
+&#x2022;NIST-800-53-Revision-4: ac_17_2, sc_7, sc_8_1, sc_8
+
+&#x2022;NIST-800-53-Revision-5: ac_4, ac_4_22, ac_17_2, ac_24_1, au_9_3, ca_9_b, cm_6_a, cm_9_b, ia_5_1_c, pm_11_b, pm_17_b, sc_7_4_b, sc_7_4_g, sc_7_5, sc_8, sc_8_1, sc_8_2, sc_8_3, sc_8_4, sc_8_5, sc_13_a, sc_16_1, sc_23, si_1_a_2
+
+&#x2022;CIS-3.0: 2.1.1
+
+&#x2022;ENS-RD2022: mp.com.1.aws.s3.1, mp.com.3.aws.s3.1
+
+&#x2022;CIS-6.0: 3.1.1
+
+&#x2022;AWS-Foundational-Technical-Review: S3-001
+
+&#x2022;NIST-CSF-1.1: ds_2
+
+&#x2022;CCC-v2025.10: CCC.Core.CN01.AR01, CCC.Core.CN01.AR03
+
+&#x2022;SecNumCloud-3.2: 10.2
+
+&#x2022;RBI-Cyber-Security-Framework: annex_i_1_3
+
+&#x2022;FFIEC: d3-pc-am-b-12, d3-pc-am-b-13, d3-pc-am-b-15
+
+&#x2022;ProwlerThreatScore-1.0: 4.1.1
+
+&#x2022;AWS-AI-Security-Framework-1.0: AISF-INFRA-06, AISF-DATA-04
+
+&#x2022;FedRamp-Moderate-Revision-4: ac-17-2, sc-7, sc-8-1, sc-8, sc-23
+
+&#x2022;FedRAMP-Low-Revision-4: ac-17, sc-7
+
+&#x2022;CIS-4.0.1: 2.1.1
+
+&#x2022;FedRAMP-20x-KSI-Low-25.05C: ksi-svc
+</p></td>
+                        </tr>
+                        
+                        <tr class="table-danger">
+                            <td>FAIL</td>
+                            <td>medium</td>
+                            <td>s3</td>
+                            <td>eu-north-1</td>
+                            <td>s3<wbr />_bucket<wbr />_secure<wbr />_transport<wbr />_policy</td>
+                            <td>S3 bucket policy denies requests over insecure transport</td>
+                            <td>arn:aws:s3:::ce-capstone-config-128529977749</td>
+                            <td>
+&#x2022;Project=ce-capstone
+
+&#x2022;Environment=prod
+
+&#x2022;Owner=adnan-nooruddin
+
+&#x2022;ManagedBy=terraform
+</td>
+                            <td>S3 Bucket ce-capstone-config-128529977749 allows requests over insecure transport in the bucket policy.</td>
+                            <td><p class="show-read-more">HTTP access exposes object data and auth details to <strong>eavesdropping</strong> and <strong>man-in-the-middle</strong> attacks. Captured <strong>pre-signed URLs</strong> can be replayed to exfiltrate data. Traffic can be intercepted or altered, undermining <strong>confidentiality</strong> and <strong>integrity</strong> of S3 content.</p></td>
+                            <td><p class="show-read-more">Enforce <strong>HTTPS-only</strong> access with a bucket policy that denies requests when <code>aws:SecureTransport=false</code>.<br />
+<br />
+Prefer <strong>private access</strong> (VPC endpoints or CloudFront with TLS), avoid S3 website endpoints, apply <strong>least privilege</strong>, use short-lived HTTPS <strong>pre-signed URLs</strong>, and monitor logs for insecure access attempts.</p> <a class="read-more" href="https://hub.prowler.com/check/s3_bucket_secure_transport_policy"><i class="fas fa-external-link-alt"></i></a></td>
+                            <td><p class="show-read-more">
+&#x2022;CISA: your-systems-3, your-data-2
+
+&#x2022;CIS-7.0: 3.1.1
+
+&#x2022;CIS-1.4: 2.1.2
+
+&#x2022;CIS-1.5: 2.1.2
+
+&#x2022;MITRE-ATTACK: T1040
+
+&#x2022;GDPR: article_32
+
+&#x2022;AWS-Foundational-Security-Best-Practices: S3.5
+
+&#x2022;KISA-ISMS-P-2023: 2.7.1, 2.10.2
+
+&#x2022;HIPAA: 164_308_a_1_ii_b, 164_312_a_2_iv, 164_312_c_1, 164_312_c_2, 164_312_e_1, 164_312_e_2_i, 164_312_e_2_ii
+
+&#x2022;CIS-2.0: 2.1.1
+
+&#x2022;KISA-ISMS-P-2023-korean: 2.7.1, 2.10.2
+
+&#x2022;GxP-21-CFR-Part-11: 11.10-c, 11.30
+
+&#x2022;AWS-Well-Architected-Framework-Security-Pillar: SEC09-BP02
+
+&#x2022;NIST-CSF-2.0: ds_2, pt_4
+
+&#x2022;CIS-5.0: 2.1.1
+
+&#x2022;NIST-800-171-Revision-2: 3_1_13, 3_5_10, 3_13_1, 3_13_5, 3_13_8, 3_13_11, 3_13_16
+
+&#x2022;PCI-4.0: 1.2.5.15, 2.2.5.15, 2.2.7.19, 4.2.1.1.27, 4.2.1.19, 8.3.2.49
+
+&#x2022;NIST-800-53-Revision-4: ac_17_2, sc_7, sc_8_1, sc_8
+
+&#x2022;NIST-800-53-Revision-5: ac_4, ac_4_22, ac_17_2, ac_24_1, au_9_3, ca_9_b, cm_6_a, cm_9_b, ia_5_1_c, pm_11_b, pm_17_b, sc_7_4_b, sc_7_4_g, sc_7_5, sc_8, sc_8_1, sc_8_2, sc_8_3, sc_8_4, sc_8_5, sc_13_a, sc_16_1, sc_23, si_1_a_2
+
+&#x2022;CIS-3.0: 2.1.1
+
+&#x2022;ENS-RD2022: mp.com.1.aws.s3.1, mp.com.3.aws.s3.1
+
+&#x2022;CIS-6.0: 3.1.1
+
+&#x2022;AWS-Foundational-Technical-Review: S3-001
+
+&#x2022;NIST-CSF-1.1: ds_2
+
+&#x2022;CCC-v2025.10: CCC.Core.CN01.AR01, CCC.Core.CN01.AR03
+
+&#x2022;SecNumCloud-3.2: 10.2
+
+&#x2022;RBI-Cyber-Security-Framework: annex_i_1_3
+
+&#x2022;FFIEC: d3-pc-am-b-12, d3-pc-am-b-13, d3-pc-am-b-15
+
+&#x2022;ProwlerThreatScore-1.0: 4.1.1
+
+&#x2022;AWS-AI-Security-Framework-1.0: AISF-INFRA-06, AISF-DATA-04
+
+&#x2022;FedRamp-Moderate-Revision-4: ac-17-2, sc-7, sc-8-1, sc-8, sc-23
+
+&#x2022;FedRAMP-Low-Revision-4: ac-17, sc-7
+
+&#x2022;CIS-4.0.1: 2.1.1
+
+&#x2022;FedRAMP-20x-KSI-Low-25.05C: ksi-svc
+</p></td>
+                        </tr>
+                        
+            </tbody>
+            </table>
+        </div>
+    </div>
+    <!-- Table search and paginator -->
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"
+        integrity="sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.bundle.min.js"
+        integrity="sha384-1CmrxMRARb6aLqgBO7yyAxTOQE2AKb9GfXnEo760AUcUmFx3ibVJJAzGytlQcNXd"
+        crossorigin="anonymous"></script>
+    <!-- https://datatables.net/download/index with jQuery, DataTables, Buttons, SearchPanes, and Select //-->
+    <script type="text/javascript"
+        src="https://cdn.datatables.net/v/dt/jqc-1.12.4/dt-1.10.25/b-1.7.1/sp-1.4.0/sl-1.3.3/datatables.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            // Initialise the table with 50 rows, and some search/filtering panes
+            $('#findingsTable').DataTable({
+                responsive: true,
+                // Show 25, 50, 100 and All records
+                lengthChange: true,
+                lengthMenu: [[25, 50, 100, -1], [25, 50, 100, "All"]],
+                searchPanes: {
+                    cascadePanes: true,
+                    viewTotal: true,
+                },
+                dom: 'Blfrtip',
+                language: {
+                    // To enable a filter button instead of the filter row
+                    searchPanes: {
+                        clearMessage: 'Clear Filters',
+                        collapse: { 0: 'Filters', _: 'Filters (%d)' },
+                        initCollapsed: true
+
+                    }
+                },
+                buttons: [
+                    {
+                        extend: 'searchPanes',
+                        config: {
+                            cascadePanes: true,
+                            viewTotal: true,
+                            orderable: false
+                        }
+                    }
+                ],
+                columnDefs: [
+                    {
+                        searchPanes: {
+                            show: true,
+                            pagingType: 'numbers',
+                            searching: true
+                        },
+                        // Show all filters
+                        targets: [0, 1, 2, 3, 5, 7]
+                    }
+                ]
+            });
+            var maxLength = 30;
+            // ReadMore ReadLess
+            $(".show-read-more").each(function () {
+                var myStr = $(this).html();
+                var textLength = $(this).text().length;
+                if (textLength > maxLength) {
+                    // Find the position where to cut while preserving HTML tags and breaking at word boundaries
+                    var cutPosition = 0;
+                    var currentLength = 0;
+                    var inTag = false;
+                    var lastWordBoundary = 0;
+                    var tagStack = [];
+
+                    for (var i = 0; i < myStr.length; i++) {
+                        if (myStr[i] === '<') {
+                            inTag = true;
+                            // Track opening tags
+                            if (myStr[i + 1] !== '/') {
+                                var tagEnd = myStr.indexOf('>', i);
+                                if (tagEnd !== -1) {
+                                    var tagName = myStr.substring(i + 1, tagEnd).split(' ')[0];
+                                    tagStack.push(tagName);
+                                }
+                            } else {
+                                // Closing tag
+                                var tagEnd = myStr.indexOf('>', i);
+                                if (tagEnd !== -1) {
+                                    var tagName = myStr.substring(i + 2, tagEnd).split(' ')[0];
+                                    if (tagStack.length > 0) {
+                                        tagStack.pop();
+                                    }
+                                }
+                            }
+                        } else if (myStr[i] === '>') {
+                            inTag = false;
+                        } else if (!inTag) {
+                            currentLength++;
+                            // Only consider word boundaries if we're not inside any HTML tags
+                            if (tagStack.length === 0 && (myStr[i] === ' ' || myStr[i] === '.' || myStr[i] === ',' || myStr[i] === ';' || myStr[i] === ':' || myStr[i] === '!' || myStr[i] === '?')) {
+                                lastWordBoundary = i + 1;
+                            }
+
+                            if (currentLength >= maxLength) {
+                                // If we're inside HTML tags, find the next closing tag
+                                if (tagStack.length > 0) {
+                                    // Find the next closing tag for the current open tag
+                                    var nextClosingTag = '</' + tagStack[tagStack.length - 1] + '>';
+                                    var closingTagPos = myStr.indexOf(nextClosingTag, i);
+                                    if (closingTagPos !== -1) {
+                                        cutPosition = closingTagPos + nextClosingTag.length;
+                                    } else {
+                                        // If no closing tag found, use current position
+                                        cutPosition = i + 1;
+                                    }
+                                } else {
+                                    // Use the last word boundary if available, otherwise use current position
+                                    cutPosition = lastWordBoundary > 0 ? lastWordBoundary : i + 1;
+                                }
+                                break;
+                            }
+                        }
+                    }
+
+                    var newStr = myStr.substring(0, cutPosition);
+                    var removedStr = myStr.substring(cutPosition);
+                    $(this).empty().html(newStr);
+                    $(this).append(' <a href="javascript:void(0);" class="read-more">read more...</a>');
+                    $(this).append('<span class="more-text">' + removedStr + '</span>');
+                }
+            });
+            $(".read-more").click(function () {
+                $(this).siblings(".more-text").contents().unwrap();
+                $(this).remove();
+            });
+        });
+    </script>
+</body>
+
+</html>
