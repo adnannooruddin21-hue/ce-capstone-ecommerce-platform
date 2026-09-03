@@ -187,6 +187,19 @@ resource "aws_autoscaling_group" "app" {
     preferences { min_healthy_percentage = 50 }
   }
 
+  # Publish group capacity metrics (running / desired / min / max / pending /
+  # terminating) so the dashboard can tell the auto-scaling story. Free.
+  metrics_granularity = "1Minute"
+  enabled_metrics = [
+    "GroupMinSize",
+    "GroupMaxSize",
+    "GroupDesiredCapacity",
+    "GroupInServiceInstances",
+    "GroupPendingInstances",
+    "GroupTerminatingInstances",
+    "GroupTotalInstances",
+  ]
+
   tag {
     key                 = "Name"
     value               = "${var.project}-app"
