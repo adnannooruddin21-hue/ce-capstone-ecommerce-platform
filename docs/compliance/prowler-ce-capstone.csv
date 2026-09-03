@@ -1,0 +1,1232 @@
+AUTH_METHOD;TIMESTAMP;ACCOUNT_UID;ACCOUNT_NAME;ACCOUNT_EMAIL;ACCOUNT_ORGANIZATION_UID;ACCOUNT_ORGANIZATION_NAME;ACCOUNT_TAGS;FINDING_UID;PROVIDER;CHECK_ID;CHECK_TITLE;CHECK_TYPE;STATUS;STATUS_EXTENDED;MUTED;SERVICE_NAME;SUBSERVICE_NAME;SEVERITY;RESOURCE_TYPE;RESOURCE_UID;RESOURCE_NAME;RESOURCE_DETAILS;RESOURCE_TAGS;PARTITION;REGION;DESCRIPTION;RISK;RELATED_URL;REMEDIATION_RECOMMENDATION_TEXT;REMEDIATION_RECOMMENDATION_URL;REMEDIATION_CODE_NATIVEIAC;REMEDIATION_CODE_TERRAFORM;REMEDIATION_CODE_CLI;REMEDIATION_CODE_OTHER;COMPLIANCE;CATEGORIES;DEPENDS_ON;RELATED_TO;NOTES;PROWLER_VERSION;ADDITIONAL_URLS;ACCOUNT_OU_UID;ACCOUNT_OU_NAME
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-cloudwatch_changes_to_network_acls_alarm_configured-128529977749-eu-north-1-128529977749;aws;cloudwatch_changes_to_network_acls_alarm_configured;CloudWatch log metric filter and alarm exist for Network ACL (NACL) change events;Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | Software and Configuration Checks/AWS Security Best Practices/Runtime Behavior Analysis;FAIL;No CloudWatch log groups found with metric filters or alarms associated.;False;cloudwatch;;medium;AwsCloudWatchAlarm;arn:aws:logs:eu-north-1:128529977749:log-group;128529977749;;;aws;eu-north-1;CloudTrail records for **Network ACL changes** are matched by a CloudWatch Logs metric filter with an associated alarm for events like `CreateNetworkAcl`, `CreateNetworkAclEntry`, `DeleteNetworkAcl`, `DeleteNetworkAclEntry`, `ReplaceNetworkAclEntry`, and `ReplaceNetworkAclAssociation`.;Absent monitoring of **NACL changes** reduces detection of policy tampering, risking loss of **confidentiality** (opened ingress/egress), degraded network **integrity** (lateral movement, bypassed segmentation), and reduced **availability** (traffic blackholes or lockouts).;;Implement a CloudWatch Logs metric filter and alarm for NACL change events from CloudTrail and route alerts to responders. Enforce **least privilege** on NACL management, require **change control**, and use **defense in depth** with configuration monitoring and flow logs to validate and monitor network posture.;https://hub.prowler.com/check/cloudwatch_changes_to_network_acls_alarm_configured;"```yaml
+# CloudFormation to alert on NACL changes
+Resources:
+  MetricFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      LogGroupName: ""<example_resource_name>""  # CRITICAL: CloudTrail log group to monitor
+      FilterPattern: '{ ($.eventName = CreateNetworkAcl) || ($.eventName = CreateNetworkAclEntry) || ($.eventName = DeleteNetworkAcl) || ($.eventName = DeleteNetworkAclEntry) || ($.eventName = ReplaceNetworkAclEntry) || ($.eventName = ReplaceNetworkAclAssociation) }'  # CRITICAL: detects NACL changes
+      MetricTransformations:
+        - MetricValue: ""1""
+          MetricNamespace: ""CISBenchmark""
+          MetricName: ""nacl_changes""
+
+  NaclChangesAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: ""nacl_changes""
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      EvaluationPeriods: 1
+      MetricName: ""nacl_changes""   # CRITICAL: alarm targets the metric from the filter
+      Namespace: ""CISBenchmark""
+      Period: 300
+      Statistic: Sum
+      Threshold: 1
+```";"```hcl
+# CloudWatch metric filter and alarm for NACL changes
+resource ""aws_cloudwatch_log_metric_filter"" ""nacl"" {
+  name           = ""nacl_changes""
+  log_group_name = ""<example_resource_name>""  # CloudTrail log group
+  pattern        = ""{ ($.eventName = CreateNetworkAcl) || ($.eventName = CreateNetworkAclEntry) || ($.eventName = DeleteNetworkAcl) || ($.eventName = DeleteNetworkAclEntry) || ($.eventName = ReplaceNetworkAclEntry) || ($.eventName = ReplaceNetworkAclAssociation) }""  # CRITICAL: detects NACL changes
+
+  metric_transformation {
+    name      = ""nacl_changes""
+    namespace = ""CISBenchmark""
+    value     = ""1""
+  }
+}
+
+resource ""aws_cloudwatch_metric_alarm"" ""nacl"" {
+  alarm_name          = ""nacl_changes""
+  comparison_operator = ""GreaterThanOrEqualToThreshold""
+  evaluation_periods  = 1
+  metric_name         = ""nacl_changes""   # CRITICAL: alarm targets the metric from the filter
+  namespace           = ""CISBenchmark""
+  period              = 300
+  statistic           = ""Sum""
+  threshold           = 1
+}
+```";;"1. In the AWS Console, go to CloudWatch > Log groups and open the CloudTrail log group
+2. Metric filters tab > Create metric filter
+3. Set Filter pattern to:
+   { ($.eventName = CreateNetworkAcl) || ($.eventName = CreateNetworkAclEntry) || ($.eventName = DeleteNetworkAcl) || ($.eventName = DeleteNetworkAclEntry) || ($.eventName = ReplaceNetworkAclEntry) || ($.eventName = ReplaceNetworkAclAssociation) }
+4. Next > Filter name: nacl_changes; Metric namespace: CISBenchmark; Metric name: nacl_changes; Metric value: 1 > Create metric filter
+5. Select the new metric filter > Create alarm
+6. Set Statistic: Sum, Period: 5 minutes, Threshold type: Static, Condition: Greater/Equal, Threshold: 1
+7. Next through actions (optional) > Name: nacl_changes > Create alarm";CIS-7.0: 5.11 | SOC2: cc_5_2, cc_7_2, cc_7_3, cc_7_4 | CIS-1.4: 4.11 | CIS-1.5: 4.11 | MITRE-ATTACK: T1496 | ISO27001-2013: A.12.4.D | KISA-ISMS-P-2023: 2.9.4, 2.10.1, 2.10.2, 2.11.3 | C5-2025: OIS-04.03B, OIS-04.01AC, OIS-04.02AC, HR-03.02AC, AM-09.03AC, OPS-11.02AC, OPS-13.03AC, OPS-26.05B, OPS-26.01AS, OPS-26.06B, PSS-04.01B | HIPAA: 164_308_a_6_i | CIS-2.0: 4.11 | KISA-ISMS-P-2023-korean: 2.9.4, 2.10.1, 2.10.2, 2.11.3 | AWS-Well-Architected-Framework-Security-Pillar: SEC04-BP04 | NIST-CSF-2.0: ra_5, cm_1, dp_4 | CIS-5.0: 4.11 | NIST-800-171-Revision-2: 3_6_1, 3_6_2, 3_12_4 | NIST-800-53-Revision-4: ac_2_4, au_6_1, au_6_3, au_7_1, ca_7, ir_4_1, si_4_2, si_4_4, si_4_5, si_4 | NIST-800-53-Revision-5: au_6_1, au_6_5, au_12_3, au_14_a, au_14_b, ca_2_2, ca_7, ca_7_b, pm_14_a_1, pm_14_b, pm_31, sc_36_1_a, si_2_a, si_4_12, si_5_1, si_5_b | CIS-3.0: 4.11 | CIS-6.0: 5.11 | NIST-CSF-1.1: ae_5, cm_2, cm_5, cp_4, ra_5 | CCC-v2025.10: CCC.Core.CN09.AR03, CCC.Core.CN04.AR01 | SecNumCloud-3.2: 12.9 | FFIEC: d5-dr-de-b-1, d5-dr-de-b-3 | ProwlerThreatScore-1.0: 3.3.12 | ISO27001-2022: A.8.15, A.8.16 | AWS-AI-Security-Framework-1.0: AISF-DETECT-05 | FedRamp-Moderate-Revision-4: ac-2-4, au-6-1-3, au-7-1, ca-7-a-b, ir-4-1, ir-4-1, si-4-2, si-4-4, si-4-5, si-4-a-b-c | FedRAMP-Low-Revision-4: ac-2, ca-7, ir-4 | CIS-4.0.1: 4.11 | NIS2: 2.2.3, 3.2.3.a, 3.2.3.c, 3.2.3.f, 6.4.1 | FedRAMP-20x-KSI-Low-25.05C: ksi-cmt;logging;;;Logging and Monitoring;5.40.0;https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudwatch-alarms-for-cloudtrail.html | https://support.icompaas.com/support/solutions/articles/62000084031-ensure-a-log-metric-filter-and-alarm-exist-for-changes-to-network-access-control-lists-nacl- | https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/CloudWatchLogs/network-acl-changes-alarm.html | https://support.icompaas.com/support/solutions/articles/62000233134-4-11-ensure-network-access-control-list-nacl-changes-are-monitored-manual-;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-cloudwatch_changes_to_network_gateways_alarm_configured-128529977749-eu-north-1-128529977749;aws;cloudwatch_changes_to_network_gateways_alarm_configured;CloudWatch Logs metric filter and alarm exist for changes to network gateways;Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | Software and Configuration Checks/AWS Security Best Practices/Runtime Behavior Analysis | Software and Configuration Checks/AWS Security Best Practices/Network Reachability | TTPs/Command and Control;FAIL;No CloudWatch log groups found with metric filters or alarms associated.;False;cloudwatch;;medium;AwsCloudWatchAlarm;arn:aws:logs:eu-north-1:128529977749:log-group;128529977749;;;aws;eu-north-1;CloudWatch log metric filters and alarms for **network gateway changes** are identified by matching CloudTrail events such as `CreateCustomerGateway`, `DeleteCustomerGateway`, `AttachInternetGateway`, `CreateInternetGateway`, `DeleteInternetGateway`, and `DetachInternetGateway` in log groups that receive trail logs.;Without this monitoring, gateway changes can expose private networks to the Internet or break connectivity. Adversaries or mistakes can enable data exfiltration, bypass network inspection, and trigger outages via deletions or detachments, impacting **confidentiality** and **availability**.;;Send CloudTrail to CloudWatch Logs and create a metric filter for the listed gateway events with an alarm that notifies responders. Enforce **least privilege** for gateway modifications, require change approvals, and route alerts to monitored channels as part of **defense in depth**.;https://hub.prowler.com/check/cloudwatch_changes_to_network_gateways_alarm_configured;"```yaml
+# CloudFormation: Create metric filter and alarm for network gateway changes
+Resources:
+  NetworkGatewayMetricFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      LogGroupName: <example_resource_name>
+      FilterPattern: '{ ($.eventName = CreateCustomerGateway) || ($.eventName = DeleteCustomerGateway) || ($.eventName = AttachInternetGateway) || ($.eventName = CreateInternetGateway) || ($.eventName = DeleteInternetGateway) || ($.eventName = DetachInternetGateway) }'  # Critical: matches gateway change events
+      MetricTransformations:
+        - MetricName: <example_resource_name>
+          MetricNamespace: <example_resource_name>
+          MetricValue: ""1""
+
+  NetworkGatewayAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      EvaluationPeriods: 1
+      MetricName: <example_resource_name>  # Critical: alarm targets the metric created by the filter
+      Namespace: <example_resource_name>
+      Period: 300
+      Statistic: Sum
+      Threshold: 1
+```";"```hcl
+# CloudWatch Logs metric filter for network gateway changes
+resource ""aws_cloudwatch_log_metric_filter"" ""<example_resource_name>"" {
+  name           = ""<example_resource_name>""
+  log_group_name = ""<example_resource_name>""
+  pattern        = ""{ ($.eventName = CreateCustomerGateway) || ($.eventName = DeleteCustomerGateway) || ($.eventName = AttachInternetGateway) || ($.eventName = CreateInternetGateway) || ($.eventName = DeleteInternetGateway) || ($.eventName = DetachInternetGateway) }"" # Critical: matches gateway change events
+
+  metric_transformation {
+    name      = ""<example_resource_name>""
+    namespace = ""<example_resource_name>""
+    value     = ""1""
+  }
+}
+
+# Alarm on the metric filter
+resource ""aws_cloudwatch_metric_alarm"" ""<example_resource_name>"" {
+  alarm_name          = ""<example_resource_name>""
+  comparison_operator = ""GreaterThanOrEqualToThreshold""
+  evaluation_periods  = 1
+  metric_name         = ""<example_resource_name>""   # Critical: must match metric from the filter
+  namespace           = ""<example_resource_name>""
+  period              = 300
+  statistic           = ""Sum""
+  threshold           = 1
+}
+```";;"1. In the AWS Console, go to CloudWatch > Logs > Log groups and open the CloudTrail log group
+2. Create metric filter:
+   - Filter pattern: { ($.eventName = CreateCustomerGateway) || ($.eventName = DeleteCustomerGateway) || ($.eventName = AttachInternetGateway) || ($.eventName = CreateInternetGateway) || ($.eventName = DeleteInternetGateway) || ($.eventName = DetachInternetGateway) }
+   - Metric name: <example_resource_name>
+   - Metric namespace: <example_resource_name>
+   - Metric value: 1
+3. From the filter, choose Create alarm:
+   - Statistic: Sum, Period: 5 minutes, Threshold: >= 1, Evaluation periods: 1
+   - Create the alarm (actions optional)
+";CIS-7.0: 5.12 | SOC2: cc_5_2, cc_7_2, cc_7_3, cc_7_4 | CIS-1.4: 4.12 | CIS-1.5: 4.12 | MITRE-ATTACK: T1496 | ISO27001-2013: A.12.4.C | KISA-ISMS-P-2023: 2.9.4, 2.10.1, 2.10.2, 2.11.3 | C5-2025: OIS-04.03B, OIS-04.01AC, OIS-04.02AC, HR-03.02AC, AM-09.03AC, OPS-11.02AC, OPS-13.03AC, OPS-26.05B, OPS-26.01AS, OPS-26.06B, COS-03.02B, PSS-04.01B | HIPAA: 164_308_a_6_i | CIS-2.0: 4.12 | KISA-ISMS-P-2023-korean: 2.9.4, 2.10.1, 2.10.2, 2.11.3 | AWS-Well-Architected-Framework-Security-Pillar: SEC04-BP04 | NIST-CSF-2.0: ra_5, ae_2, ae_3, cm_1, dp_4 | CIS-5.0: 4.12 | NIST-800-171-Revision-2: 3_6_1, 3_6_2, 3_12_4 | NIST-800-53-Revision-4: ac_2_4, au_6_1, au_6_3, au_7_1, ca_7, ir_4_1, si_4_2, si_4_4, si_4_5, si_4 | NIST-800-53-Revision-5: au_6_1, au_6_5, au_12_3, au_14_a, au_14_b, ca_2_2, ca_7, ca_7_b, pm_14_a_1, pm_14_b, pm_31, sc_36_1_a, si_2_a, si_4_12, si_5_1, si_5_b | CIS-3.0: 4.12 | CIS-6.0: 5.12 | NIST-CSF-1.1: ae_5, cm_2, cm_5, cp_4, ra_5 | CCC-v2025.10: CCC.Core.CN09.AR03, CCC.Core.CN04.AR01 | SecNumCloud-3.2: 12.9 | FFIEC: d5-dr-de-b-1, d5-dr-de-b-3 | ProwlerThreatScore-1.0: 3.3.13 | ISO27001-2022: A.8.15, A.8.16 | FedRamp-Moderate-Revision-4: ac-2-4, au-6-1-3, au-7-1, ca-7-a-b, ir-4-1, ir-4-1, si-4-2, si-4-4, si-4-5, si-4-a-b-c | FedRAMP-Low-Revision-4: ir-4 | CIS-4.0.1: 4.12 | NIS2: 2.2.3, 3.2.3.a, 3.2.3.c, 3.2.3.f, 3.2.4, 6.4.1 | FedRAMP-20x-KSI-Low-25.05C: ksi-cmt;logging;;;Logging and Monitoring;5.40.0;https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudwatch-alarms-for-cloudtrail.html | https://support.icompaas.com/support/solutions/articles/62000083807-ensure-a-log-metric-filter-and-alarm-exist-for-changes-to-network-gateways | https://docs.aws.amazon.com/securityhub/latest/userguide/cloudwatch-controls.html#cloudwatch-12 | https://paper.bobylive.com/Security/CIS/CIS_Amazon_Web_Services_Foundations_Benchmark_v1_3_0.pdf;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-cloudwatch_changes_to_network_route_tables_alarm_configured-128529977749-eu-north-1-128529977749;aws;cloudwatch_changes_to_network_route_tables_alarm_configured;Account monitors VPC route table changes with a CloudWatch Logs metric filter and alarm;Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | Software and Configuration Checks/AWS Security Best Practices | TTPs/Defense Evasion | Effects/Data Exfiltration;FAIL;No CloudWatch log groups found with metric filters or alarms associated.;False;cloudwatch;;medium;AwsCloudWatchAlarm;arn:aws:logs:eu-north-1:128529977749:log-group;128529977749;;;aws;eu-north-1;**VPC route table changes** are captured from **CloudTrail logs** by a **CloudWatch Logs metric filter** with an associated **alarm** for events like `CreateRoute`, `CreateRouteTable`, `ReplaceRoute`, `ReplaceRouteTableAssociation`, `DeleteRoute`, `DeleteRouteTable`, and `DisassociateRouteTable`.;Without monitoring of **route table changes**, unauthorized or accidental edits can redirect traffic, bypass inspection, or blackhole routes, impacting **confidentiality** (exfiltration), **integrity** (tampered paths), and **availability** (outages from misrouted traffic).;;Implement a **CloudWatch Logs metric filter and alarm** on CloudTrail for these route table events and notify responders. Enforce **least privilege** for route modifications, require **change control**, and apply **defense in depth** with VPC Flow Logs and guardrails to prevent and quickly contain unsafe routing changes.;https://hub.prowler.com/check/cloudwatch_changes_to_network_route_tables_alarm_configured;"```yaml
+# CloudFormation: Metric filter + alarm for VPC route table changes
+Resources:
+  RouteTableChangeMetricFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      LogGroupName: ""<example_resource_name>""
+      # CRITICAL: Detect EC2 route table change events in CloudTrail logs
+      # Includes eventSource and the required eventNames
+      FilterPattern: '{($.eventSource = ec2.amazonaws.com) && (($.eventName = CreateRoute) || ($.eventName = CreateRouteTable) || ($.eventName = ReplaceRoute) || ($.eventName = ReplaceRouteTableAssociation) || ($.eventName = DeleteRouteTable) || ($.eventName = DeleteRoute) || ($.eventName = DisassociateRouteTable))}'
+      MetricTransformations:
+        - MetricValue: ""1""
+          MetricNamespace: ""<example_resource_name>""
+          MetricName: ""<example_resource_name>""
+
+  RouteTableChangeAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      # CRITICAL: Alarm on the metric from the filter above
+      Namespace: ""<example_resource_name>""
+      MetricName: ""<example_resource_name>""
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      EvaluationPeriods: 1
+      Period: 300
+      Statistic: Sum
+      Threshold: 1
+```";"```hcl
+# Metric filter + alarm for VPC route table changes
+resource ""aws_cloudwatch_log_metric_filter"" ""routes"" {
+  name           = ""<example_resource_name>""
+  log_group_name = ""<example_resource_name>""
+  # CRITICAL: Detect EC2 route table change events in CloudTrail logs
+  pattern = ""{($.eventSource = ec2.amazonaws.com) && (($.eventName = CreateRoute) || ($.eventName = CreateRouteTable) || ($.eventName = ReplaceRoute) || ($.eventName = ReplaceRouteTableAssociation) || ($.eventName = DeleteRouteTable) || ($.eventName = DeleteRoute) || ($.eventName = DisassociateRouteTable))}""
+
+  metric_transformation {
+    name      = ""<example_resource_name>""
+    namespace = ""<example_resource_name>""
+    value     = ""1""
+  }
+}
+
+resource ""aws_cloudwatch_metric_alarm"" ""routes"" {
+  alarm_name          = ""<example_resource_name>""
+  # CRITICAL: Alarm targets the metric from the filter above
+  metric_name         = ""<example_resource_name>""
+  namespace           = ""<example_resource_name>""
+  comparison_operator = ""GreaterThanOrEqualToThreshold""
+  evaluation_periods  = 1
+  period              = 300
+  statistic           = ""Sum""
+  threshold           = 1
+}
+```";;"1. In the AWS console, open CloudWatch > Log groups and select your CloudTrail log group
+2. Go to Metric filters > Create metric filter
+3. Set Filter pattern to:
+   {($.eventSource = ec2.amazonaws.com) && (($.eventName = CreateRoute) || ($.eventName = CreateRouteTable) || ($.eventName = ReplaceRoute) || ($.eventName = ReplaceRouteTableAssociation) || ($.eventName = DeleteRouteTable) || ($.eventName = DeleteRoute) || ($.eventName = DisassociateRouteTable))}
+4. Name the metric and set Metric value to 1; choose any namespace/name
+5. Create the filter
+6. From the filter, click Create alarm
+7. Set Statistic: Sum, Period: 5 minutes, Threshold type: Static, Threshold: 1, Whenever: Greater/Equal
+8. Create the alarm (notifications optional)";CIS-7.0: 5.13 | SOC2: cc_5_2, cc_7_2, cc_7_3, cc_7_4 | CIS-1.4: 4.13 | CIS-1.5: 4.13 | MITRE-ATTACK: T1496 | ISO27001-2013: A.12.4.B | KISA-ISMS-P-2023: 2.9.4, 2.10.1, 2.10.2, 2.11.3 | C5-2025: OIS-04.03B, OIS-04.01AC, OIS-04.02AC, HR-03.02AC, AM-09.03AC, OPS-13.03AC, OPS-26.06B, COS-03.02B, PSS-04.01B | HIPAA: 164_308_a_6_i | CIS-2.0: 4.13 | KISA-ISMS-P-2023-korean: 2.9.4, 2.10.1, 2.10.2, 2.11.3 | AWS-Well-Architected-Framework-Security-Pillar: SEC04-BP04 | NIST-CSF-2.0: ae_2, ae_3, cm_1, dp_4 | CIS-5.0: 4.13 | NIST-800-171-Revision-2: 3_6_1, 3_6_2, 3_12_4 | NIST-800-53-Revision-4: ac_2_4, au_6_1, au_6_3, au_7_1, ca_7, ir_4_1, si_4_2, si_4_4, si_4_5, si_4 | NIST-800-53-Revision-5: au_6_1, au_6_5, au_12_3, au_14_a, au_14_b, ca_2_2, ca_7, ca_7_b, pm_14_a_1, pm_14_b, pm_31, sc_36_1_a, si_2_a, si_4_12, si_5_1, si_5_b | CIS-3.0: 4.13 | CIS-6.0: 5.13 | NIST-CSF-1.1: ae_5, cm_2, cm_5, cp_4, ra_5 | CCC-v2025.10: CCC.Core.CN09.AR03, CCC.Core.CN04.AR01 | SecNumCloud-3.2: 12.9 | FFIEC: d5-dr-de-b-1, d5-dr-de-b-3 | ProwlerThreatScore-1.0: 3.3.14 | FedRamp-Moderate-Revision-4: ac-2-4, au-6-1-3, au-7-1, ca-7-a-b, ir-4-1, ir-4-1, si-4-2, si-4-4, si-4-5, si-4-a-b-c | FedRAMP-Low-Revision-4: ir-4 | CIS-4.0.1: 4.13 | NIS2: 2.2.3, 3.2.3.a, 3.2.3.f, 3.2.4, 6.4.1 | FedRAMP-20x-KSI-Low-25.05C: ksi-cmt;logging;;;Logging and Monitoring;5.40.0;https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudwatch-alarms-for-cloudtrail.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-cloudwatch_changes_to_vpcs_alarm_configured-128529977749-eu-north-1-128529977749;aws;cloudwatch_changes_to_vpcs_alarm_configured;AWS account has a CloudWatch Logs metric filter and alarm for VPC changes;Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark;FAIL;No CloudWatch log groups found with metric filters or alarms associated.;False;cloudwatch;;medium;AwsCloudWatchAlarm;arn:aws:logs:eu-north-1:128529977749:log-group;128529977749;;;aws;eu-north-1;**CloudTrail events** for **VPC configuration changes** are captured in CloudWatch Logs with a metric filter and an associated alarm. The filter targets actions like `CreateVpc`, `DeleteVpc`, `ModifyVpcAttribute`, and VPC peering operations to surface when network topology is altered.;Without alerting on VPC changes, unauthorized or accidental edits to routes, peering, or attributes can go unnoticed, exposing private networks and enabling data exfiltration (C), lateral movement and traffic tampering (I), and outages from misrouted or bridged networks (A).;;Create a CloudWatch Logs metric filter and alarm on CloudTrail for critical **VPC change events**, and notify responders. Apply **least privilege** to network changes, require change approvals, and use **defense in depth** (segmentation, route controls) to prevent and contain unauthorized modifications.;https://hub.prowler.com/check/cloudwatch_changes_to_vpcs_alarm_configured;"```yaml
+# CloudFormation: Create a metric filter and alarm for VPC changes
+Resources:
+  VPCChangesMetricFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      LogGroupName: <example_log_group_name>
+      FilterPattern: '{ ($.eventName = CreateVpc) || ($.eventName = DeleteVpc) || ($.eventName = ModifyVpcAttribute) || ($.eventName = AcceptVpcPeeringConnection) || ($.eventName = CreateVpcPeeringConnection) || ($.eventName = DeleteVpcPeeringConnection) || ($.eventName = RejectVpcPeeringConnection) || ($.eventName = AttachClassicLinkVpc) || ($.eventName = DetachClassicLinkVpc) || ($.eventName = DisableVpcClassicLink) || ($.eventName = EnableVpcClassicLink) }' # Critical: matches VPC change events
+      MetricTransformations:
+        - MetricName: vpc_changes_metric
+          MetricNamespace: CISBenchmark
+          MetricValue: ""1""  # Critical: emits a metric on matching events
+
+  VPCChangesAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      MetricName: vpc_changes_metric  # Critical: alarm monitors the metric above
+      Namespace: CISBenchmark
+      Statistic: Sum
+      Period: 300
+      EvaluationPeriods: 1
+      Threshold: 1
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+```";"```hcl
+# Metric filter for VPC changes
+resource ""aws_cloudwatch_log_metric_filter"" ""<example_resource_name>"" {
+  name           = ""<example_resource_name>""
+  log_group_name = ""<example_log_group_name>""
+  pattern        = ""{ ($.eventName = CreateVpc) || ($.eventName = DeleteVpc) || ($.eventName = ModifyVpcAttribute) || ($.eventName = AcceptVpcPeeringConnection) || ($.eventName = CreateVpcPeeringConnection) || ($.eventName = DeleteVpcPeeringConnection) || ($.eventName = RejectVpcPeeringConnection) || ($.eventName = AttachClassicLinkVpc) || ($.eventName = DetachClassicLinkVpc) || ($.eventName = DisableVpcClassicLink) || ($.eventName = EnableVpcClassicLink) }"" # Critical: matches VPC change events
+
+  metric_transformation {
+    name      = ""<example_resource_name>""   # Critical: metric created by the filter
+    namespace = ""CISBenchmark""
+    value     = ""1""
+  }
+}
+
+# Alarm on the VPC changes metric
+resource ""aws_cloudwatch_metric_alarm"" ""<example_resource_name>"" {
+  metric_name        = ""<example_resource_name>""  # Critical: alarm monitors the filter's metric
+  namespace          = ""CISBenchmark""
+  statistic          = ""Sum""
+  period             = 300
+  evaluation_periods = 1
+  threshold          = 1
+  comparison_operator = ""GreaterThanOrEqualToThreshold""
+}
+```";;"1. In the AWS Console, go to CloudWatch > Log groups and open the CloudTrail log group
+2. Choose Create metric filter
+3. For Filter pattern, paste:
+   { ($.eventName = CreateVpc) || ($.eventName = DeleteVpc) || ($.eventName = ModifyVpcAttribute) || ($.eventName = AcceptVpcPeeringConnection) || ($.eventName = CreateVpcPeeringConnection) || ($.eventName = DeleteVpcPeeringConnection) || ($.eventName = RejectVpcPeeringConnection) || ($.eventName = AttachClassicLinkVpc) || ($.eventName = DetachClassicLinkVpc) || ($.eventName = DisableVpcClassicLink) || ($.eventName = EnableVpcClassicLink) }
+4. Name the filter and set Metric namespace to CISBenchmark, Metric name to vpc_changes_metric, Metric value to 1; create the filter
+5. Select the new filter and choose Create alarm
+6. Set Statistic to Sum, Period 5 minutes, Threshold type Static, Whenever Greater/Equal 1, Evaluation periods 1
+7. Create the alarm (actions/notifications are optional and not required for pass)
+";CIS-7.0: 5.14 | SOC2: cc_5_2, cc_7_2, cc_7_3, cc_7_4 | CIS-1.4: 4.14 | CIS-1.5: 4.14 | MITRE-ATTACK: T1496 | ISO27001-2013: A.12.4.A | KISA-ISMS-P-2023: 2.9.4, 2.10.1, 2.10.2, 2.11.3 | C5-2025: OIS-04.03B, OIS-04.01AC, OIS-04.02AC, HR-03.02AC, AM-09.03AC, OPS-11.02AC, OPS-13.03AC, OPS-26.05B, OPS-26.01AS, OPS-26.06B, COS-03.02B, PSS-04.01B | HIPAA: 164_308_a_6_i | CIS-2.0: 4.14 | KISA-ISMS-P-2023-korean: 2.9.4, 2.10.1, 2.10.2, 2.11.3 | AWS-Well-Architected-Framework-Security-Pillar: SEC04-BP04 | NIST-CSF-2.0: ra_5, ae_2, cm_1 | CIS-5.0: 4.14 | NIST-800-171-Revision-2: 3_6_1, 3_6_2, 3_12_4 | NIST-800-53-Revision-4: ac_2_4, au_6_1, au_6_3, au_7_1, ca_7, ir_4_1, si_4_2, si_4_4, si_4_5, si_4 | NIST-800-53-Revision-5: au_6_1, au_6_5, au_12_3, au_14_a, au_14_b, ca_2_2, ca_7, ca_7_b, pm_14_a_1, pm_14_b, pm_31, sc_36_1_a, si_2_a, si_4_12, si_5_1, si_5_b | CIS-3.0: 4.14 | CIS-6.0: 5.14 | NIST-CSF-1.1: ae_5, cm_2, cm_5, cp_4, ra_5 | CCC-v2025.10: CCC.Core.CN09.AR03, CCC.Core.CN04.AR01 | SecNumCloud-3.2: 12.9 | FFIEC: d5-dr-de-b-1, d5-dr-de-b-3 | ProwlerThreatScore-1.0: 3.3.15 | ISO27001-2022: A.8.15, A.8.16, A.8.20, A.8.21, A.8.22 | AWS-AI-Security-Framework-1.0: AISF-DETECT-05 | FedRamp-Moderate-Revision-4: ac-2-4, au-6-1-3, au-7-1, ca-7-a-b, ir-4-1, ir-4-1, si-4-2, si-4-4, si-4-5, si-4-a-b-c | FedRAMP-Low-Revision-4: ir-4 | CIS-4.0.1: 4.14 | NIS2: 2.2.3, 3.2.3.c, 3.2.3.f, 3.2.4, 6.4.1 | FedRAMP-20x-KSI-Low-25.05C: ksi-cmt;logging;;;Logging and Monitoring;5.40.0;https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudwatch-alarms-for-cloudtrail.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-cloudwatch_log_metric_filter_and_alarm_for_aws_config_configuration_changes_enabled-128529977749-eu-north-1-128529977749;aws;cloudwatch_log_metric_filter_and_alarm_for_aws_config_configuration_changes_enabled;CloudWatch Logs metric filter and alarm exist for AWS Config configuration changes;Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | Software and Configuration Checks/AWS Security Best Practices/Runtime Behavior Analysis | TTPs/Defense Evasion;FAIL;No CloudWatch log groups found with metric filters or alarms associated.;False;cloudwatch;;medium;AwsCloudWatchAlarm;arn:aws:logs:eu-north-1:128529977749:log-group;128529977749;;;aws;eu-north-1;CloudTrail logs in **CloudWatch Logs** are inspected for a metric filter and alarm that track **AWS Config configuration changes**, specifically `StopConfigurationRecorder`, `DeleteDeliveryChannel`, `PutDeliveryChannel`, and `PutConfigurationRecorder` events from `config.amazonaws.com`.;"Without alerting on **AWS Config changes**, actions like `StopConfigurationRecorder` or `DeleteDeliveryChannel` can silently suspend recording and delivery.
+
+This degrades the **integrity** and **availability** of configuration audit data, enabling undetected changes and delaying incident response.";;Create a **CloudWatch Logs metric filter and alarm** for `config.amazonaws.com` events (`StopConfigurationRecorder`, `DeleteDeliveryChannel`, `PutDeliveryChannel`, `PutConfigurationRecorder`). Route CloudTrail to Logs, notify responders, and enforce **least privilege** and **separation of duties** on Config changes to prevent abuse.;https://hub.prowler.com/check/cloudwatch_log_metric_filter_and_alarm_for_aws_config_configuration_changes_enabled;"```yaml
+# CloudFormation: Create metric filter and alarm for AWS Config changes
+Resources:
+  ConfigChangeMetricFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      LogGroupName: <example_resource_name>
+      FilterPattern: ""{($.eventSource = config.amazonaws.com) && (($.eventName=StopConfigurationRecorder)||($.eventName=DeleteDeliveryChannel)||($.eventName=PutDeliveryChannel)||($.eventName=PutConfigurationRecorder))}""  # Critical: detects AWS Config configuration change events
+      MetricTransformations:
+        - MetricName: aws_config_changes_metric  # Critical: metric used by the alarm
+          MetricNamespace: CISBenchmark
+          MetricValue: ""1""
+
+  ConfigChangeAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: aws_config_changes_alarm
+      MetricName: aws_config_changes_metric  # Critical: ties alarm to the metric filter
+      Namespace: CISBenchmark
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      EvaluationPeriods: 1
+      Period: 300
+      Statistic: Sum
+      Threshold: 1  # Critical: alarm on first occurrence
+```";"```hcl
+# CloudWatch Logs metric filter for AWS Config changes
+resource ""aws_cloudwatch_log_metric_filter"" ""config_change"" {
+  name           = ""aws_config_changes_metric""
+  log_group_name = ""<example_resource_name>""
+  pattern        = ""{($.eventSource = config.amazonaws.com) && (($.eventName=StopConfigurationRecorder)||($.eventName=DeleteDeliveryChannel)||($.eventName=PutDeliveryChannel)||($.eventName=PutConfigurationRecorder))}"" # Critical: detects AWS Config configuration change events
+
+  metric_transformation {
+    name      = ""aws_config_changes_metric""   # Critical: metric used by the alarm
+    namespace = ""CISBenchmark""
+    value     = ""1""
+  }
+}
+
+# Alarm for the above metric
+resource ""aws_cloudwatch_metric_alarm"" ""config_change"" {
+  alarm_name          = ""aws_config_changes_alarm""
+  metric_name         = ""aws_config_changes_metric""   # Critical: ties alarm to the metric filter
+  namespace           = ""CISBenchmark""
+  comparison_operator = ""GreaterThanOrEqualToThreshold""
+  evaluation_periods  = 1
+  period              = 300
+  statistic           = ""Sum""
+  threshold           = 1  # Critical: alarm on first occurrence
+}
+```";;"1. Open the CloudWatch console and go to Logs > Log groups
+2. Select the CloudTrail log group that receives trail events
+3. Create a metric filter with pattern:
+   {($.eventSource = config.amazonaws.com) && (($.eventName=StopConfigurationRecorder)||($.eventName=DeleteDeliveryChannel)||($.eventName=PutDeliveryChannel)||($.eventName=PutConfigurationRecorder))}
+   - Metric name: aws_config_changes_metric
+   - Namespace: CISBenchmark
+   - Value: 1
+4. From the created metric filter, choose Create alarm
+5. Set: Sum, Period 5 minutes, Threshold >= 1, Evaluation periods 1
+6. Create the alarm (actions/notifications optional)";CIS-7.0: 5.9 | SOC2: cc_5_2 | CIS-1.4: 4.9 | CIS-1.5: 4.9 | MITRE-ATTACK: T1496 | GDPR: article_25 | ISO27001-2013: A.12.4.F | KISA-ISMS-P-2023: 2.10.1, 2.10.2, 2.11.3 | C5-2025: OIS-04.03B, OIS-04.01AC, OIS-04.02AC, HR-03.02AC, AM-01.01AC, AM-09.03AC, OPS-11.02AC, OPS-13.03AC, OPS-26.05B, OPS-26.01AS, OPS-26.06B, PSS-04.01B | CIS-2.0: 4.9 | KISA-ISMS-P-2023-korean: 2.10.1, 2.10.2, 2.11.3 | AWS-Well-Architected-Framework-Security-Pillar: SEC04-BP04 | NIST-CSF-2.0: ov_3, ra_5, ip_8, pt_1, ae_1, ae_2, ae_3, cm_1, cm_7, dp_4 | CIS-5.0: 4.9 | CIS-3.0: 4.9 | CIS-6.0: 5.9 | NIST-CSF-1.1: cm_2, ra_5, sc_4 | CCC-v2025.10: CCC.Core.CN04.AR01 | SecNumCloud-3.2: 12.9 | ProwlerThreatScore-1.0: 3.3.10 | ISO27001-2022: A.8.15, A.8.16 | CIS-4.0.1: 4.9 | NIS2: 2.2.3, 3.2.3.c, 3.2.3.f, 3.2.3.g, 3.5.4, 7.2.b | FedRAMP-20x-KSI-Low-25.05C: ksi-cmt;logging;;;Logging and Monitoring;5.40.0;https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudwatch-alarms-for-cloudtrail.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-cloudwatch_log_metric_filter_and_alarm_for_cloudtrail_configuration_changes_enabled-128529977749-eu-north-1-128529977749;aws;cloudwatch_log_metric_filter_and_alarm_for_cloudtrail_configuration_changes_enabled;CloudWatch Logs metric filter and alarm exist for CloudTrail configuration changes;Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | Software and Configuration Checks/AWS Security Best Practices | TTPs/Defense Evasion;FAIL;No CloudWatch log groups found with metric filters or alarms associated.;False;cloudwatch;;medium;AwsCloudWatchAlarm;arn:aws:logs:eu-north-1:128529977749:log-group;128529977749;;;aws;eu-north-1;"**CloudTrail logs** include a **metric filter** for trail configuration events (`CreateTrail`, `UpdateTrail`, `DeleteTrail`, `StartLogging`, `StopLogging`) with an associated **CloudWatch alarm** to alert on matches.
+
+Evaluates the presence of this filter-and-alarm monitoring.";"Absent this monitoring, logging can be stopped or altered without notice, eroding visibility.
+
+That enables covert activity and data exfiltration without audit evidence, harming confidentiality, the integrity of records, and the availability of reliable logs for detection and forensics.";;"Implement a **metric filter** for trail configuration events and a linked **alarm** that notifies response channels.
+
+Apply **least privilege** and **separation of duties** for trail changes, add **defense in depth** with centralized logging and validation, and regularly test that alerts fire.";https://hub.prowler.com/check/cloudwatch_log_metric_filter_and_alarm_for_cloudtrail_configuration_changes_enabled;"```yaml
+Resources:
+  CloudTrailCfgMetricFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      LogGroupName: <example_resource_name> # CRITICAL: CloudTrail log group to monitor
+      FilterPattern: ""{($.eventName = CreateTrail) || ($.eventName = UpdateTrail) || ($.eventName = DeleteTrail) || ($.eventName = StartLogging) || ($.eventName = StopLogging)}"" # CRITICAL: Detects CloudTrail config changes
+      MetricTransformations:
+        - MetricName: <example_resource_name>  # CRITICAL: Metric created by the filter
+          MetricNamespace: <example_resource_name>
+          MetricValue: ""1""
+
+  CloudTrailCfgAlarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      MetricName: <example_resource_name>      # CRITICAL: Alarm uses metric from filter
+      Namespace: <example_resource_name>
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      EvaluationPeriods: 1
+      Period: 300
+      Statistic: Sum
+      Threshold: 1
+```";"```hcl
+resource ""aws_cloudwatch_log_metric_filter"" ""cfg"" {
+  name           = ""<example_resource_name>""
+  log_group_name = ""<example_resource_name>"" # CRITICAL: CloudTrail log group
+  pattern        = ""{($.eventName = CreateTrail) || ($.eventName = UpdateTrail) || ($.eventName = DeleteTrail) || ($.eventName = StartLogging) || ($.eventName = StopLogging)}"" # CRITICAL: Detects CloudTrail config changes
+
+  metric_transformation {
+    name      = ""<example_resource_name>""   # CRITICAL: Metric created by filter
+    namespace = ""<example_resource_name>""
+    value     = ""1""
+  }
+}
+
+resource ""aws_cloudwatch_metric_alarm"" ""cfg"" {
+  metric_name         = ""<example_resource_name>"" # CRITICAL: Uses metric from filter
+  namespace           = ""<example_resource_name>""
+  comparison_operator = ""GreaterThanOrEqualToThreshold""
+  evaluation_periods  = 1
+  period              = 300
+  statistic           = ""Sum""
+  threshold           = 1
+}
+```";;"1. In the AWS Console, go to CloudWatch > Log groups and open the log group used by CloudTrail
+2. Create metric filter: Actions > Create metric filter
+   - Filter pattern: {($.eventName = CreateTrail) || ($.eventName = UpdateTrail) || ($.eventName = DeleteTrail) || ($.eventName = StartLogging) || ($.eventName = StopLogging)}
+   - Metric name: <example_resource_name>, Namespace: <example_resource_name>, Value: 1
+   - Create metric filter
+3. From the Metric filters tab, select the new filter and choose Create alarm
+   - Threshold: Greater/Equal 1, Period: 5 minutes, Evaluation periods: 1
+   - Create alarm";CISA: your-data-2 | CIS-7.0: 5.5 | SOC2: cc_5_2 | CIS-1.4: 4.5 | CIS-1.5: 4.5 | MITRE-ATTACK: T1496 | GDPR: article_25 | ISO27001-2013: A.12.4.J | KISA-ISMS-P-2023: 2.10.1, 2.10.2, 2.11.3 | C5-2025: OIS-04.03B, OIS-04.01AC, OIS-04.02AC, HR-03.02AC, AM-01.01AC, AM-09.03AC, OPS-11.02AC, OPS-13.03AC, OPS-26.05B, OPS-26.01AS, OPS-26.06B, SIM-03.07B, COM-04.01AC, PSS-04.01B | CIS-2.0: 4.5 | KISA-ISMS-P-2023-korean: 2.10.1, 2.10.2, 2.11.3 | AWS-Well-Architected-Framework-Security-Pillar: SEC04-BP04 | NIST-CSF-2.0: ov_3, ra_5, ip_8, pt_1, ae_1, ae_2, ae_3, cm_1, cm_3, cm_7, dp_4 | CIS-5.0: 4.5 | AWS-Account-Security-Onboarding: Critical alert on cloudtrail settings changes | CIS-3.0: 4.5 | ENS-RD2022: op.exp.8.aws.ct.2, op.exp.8.r1.aws.ct.2, op.exp.8.r1.aws.ct.3 | CIS-6.0: 5.5 | NIST-CSF-1.1: cm_2, ra_5, sc_4 | CCC-v2025.10: CCC.Core.CN09.AR02, CCC.Core.CN09.AR03, CCC.Core.CN04.AR01, CCC.AuditLog.CN03.AR01, CCC.Logging.CN07.AR01, CCC.LB.CN04.AR01 | SecNumCloud-3.2: 12.9 | ProwlerThreatScore-1.0: 3.3.6 | ISO27001-2022: A.8.15, A.8.16 | CIS-4.0.1: 4.5 | NIS2: 2.2.3, 3.2.3.c, 3.2.3.f, 3.2.3.g, 3.2.4, 3.5.4, 7.2.b | FedRAMP-20x-KSI-Low-25.05C: ksi-cmt;logging;;;Logging and Monitoring;5.40.0;https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudwatch-alarms-for-cloudtrail.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-cloudwatch_log_metric_filter_for_s3_bucket_policy_changes-128529977749-eu-north-1-128529977749;aws;cloudwatch_log_metric_filter_for_s3_bucket_policy_changes;CloudWatch log metric filter and alarm exist for S3 bucket policy changes;Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | Software and Configuration Checks/AWS Security Best Practices/Runtime Behavior Analysis;FAIL;No CloudWatch log groups found with metric filters or alarms associated.;False;cloudwatch;;medium;AwsCloudWatchAlarm;arn:aws:logs:eu-north-1:128529977749:log-group;128529977749;;;aws;eu-north-1;"**CloudTrail** logs are assessed for a **CloudWatch metric filter** matching S3 bucket configuration changes (ACL, policy, CORS, lifecycle, replication; e.g., `PutBucketPolicy`, `DeleteBucketPolicy`) and for an associated **CloudWatch alarm**.";Without alerting on S3 policy and ACL changes, unauthorized modifications can go unnoticed, weakening **confidentiality** and **integrity**. Misuse could expose buckets publicly, grant write/delete access, or alter replication paths, enabling data exfiltration and destructive actions.;;Establish and maintain **metric filters** and **alarms** for S3 bucket policy, ACL, CORS, lifecycle, and replication changes. Route alerts to monitored channels and integrate with SIEM. Enforce **least privilege**, require change reviews, and use **defense in depth** to prevent and quickly detect unsafe bucket policy changes.;https://hub.prowler.com/check/cloudwatch_log_metric_filter_for_s3_bucket_policy_changes;"```yaml
+# CloudFormation: CloudWatch metric filter and alarm for S3 bucket policy changes
+Resources:
+  <example_resource_name>MetricFilter:
+    Type: AWS::Logs::MetricFilter
+    Properties:
+      LogGroupName: <example_resource_name>  # Critical: CloudTrail log group to monitor
+      FilterPattern: '{($.eventSource=s3.amazonaws.com) && (($.eventName=PutBucketAcl) || ($.eventName=PutBucketPolicy) || ($.eventName=PutBucketCors) || ($.eventName=PutBucketLifecycle) || ($.eventName=PutBucketReplication) || ($.eventName=DeleteBucketPolicy) || ($.eventName=DeleteBucketCors) || ($.eventName=DeleteBucketLifecycle) || ($.eventName=DeleteBucketReplication))}'  # Critical: detects S3 bucket policy changes
+      MetricTransformations:
+        - MetricName: <example_resource_name>
+          MetricNamespace: <example_resource_name>
+          MetricValue: ""1""
+
+  <example_resource_name>Alarm:
+    Type: AWS::CloudWatch::Alarm
+    Properties:
+      AlarmName: <example_resource_name>
+      Namespace: <example_resource_name>   # Critical: must match metric filter
+      MetricName: <example_resource_name>  # Critical: must match metric filter
+      ComparisonOperator: GreaterThanOrEqualToThreshold
+      EvaluationPeriods: 1
+      Period: 300
+      Statistic: Sum
+      Threshold: 1
+```";"```hcl
+# CloudWatch metric filter for S3 bucket policy changes
+resource ""aws_cloudwatch_log_metric_filter"" ""<example_resource_name>"" {
+  name           = ""<example_resource_name>""
+  log_group_name = ""<example_resource_name>""
+  # Critical: detects S3 bucket policy changes from CloudTrail logs
+  pattern = ""{($.eventSource=s3.amazonaws.com) && (($.eventName=PutBucketAcl) || ($.eventName=PutBucketPolicy) || ($.eventName=PutBucketCors) || ($.eventName=PutBucketLifecycle) || ($.eventName=PutBucketReplication) || ($.eventName=DeleteBucketPolicy) || ($.eventName=DeleteBucketCors) || ($.eventName=DeleteBucketLifecycle) || ($.eventName=DeleteBucketReplication))}""
+
+  metric_transformation {
+    name      = ""<example_resource_name>""
+    namespace = ""<example_resource_name>""
+    value     = ""1""
+  }
+}
+
+# Alarm on the metric filter
+resource ""aws_cloudwatch_metric_alarm"" ""<example_resource_name>"" {
+  alarm_name          = ""<example_resource_name>""
+  metric_name         = ""<example_resource_name>""  # Critical: matches metric filter
+  namespace           = ""<example_resource_name>""  # Critical: matches metric filter
+  comparison_operator = ""GreaterThanOrEqualToThreshold""
+  evaluation_periods  = 1
+  period              = 300
+  statistic           = ""Sum""
+  threshold           = 1
+}
+```";;"1. Open the CloudWatch console and go to Logs > Log groups.
+2. Select the CloudTrail log group that receives your trail events.
+3. Create metric filter:
+   - Choose Create metric filter.
+   - Filter pattern:
+     ```
+     {($.eventSource=s3.amazonaws.com) && (($.eventName=PutBucketAcl) || ($.eventName=PutBucketPolicy) || ($.eventName=PutBucketCors) || ($.eventName=PutBucketLifecycle) || ($.eventName=PutBucketReplication) || ($.eventName=DeleteBucketPolicy) || ($.eventName=DeleteBucketCors) || ($.eventName=DeleteBucketLifecycle) || ($.eventName=DeleteBucketReplication))}
+     ```
+   - Set Metric name and Namespace (any values) and Metric value = 1. Save.
+4. From the Metric filters tab, select the new filter and choose Create alarm.
+5. Set: Statistic = Sum, Period = 5 minutes, Threshold type = Static, Condition = Greater/Equal, Threshold = 1, Evaluation periods = 1. Create alarm.";CIS-7.0: 5.8 | SOC2: cc_5_2 | CIS-1.4: 4.8 | CIS-1.5: 4.8 | MITRE-ATTACK: T1496 | GDPR: article_25 | ISO27001-2013: A.12.4.G | KISA-ISMS-P-2023: 2.10.1, 2.10.2, 2.11.3 | C5-2025: OIS-04.03B, OIS-04.01AC, OIS-04.02AC, HR-03.02AC, AM-01.01AC, AM-09.03AC, OPS-11.02AC, OPS-26.05B, OPS-26.01AS, OPS-26.06B, PSS-04.01B | CIS-2.0: 4.8 | KISA-ISMS-P-2023-korean: 2.10.1, 2.10.2, 2.11.3 | AWS-Well-Architected-Framework-Security-Pillar: SEC04-BP04 | NIST-CSF-2.0: pt_1, ae_1, ae_2, cm_7 | CIS-5.0: 4.8 | CIS-3.0: 4.8 | CIS-6.0: 5.8 | NIST-CSF-1.1: cm_2, ra_5, sc_4 | CCC-v2025.10: CCC.Core.CN04.AR01, CCC.AuditLog.CN03.AR02 | SecNumCloud-3.2: 12.9 | ProwlerThreatScore-1.0: 3.3.9 | ISO27001-2022: A.8.15, A.8.16 | CIS-4.0.1: 4.8 | NIS2: 2.2.3, 3.2.3.b, 3.2.3.c, 3.2.3.f, 3.2.3.g, 3.5.4, 7.2.b | FedRAMP-20x-KSI-Low-25.05C: ksi-cmt;logging;;;Logging and Monitoring;5.40.0;https://docs.aws.amazon.com/awscloudtrail/latest/userguide/cloudwatch-alarms-for-cloudtrail.html | https://support.icompaas.com/support/solutions/articles/62000086674-ensure-a-log-metric-filter-and-alarm-exist-for-s3-bucket-policy-changes;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-ec2_instance_account_imdsv2_enabled-128529977749-eu-north-1-128529977749;aws;ec2_instance_account_imdsv2_enabled;IMDSv2 is required by default for EC2 instances at the account level;Software and Configuration Checks/AWS Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | TTPs/Credential Access;PASS;IMDSv2 is enabled by default for EC2 instances.;False;ec2;;high;AwsEc2Instance;arn:aws:ec2:eu-north-1:128529977749:account;128529977749;;;aws;eu-north-1;**EC2 account IMDS defaults** with `http_tokens`=`required` ensure new instances in the Region use **IMDSv2** by default and disable IMDSv1. *Existing instances keep their current setting.*;Without a default of **IMDSv2**, new instances may enable **IMDSv1**, exposing metadata via simple HTTP. SSRF or proxy misconfigs can steal **temporary IAM credentials**, enabling data exfiltration (confidentiality), unauthorized API changes (integrity), and lateral movement that can disrupt services (availability).;;Enforce **IMDSv2** at the account level in every Region by setting `http_tokens` to `required`. Add guardrails with **SCP/IAM conditions**. Standardize AMIs and launch templates to require tokens, validate workload compatibility, and apply **least privilege** to instance roles for defense in depth. *For containers*, prefer hop limit `2`.;https://hub.prowler.com/check/ec2_instance_account_imdsv2_enabled;;;aws ec2 modify-instance-metadata-defaults --region <region> --http-tokens required;"1. In the AWS Console, open EC2 and select the target Region
+2. Go to EC2 Dashboard > Account attributes > Data protection and security
+3. Next to IMDS defaults, click Manage
+4. Set Metadata version to V2 only (token required)
+5. Click Update";KISA-ISMS-P-2023: 2.6.2, 2.10.2 | C5-2025: OPS-25.01B | CIS-2.0: 5.6 | KISA-ISMS-P-2023-korean: 2.6.2, 2.10.2 | ISO27001-2022: A.8.20, A.8.21, A.8.22 | NIS2: 6.7.2.i;secrets | ec2-imdsv1;;;;5.40.0;https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-IMDS-new-instances.html#set-imdsv2-account-defaults | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-IMDS-new-instances.html | https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/EC2/require-imds-v2.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-ec2_instance_imdsv2_enabled-128529977749-eu-north-1-i-0a1a91d21f2f18c72;aws;ec2_instance_imdsv2_enabled;EC2 instance requires IMDSv2 or has the instance metadata service disabled;Software and Configuration Checks/AWS Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | TTPs/Credential Access;PASS;EC2 Instance i-0a1a91d21f2f18c72 has IMDSv2 enabled and required.;False;ec2;;high;AwsEc2Instance;arn:aws:ec2:eu-north-1:128529977749:instance/i-0a1a91d21f2f18c72;i-0a1a91d21f2f18c72;;ManagedBy=terraform | Environment=prod | Name=ce-capstone-nat | Project=ce-capstone | Owner=adnan-nooruddin;aws;eu-north-1;**EC2 instances** are evaluated for **IMDSv2 enforcement**: metadata endpoint enabled with `http_tokens: required`, or metadata service fully disabled (`http_endpoint: disabled`).;Permitting **IMDSv1** or optional tokens lets SSRF or compromised workloads retrieve **temporary IAM credentials**, impacting confidentiality and integrity. Stolen role creds can drive **privilege escalation**, unauthorized data access, and lateral movement across AWS resources.;;"Apply defense in depth:
+- Require **IMDSv2** tokens on all instances (`http_tokens: required`)
+- Disable metadata where not needed (`http_endpoint: disabled`)
+- Minimize hop limit to `1` when feasible
+- Update SDKs/apps for IMDSv2
+- Restrict instance profile permissions (least privilege)
+- Block metadata access from untrusted workloads";https://hub.prowler.com/check/ec2_instance_imdsv2_enabled;"```yaml
+# CloudFormation: enforce IMDSv2 on an EC2 instance
+Resources:
+  <example_resource_name>:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ""<example_resource_id>""
+      InstanceType: ""<example_resource_name>""
+      MetadataOptions:
+        HttpTokens: required  # Critical: Require IMDSv2 tokens (blocks IMDSv1)
+```";"```hcl
+# Enforce IMDSv2 on an EC2 instance
+resource ""aws_instance"" ""<example_resource_name>"" {
+  ami           = ""<example_resource_id>""
+  instance_type = ""<example_resource_name>""
+
+  metadata_options {
+    http_tokens = ""required""  # Critical: Require IMDSv2 tokens (blocks IMDSv1)
+  }
+}
+```";aws ec2 modify-instance-metadata-options --instance-id <instance-id> --http-tokens required --http-endpoint enabled;"1. In AWS Console, go to EC2 > Instances
+2. Select the instance > Actions > Instance settings > Modify instance metadata options
+3. Set Metadata version to IMDSv2 only (HTTP tokens: Required)
+4. Ensure Instance metadata service is Enabled (or set to Disabled to turn off IMDS entirely)
+5. Click Save";CIS-7.0: 6.7 | SOC2: cc_7_2 | MITRE-ATTACK: T1552 | AWS-Foundational-Security-Best-Practices: EC2.8 | KISA-ISMS-P-2023: 2.6.2, 2.10.2 | CIS-2.0: 5.6 | KISA-ISMS-P-2023-korean: 2.6.2, 2.10.2 | GxP-21-CFR-Part-11: 11.10-d, 11.10-g | AWS-Well-Architected-Framework-Security-Pillar: SEC03-BP01, SEC06-BP01 | NIST-CSF-2.0: ac_3 | CIS-5.0: 5.7 | NIST-800-171-Revision-2: 3_12_4 | PCI-4.0: 8.2.8.4 | NIST-800-53-Revision-4: ac_6, ca_7, si_4_2, si_4 | NIST-800-53-Revision-5: ac_2_6, ac_3, ac_3_3, ac_3_3_a, ac_3_3_b_1, ac_3_3_b_2, ac_3_3_b_3, ac_3_3_b_4, ac_3_3_b_5, ac_3_3_c, ac_3_4, ac_3_4_a, ac_3_4_b, ac_3_4_c, ac_3_4_d, ac_3_4_e, ac_3_7, ac_3_8, ac_3_12_a, ac_3_13, ac_3_15_a, ac_3_15_b, ac_4_28, ac_6, ac_24, cm_5_1_a, mp_2, sc_23_3 | CIS-3.0: 5.6 | CIS-6.0: 6.7 | NIST-CSF-1.1: cm_2, cm_5, cp_4, cp_5, ra_5, sc_4 | ProwlerThreatScore-1.0: 4.1.2 | ISO27001-2022: A.8.20, A.8.21, A.8.22 | FedRamp-Moderate-Revision-4: ac-3, ac-6, ca-7-a-b, si-4-2, si-4-4, si-4-5, si-4-a-b-c | FedRAMP-Low-Revision-4: ac-3, ca-7 | CIS-4.0.1: 5.7 | NIS2: 6.7.2.i | FedRAMP-20x-KSI-Low-25.05C: ksi-cna;identity-access | secrets | ec2-imdsv1;;;;5.40.0;https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/EC2/require-imds-v2.html | https://support.icompaas.com/support/solutions/articles/62000234166-5-7-ensure-that-the-ec2-metadata-service-only-allows-imdsv2-automated- | https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/configuring-instance-metadata-service.html#configuring-instance-metadata-options;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-ec2_instance_profile_attached-128529977749-eu-north-1-i-0a1a91d21f2f18c72;aws;ec2_instance_profile_attached;EC2 instance is associated with an IAM instance profile role;Software and Configuration Checks/AWS Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark;FAIL;EC2 Instance i-0a1a91d21f2f18c72 not associated with an Instance Profile Role.;False;ec2;;medium;AwsEc2Instance;arn:aws:ec2:eu-north-1:128529977749:instance/i-0a1a91d21f2f18c72;i-0a1a91d21f2f18c72;;ManagedBy=terraform | Environment=prod | Name=ce-capstone-nat | Project=ce-capstone | Owner=adnan-nooruddin;aws;eu-north-1;**EC2 instances** are evaluated for association with an **IAM instance profile role** that delivers temporary credentials to workloads running on the instance;Without an instance profile, apps often rely on long-term access keys on the host. Exposed keys can be used from anywhere to read data, alter resources, or disrupt services, impacting confidentiality, integrity, and availability. Keys may persist in AMIs, images, or logs, hindering rotation and amplifying blast radius.;;"Attach an **IAM instance profile** to every instance and grant only permissions each workload requires (**least privilege**). Eliminate static keys on hosts; use **temporary credentials** with automatic rotation. Separate roles per application, enforce **separation of duties**, and limit who can assign roles (govern via `iam:PassRole`). Monitor role usage for anomalies.";https://hub.prowler.com/check/ec2_instance_profile_attached;"```yaml
+# CloudFormation: attach an IAM instance profile to the EC2 instance
+Resources:
+  ExampleInstance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: <AMI_ID>
+      InstanceType: <INSTANCE_TYPE>
+      IamInstanceProfile: <INSTANCE_PROFILE_NAME>  # Critical: associates an instance profile so the check passes
+```";"```hcl
+# Attach an IAM instance profile to the EC2 instance
+resource ""aws_instance"" ""example"" {
+  ami                  = ""<AMI_ID>""
+  instance_type        = ""<INSTANCE_TYPE>""
+  iam_instance_profile = ""<INSTANCE_PROFILE_NAME>""  # Critical: associates an instance profile so the check passes
+}
+```";aws ec2 associate-iam-instance-profile --instance-id <INSTANCE_ID> --iam-instance-profile Name=<INSTANCE_PROFILE_NAME>;"1. Open the AWS Management Console and go to EC2
+2. Select Instances and choose the target instance
+3. Click Actions > Security > Modify IAM role
+4. Select the IAM role (instance profile) to attach
+5. Click Update IAM role";CIS-7.0: 2.16 | CIS-1.4: 1.18 | CIS-1.5: 1.18 | KISA-ISMS-P-2023: 2.5.1, 2.5.6, 2.10.2 | C5-2025: HR-01.01B, AM-03.01B, IAM-01.01B, IAM-01.04B, IAM-03.03B, IAM-08.02B, IAM-10.01B, IAM-10.02B, PSS-09.01AC | CIS-2.0: 1.18 | KISA-ISMS-P-2023-korean: 2.5.1, 2.5.6, 2.10.2 | GxP-21-CFR-Part-11: 11.10-d, 11.10-g | AWS-Well-Architected-Framework-Security-Pillar: SEC03-BP01, SEC03-BP02, SEC06-BP04, SEC06-BP05 | CIS-5.0: 1.17 | NIST-800-171-Revision-2: 3_1_1, 3_1_2 | PCI-4.0: 7.2.1.5, 7.2.2.5, 7.2.5.3, 7.3.1.3, 7.3.2.3, 7.3.3.3, 8.2.7.3, 8.2.8.5, 8.3.4.3 | NIST-800-53-Revision-5: ac_3, cm_5_1_a, cm_6_a | CIS-3.0: 1.18 | CIS-6.0: 2.17 | FFIEC: d3-pc-am-b-1 | ProwlerThreatScore-1.0: 1.2.4 | ISO27001-2022: A.8.2, A.8.20, A.8.21, A.8.22 | CIS-4.0.1: 1.18 | NIS2: 11.1.1, 11.2.2.d;identity-access;;;;5.40.0;http://docs.aws.amazon.com/IAM/latest/UserGuide/id_roles_use_switch-role-ec2.html | https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/EC2/ec2-instance-using-iam-roles.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-ec2_securitygroup_allow_ingress_from_internet_to_all_ports-128529977749-eu-north-1-sg-004d1060824dafc6d;aws;ec2_securitygroup_allow_ingress_from_internet_to_all_ports;Security group does not have all ports open to the Internet;Software and Configuration Checks/AWS Security Best Practices/Network Reachability | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | TTPs/Initial Access/Unauthorized Access | Effects/Data Exposure;PASS;Security group ce-capstone-app-20260831143453433000000008 (sg-004d1060824dafc6d) does not have all ports open to the Internet.;False;ec2;;critical;AwsEc2SecurityGroup;arn:aws:ec2:eu-north-1:128529977749:security-group/sg-004d1060824dafc6d;sg-004d1060824dafc6d;ce-capstone-app-20260831143453433000000008;Name=ce-capstone-app-sg | Owner=adnan-nooruddin | Project=ce-capstone | Environment=prod | ManagedBy=terraform;aws;eu-north-1;**EC2 security groups** with **inbound rules** permitting Internet sources (`0.0.0.0/0`, `::/0`) to `all ports` across any protocol;Opening every port to the Internet enables broad scanning and exploit attempts, leading to **unauthorized access**, **remote code execution**, and **data exfiltration**, with easier lateral movement into the VPC. Confidentiality, integrity, and availability are all at risk.;;Enforce **least privilege** on ingress: allow only required ports from trusted sources, avoid `0.0.0.0/0` and `::/0`. Prefer private access (VPN, bastion, or Session Manager), use security group references, and layer **defense in depth** with network ACLs. Periodically review and remove unused rules.;https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_all_ports;"```yaml
+# CloudFormation: Security Group without an inbound rule that opens all ports to the Internet
+Resources:
+  <example_resource_name>:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Example SG
+      VpcId: <example_resource_id>
+      # Critical: Omit SecurityGroupIngress to ensure no rule with IpProtocol ""-1"" from 0.0.0.0/0 or ::/0 exists,
+      # which prevents all ports from being open to the Internet.
+```";"```hcl
+# Security Group with no inbound rules (prevents all ports open to the Internet)
+resource ""aws_security_group"" ""<example_resource_name>"" {
+  name   = ""<example_resource_name>""
+  vpc_id = ""<example_resource_id>""
+
+  # Critical: no ingress blocks; avoids any rule with protocol ""-1"" from 0.0.0.0/0 or ::/0
+}
+```";;"1. In the AWS Console, go to EC2 > Security Groups
+2. Select the affected security group
+3. Open the Inbound rules tab and click Edit inbound rules
+4. Delete any rule where Type is All traffic (protocol = All) with Source 0.0.0.0/0 or ::/0
+5. Click Save rules";CISA: your-systems-3, your-data-2 | CIS-7.0: 6.3, 6.4 | SOC2: cc_6_6 | CIS-1.4: 5.2 | CIS-1.5: 5.2, 5.3 | MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046 | KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.4, 2.6.6, 2.10.2 | C5-2025: PI-01.01AC | CIS-2.0: 5.2, 5.3 | KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.4, 2.6.6, 2.10.2 | AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03 | NIST-CSF-2.0: ac_3, ac_5, ds_5, ip_1, pt_4 | CIS-5.0: 5.3, 5.4 | CIS-3.0: 5.2, 5.3 | ENS-RD2022: mp.com.1.aws.sg.2 | CIS-6.0: 6.3, 6.4 | AWS-Foundational-Technical-Review: NETSEC-001 | CCC-v2025.10: CCC.Core.CN01.AR02, CCC.Core.CN05.AR01, CCC.Core.CN05.AR05 | SecNumCloud-3.2: 13.2 | PCI-3.2.1: 1.1, 1.1.4, 1.1.4.c, 1.2, 1.2.1, 1.2.1.a, 1.2.1.b, 1.2.1.c, 1.2.3, 1.2.3.b, 1.3, 1.3.2, 1.3.5 | ProwlerThreatScore-1.0: 2.1.4 | ISO27001-2022: A.8.20, A.8.21, A.8.22 | CIS-4.0.1: 5.3, 5.4;internet-exposed;;;;5.40.0;https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html | https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/EC2/security-group-ingress-any.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-ec2_securitygroup_allow_ingress_from_internet_to_all_ports-128529977749-eu-north-1-sg-0ab21fe0bf7823fec;aws;ec2_securitygroup_allow_ingress_from_internet_to_all_ports;Security group does not have all ports open to the Internet;Software and Configuration Checks/AWS Security Best Practices/Network Reachability | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | TTPs/Initial Access/Unauthorized Access | Effects/Data Exposure;PASS;Security group ce-capstone-db-20260831143455943400000009 (sg-0ab21fe0bf7823fec) does not have all ports open to the Internet.;False;ec2;;critical;AwsEc2SecurityGroup;arn:aws:ec2:eu-north-1:128529977749:security-group/sg-0ab21fe0bf7823fec;sg-0ab21fe0bf7823fec;ce-capstone-db-20260831143455943400000009;Environment=prod | Owner=adnan-nooruddin | Project=ce-capstone | Name=ce-capstone-db-sg | ManagedBy=terraform;aws;eu-north-1;**EC2 security groups** with **inbound rules** permitting Internet sources (`0.0.0.0/0`, `::/0`) to `all ports` across any protocol;Opening every port to the Internet enables broad scanning and exploit attempts, leading to **unauthorized access**, **remote code execution**, and **data exfiltration**, with easier lateral movement into the VPC. Confidentiality, integrity, and availability are all at risk.;;Enforce **least privilege** on ingress: allow only required ports from trusted sources, avoid `0.0.0.0/0` and `::/0`. Prefer private access (VPN, bastion, or Session Manager), use security group references, and layer **defense in depth** with network ACLs. Periodically review and remove unused rules.;https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_all_ports;"```yaml
+# CloudFormation: Security Group without an inbound rule that opens all ports to the Internet
+Resources:
+  <example_resource_name>:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Example SG
+      VpcId: <example_resource_id>
+      # Critical: Omit SecurityGroupIngress to ensure no rule with IpProtocol ""-1"" from 0.0.0.0/0 or ::/0 exists,
+      # which prevents all ports from being open to the Internet.
+```";"```hcl
+# Security Group with no inbound rules (prevents all ports open to the Internet)
+resource ""aws_security_group"" ""<example_resource_name>"" {
+  name   = ""<example_resource_name>""
+  vpc_id = ""<example_resource_id>""
+
+  # Critical: no ingress blocks; avoids any rule with protocol ""-1"" from 0.0.0.0/0 or ::/0
+}
+```";;"1. In the AWS Console, go to EC2 > Security Groups
+2. Select the affected security group
+3. Open the Inbound rules tab and click Edit inbound rules
+4. Delete any rule where Type is All traffic (protocol = All) with Source 0.0.0.0/0 or ::/0
+5. Click Save rules";CISA: your-systems-3, your-data-2 | CIS-7.0: 6.3, 6.4 | SOC2: cc_6_6 | CIS-1.4: 5.2 | CIS-1.5: 5.2, 5.3 | MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046 | KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.4, 2.6.6, 2.10.2 | C5-2025: PI-01.01AC | CIS-2.0: 5.2, 5.3 | KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.4, 2.6.6, 2.10.2 | AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03 | NIST-CSF-2.0: ac_3, ac_5, ds_5, ip_1, pt_4 | CIS-5.0: 5.3, 5.4 | CIS-3.0: 5.2, 5.3 | ENS-RD2022: mp.com.1.aws.sg.2 | CIS-6.0: 6.3, 6.4 | AWS-Foundational-Technical-Review: NETSEC-001 | CCC-v2025.10: CCC.Core.CN01.AR02, CCC.Core.CN05.AR01, CCC.Core.CN05.AR05 | SecNumCloud-3.2: 13.2 | PCI-3.2.1: 1.1, 1.1.4, 1.1.4.c, 1.2, 1.2.1, 1.2.1.a, 1.2.1.b, 1.2.1.c, 1.2.3, 1.2.3.b, 1.3, 1.3.2, 1.3.5 | ProwlerThreatScore-1.0: 2.1.4 | ISO27001-2022: A.8.20, A.8.21, A.8.22 | CIS-4.0.1: 5.3, 5.4;internet-exposed;;;;5.40.0;https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html | https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/EC2/security-group-ingress-any.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-ec2_securitygroup_allow_ingress_from_internet_to_all_ports-128529977749-eu-north-1-sg-0ae6dc99a169add31;aws;ec2_securitygroup_allow_ingress_from_internet_to_all_ports;Security group does not have all ports open to the Internet;Software and Configuration Checks/AWS Security Best Practices/Network Reachability | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | TTPs/Initial Access/Unauthorized Access | Effects/Data Exposure;PASS;Security group ce-capstone-alb-20260831143450720000000006 (sg-0ae6dc99a169add31) does not have all ports open to the Internet.;False;ec2;;critical;AwsEc2SecurityGroup;arn:aws:ec2:eu-north-1:128529977749:security-group/sg-0ae6dc99a169add31;sg-0ae6dc99a169add31;ce-capstone-alb-20260831143450720000000006;Owner=adnan-nooruddin | Environment=prod | ManagedBy=terraform | Name=ce-capstone-alb-sg | Project=ce-capstone;aws;eu-north-1;**EC2 security groups** with **inbound rules** permitting Internet sources (`0.0.0.0/0`, `::/0`) to `all ports` across any protocol;Opening every port to the Internet enables broad scanning and exploit attempts, leading to **unauthorized access**, **remote code execution**, and **data exfiltration**, with easier lateral movement into the VPC. Confidentiality, integrity, and availability are all at risk.;;Enforce **least privilege** on ingress: allow only required ports from trusted sources, avoid `0.0.0.0/0` and `::/0`. Prefer private access (VPN, bastion, or Session Manager), use security group references, and layer **defense in depth** with network ACLs. Periodically review and remove unused rules.;https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_all_ports;"```yaml
+# CloudFormation: Security Group without an inbound rule that opens all ports to the Internet
+Resources:
+  <example_resource_name>:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Example SG
+      VpcId: <example_resource_id>
+      # Critical: Omit SecurityGroupIngress to ensure no rule with IpProtocol ""-1"" from 0.0.0.0/0 or ::/0 exists,
+      # which prevents all ports from being open to the Internet.
+```";"```hcl
+# Security Group with no inbound rules (prevents all ports open to the Internet)
+resource ""aws_security_group"" ""<example_resource_name>"" {
+  name   = ""<example_resource_name>""
+  vpc_id = ""<example_resource_id>""
+
+  # Critical: no ingress blocks; avoids any rule with protocol ""-1"" from 0.0.0.0/0 or ::/0
+}
+```";;"1. In the AWS Console, go to EC2 > Security Groups
+2. Select the affected security group
+3. Open the Inbound rules tab and click Edit inbound rules
+4. Delete any rule where Type is All traffic (protocol = All) with Source 0.0.0.0/0 or ::/0
+5. Click Save rules";CISA: your-systems-3, your-data-2 | CIS-7.0: 6.3, 6.4 | SOC2: cc_6_6 | CIS-1.4: 5.2 | CIS-1.5: 5.2, 5.3 | MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046 | KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.4, 2.6.6, 2.10.2 | C5-2025: PI-01.01AC | CIS-2.0: 5.2, 5.3 | KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.4, 2.6.6, 2.10.2 | AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03 | NIST-CSF-2.0: ac_3, ac_5, ds_5, ip_1, pt_4 | CIS-5.0: 5.3, 5.4 | CIS-3.0: 5.2, 5.3 | ENS-RD2022: mp.com.1.aws.sg.2 | CIS-6.0: 6.3, 6.4 | AWS-Foundational-Technical-Review: NETSEC-001 | CCC-v2025.10: CCC.Core.CN01.AR02, CCC.Core.CN05.AR01, CCC.Core.CN05.AR05 | SecNumCloud-3.2: 13.2 | PCI-3.2.1: 1.1, 1.1.4, 1.1.4.c, 1.2, 1.2.1, 1.2.1.a, 1.2.1.b, 1.2.1.c, 1.2.3, 1.2.3.b, 1.3, 1.3.2, 1.3.5 | ProwlerThreatScore-1.0: 2.1.4 | ISO27001-2022: A.8.20, A.8.21, A.8.22 | CIS-4.0.1: 5.3, 5.4;internet-exposed;;;;5.40.0;https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html | https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/EC2/security-group-ingress-any.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-ec2_securitygroup_allow_ingress_from_internet_to_all_ports-128529977749-eu-north-1-sg-0f559018c82176a2b;aws;ec2_securitygroup_allow_ingress_from_internet_to_all_ports;Security group does not have all ports open to the Internet;Software and Configuration Checks/AWS Security Best Practices/Network Reachability | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | TTPs/Initial Access/Unauthorized Access | Effects/Data Exposure;PASS;Security group ce-capstone-nat-20260831143450716100000005 (sg-0f559018c82176a2b) does not have all ports open to the Internet.;False;ec2;;critical;AwsEc2SecurityGroup;arn:aws:ec2:eu-north-1:128529977749:security-group/sg-0f559018c82176a2b;sg-0f559018c82176a2b;ce-capstone-nat-20260831143450716100000005;ManagedBy=terraform | Name=ce-capstone-nat-sg | Owner=adnan-nooruddin | Project=ce-capstone | Environment=prod;aws;eu-north-1;**EC2 security groups** with **inbound rules** permitting Internet sources (`0.0.0.0/0`, `::/0`) to `all ports` across any protocol;Opening every port to the Internet enables broad scanning and exploit attempts, leading to **unauthorized access**, **remote code execution**, and **data exfiltration**, with easier lateral movement into the VPC. Confidentiality, integrity, and availability are all at risk.;;Enforce **least privilege** on ingress: allow only required ports from trusted sources, avoid `0.0.0.0/0` and `::/0`. Prefer private access (VPN, bastion, or Session Manager), use security group references, and layer **defense in depth** with network ACLs. Periodically review and remove unused rules.;https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_all_ports;"```yaml
+# CloudFormation: Security Group without an inbound rule that opens all ports to the Internet
+Resources:
+  <example_resource_name>:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Example SG
+      VpcId: <example_resource_id>
+      # Critical: Omit SecurityGroupIngress to ensure no rule with IpProtocol ""-1"" from 0.0.0.0/0 or ::/0 exists,
+      # which prevents all ports from being open to the Internet.
+```";"```hcl
+# Security Group with no inbound rules (prevents all ports open to the Internet)
+resource ""aws_security_group"" ""<example_resource_name>"" {
+  name   = ""<example_resource_name>""
+  vpc_id = ""<example_resource_id>""
+
+  # Critical: no ingress blocks; avoids any rule with protocol ""-1"" from 0.0.0.0/0 or ::/0
+}
+```";;"1. In the AWS Console, go to EC2 > Security Groups
+2. Select the affected security group
+3. Open the Inbound rules tab and click Edit inbound rules
+4. Delete any rule where Type is All traffic (protocol = All) with Source 0.0.0.0/0 or ::/0
+5. Click Save rules";CISA: your-systems-3, your-data-2 | CIS-7.0: 6.3, 6.4 | SOC2: cc_6_6 | CIS-1.4: 5.2 | CIS-1.5: 5.2, 5.3 | MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046 | KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.4, 2.6.6, 2.10.2 | C5-2025: PI-01.01AC | CIS-2.0: 5.2, 5.3 | KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.4, 2.6.6, 2.10.2 | AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03 | NIST-CSF-2.0: ac_3, ac_5, ds_5, ip_1, pt_4 | CIS-5.0: 5.3, 5.4 | CIS-3.0: 5.2, 5.3 | ENS-RD2022: mp.com.1.aws.sg.2 | CIS-6.0: 6.3, 6.4 | AWS-Foundational-Technical-Review: NETSEC-001 | CCC-v2025.10: CCC.Core.CN01.AR02, CCC.Core.CN05.AR01, CCC.Core.CN05.AR05 | SecNumCloud-3.2: 13.2 | PCI-3.2.1: 1.1, 1.1.4, 1.1.4.c, 1.2, 1.2.1, 1.2.1.a, 1.2.1.b, 1.2.1.c, 1.2.3, 1.2.3.b, 1.3, 1.3.2, 1.3.5 | ProwlerThreatScore-1.0: 2.1.4 | ISO27001-2022: A.8.20, A.8.21, A.8.22 | CIS-4.0.1: 5.3, 5.4;internet-exposed;;;;5.40.0;https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html | https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/EC2/security-group-ingress-any.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_22-128529977749-eu-north-1-sg-004d1060824dafc6d;aws;ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_22;Security group does not allow ingress from 0.0.0.0/0 or ::/0 to TCP port 22 (SSH);Software and Configuration Checks/AWS Security Best Practices/Network Reachability | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | TTPs/Initial Access/Unauthorized Access;PASS;Security group ce-capstone-app-20260831143453433000000008 (sg-004d1060824dafc6d) does not have SSH port 22 open to the Internet.;False;ec2;;high;AwsEc2SecurityGroup;arn:aws:ec2:eu-north-1:128529977749:security-group/sg-004d1060824dafc6d;sg-004d1060824dafc6d;ce-capstone-app-20260831143453433000000008;Name=ce-capstone-app-sg | Owner=adnan-nooruddin | Project=ce-capstone | Environment=prod | ManagedBy=terraform;aws;eu-north-1;"**EC2 security groups** are assessed for **inbound SSH exposure** by locating ingress rules that allow `TCP 22` from the Internet (`0.0.0.0/0` or `::/0`).
+
+Only groups in use are considered; sets already flagged for all-port exposure are not repeated.";Exposed **SSH** invites Internet-scale **brute force** and **credential stuffing**. A successful login grants **remote shell**, enabling data theft (confidentiality), code or config tampering (integrity), and cryptomining or service disruption (availability), plus **lateral movement** within the environment.;;"Apply **least privilege** to SSH:
+- Disallow `0.0.0.0/0` and `::/0`; allow only trusted IPs or VPN ranges
+- Prefer **private access** via bastion hosts or AWS Systems Manager Session Manager
+- Enforce **key-based auth**, disable passwords, rotate keys
+- Add **network segmentation** and monitoring for **defense in depth**";https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_22;"```yaml
+# CloudFormation: restrict SSH from the Internet
+Resources:
+  <example_resource_name>:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Restrict SSH
+      VpcId: <example_resource_id>
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 10.0.0.0/8  # Critical: allows SSH only from a private range, not 0.0.0.0/0
+```";"```hcl
+# Terraform: restrict SSH from the Internet
+resource ""aws_security_group"" ""<example_resource_name>"" {
+  vpc_id = ""<example_resource_id>""
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = ""tcp""
+    cidr_blocks = [""10.0.0.0/8""]  # Critical: do not use 0.0.0.0/0 or ::/0
+  }
+}
+```";aws ec2 revoke-security-group-ingress --group-id <SECURITY_GROUP_ID> --protocol tcp --port 22 --cidr 0.0.0.0/0;"1. In the AWS Console, go to EC2 > Security Groups
+2. Select the affected security group
+3. Open the Inbound rules tab
+4. Delete any rule for port 22 (SSH) with source 0.0.0.0/0 or ::/0
+5. Click Save rules";CISA: your-systems-3, your-data-2 | CIS-7.0: 6.3, 6.4 | SOC2: cc_6_6, cc_7_2 | CIS-1.4: 5.2 | CIS-1.5: 5.2, 5.3 | MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046 | AWS-Foundational-Security-Best-Practices: EC2.13 | ISO27001-2013: A.12.6.C, A.13.1.C | KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.6, 2.10.2 | C5-2025: PI-01.01AC | HIPAA: 164_308_a_1_ii_b, 164_312_e_1 | CIS-2.0: 5.2, 5.3 | KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.6, 2.10.2 | GxP-21-CFR-Part-11: 11.10-d, 11.10-g | AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03 | NIST-CSF-2.0: ac_3 | CIS-5.0: 5.3, 5.4 | NIST-800-171-Revision-2: 3_1_1, 3_1_2, 3_1_3, 3_1_14, 3_1_20, 3_4_7, 3_13_1, 3_13_2, 3_13_5, 3_13_6 | PCI-4.0: 1.2.8.17, 1.3.1.19, 1.3.2.19, 1.4.2.18, 1.5.1.17, A1.1.3.17 | NIST-800-53-Revision-4: ac_4, sc_7_3, sc_7 | NIST-800-53-Revision-5: ac_17_b, ac_17_1, ac_17_9, ac_17_10, cm_9_b, sc_7_7, sc_7_11, sc_7_12, sc_7_16, sc_7_21, sc_7_24_b, sc_7_25, sc_7_26, sc_7_27, sc_7_28, sc_7_a, sc_7_c | CIS-3.0: 5.2, 5.3 | CIS-6.0: 6.3, 6.4 | AWS-Foundational-Technical-Review: NETSEC-001 | NIST-CSF-1.1: ae_1, ac_3, ac_5, ds_7, pt_4 | AWS-Audit-Manager-Control-Tower-Guardrails: 2.0.2 | CCC-v2025.10: CCC.Core.CN01.AR02 | SecNumCloud-3.2: 13.2 | RBI-Cyber-Security-Framework: annex_i_5_1, annex_i_7_3 | FFIEC: d3-pc-am-b-10, d3-pc-im-b-1, d3-pc-im-b-2, d3-pc-im-b-6, d4-c-co-b-2 | PCI-3.2.1: 1.2, 1.2.1, 1.2.1.a, 1.2.1.b, 1.2.1.c, 1.3, 1.3.1, 2.2, 2.2.2 | ProwlerThreatScore-1.0: 2.1.4, 2.1.7 | ISO27001-2022: A.8.20, A.8.21, A.8.22 | FedRamp-Moderate-Revision-4: ac-4, ac-17-1, cm-2, sc-4, sc-7-3, sc-7 | FedRAMP-Low-Revision-4: ac-17, cm-2, sc-7 | CIS-4.0.1: 5.3, 5.4;internet-exposed;;;;5.40.0;https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html | https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/EC2/unrestricted-ssh-access.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_22-128529977749-eu-north-1-sg-0ab21fe0bf7823fec;aws;ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_22;Security group does not allow ingress from 0.0.0.0/0 or ::/0 to TCP port 22 (SSH);Software and Configuration Checks/AWS Security Best Practices/Network Reachability | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | TTPs/Initial Access/Unauthorized Access;PASS;Security group ce-capstone-db-20260831143455943400000009 (sg-0ab21fe0bf7823fec) does not have SSH port 22 open to the Internet.;False;ec2;;high;AwsEc2SecurityGroup;arn:aws:ec2:eu-north-1:128529977749:security-group/sg-0ab21fe0bf7823fec;sg-0ab21fe0bf7823fec;ce-capstone-db-20260831143455943400000009;Environment=prod | Owner=adnan-nooruddin | Project=ce-capstone | Name=ce-capstone-db-sg | ManagedBy=terraform;aws;eu-north-1;"**EC2 security groups** are assessed for **inbound SSH exposure** by locating ingress rules that allow `TCP 22` from the Internet (`0.0.0.0/0` or `::/0`).
+
+Only groups in use are considered; sets already flagged for all-port exposure are not repeated.";Exposed **SSH** invites Internet-scale **brute force** and **credential stuffing**. A successful login grants **remote shell**, enabling data theft (confidentiality), code or config tampering (integrity), and cryptomining or service disruption (availability), plus **lateral movement** within the environment.;;"Apply **least privilege** to SSH:
+- Disallow `0.0.0.0/0` and `::/0`; allow only trusted IPs or VPN ranges
+- Prefer **private access** via bastion hosts or AWS Systems Manager Session Manager
+- Enforce **key-based auth**, disable passwords, rotate keys
+- Add **network segmentation** and monitoring for **defense in depth**";https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_22;"```yaml
+# CloudFormation: restrict SSH from the Internet
+Resources:
+  <example_resource_name>:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Restrict SSH
+      VpcId: <example_resource_id>
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 10.0.0.0/8  # Critical: allows SSH only from a private range, not 0.0.0.0/0
+```";"```hcl
+# Terraform: restrict SSH from the Internet
+resource ""aws_security_group"" ""<example_resource_name>"" {
+  vpc_id = ""<example_resource_id>""
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = ""tcp""
+    cidr_blocks = [""10.0.0.0/8""]  # Critical: do not use 0.0.0.0/0 or ::/0
+  }
+}
+```";aws ec2 revoke-security-group-ingress --group-id <SECURITY_GROUP_ID> --protocol tcp --port 22 --cidr 0.0.0.0/0;"1. In the AWS Console, go to EC2 > Security Groups
+2. Select the affected security group
+3. Open the Inbound rules tab
+4. Delete any rule for port 22 (SSH) with source 0.0.0.0/0 or ::/0
+5. Click Save rules";CISA: your-systems-3, your-data-2 | CIS-7.0: 6.3, 6.4 | SOC2: cc_6_6, cc_7_2 | CIS-1.4: 5.2 | CIS-1.5: 5.2, 5.3 | MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046 | AWS-Foundational-Security-Best-Practices: EC2.13 | ISO27001-2013: A.12.6.C, A.13.1.C | KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.6, 2.10.2 | C5-2025: PI-01.01AC | HIPAA: 164_308_a_1_ii_b, 164_312_e_1 | CIS-2.0: 5.2, 5.3 | KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.6, 2.10.2 | GxP-21-CFR-Part-11: 11.10-d, 11.10-g | AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03 | NIST-CSF-2.0: ac_3 | CIS-5.0: 5.3, 5.4 | NIST-800-171-Revision-2: 3_1_1, 3_1_2, 3_1_3, 3_1_14, 3_1_20, 3_4_7, 3_13_1, 3_13_2, 3_13_5, 3_13_6 | PCI-4.0: 1.2.8.17, 1.3.1.19, 1.3.2.19, 1.4.2.18, 1.5.1.17, A1.1.3.17 | NIST-800-53-Revision-4: ac_4, sc_7_3, sc_7 | NIST-800-53-Revision-5: ac_17_b, ac_17_1, ac_17_9, ac_17_10, cm_9_b, sc_7_7, sc_7_11, sc_7_12, sc_7_16, sc_7_21, sc_7_24_b, sc_7_25, sc_7_26, sc_7_27, sc_7_28, sc_7_a, sc_7_c | CIS-3.0: 5.2, 5.3 | CIS-6.0: 6.3, 6.4 | AWS-Foundational-Technical-Review: NETSEC-001 | NIST-CSF-1.1: ae_1, ac_3, ac_5, ds_7, pt_4 | AWS-Audit-Manager-Control-Tower-Guardrails: 2.0.2 | CCC-v2025.10: CCC.Core.CN01.AR02 | SecNumCloud-3.2: 13.2 | RBI-Cyber-Security-Framework: annex_i_5_1, annex_i_7_3 | FFIEC: d3-pc-am-b-10, d3-pc-im-b-1, d3-pc-im-b-2, d3-pc-im-b-6, d4-c-co-b-2 | PCI-3.2.1: 1.2, 1.2.1, 1.2.1.a, 1.2.1.b, 1.2.1.c, 1.3, 1.3.1, 2.2, 2.2.2 | ProwlerThreatScore-1.0: 2.1.4, 2.1.7 | ISO27001-2022: A.8.20, A.8.21, A.8.22 | FedRamp-Moderate-Revision-4: ac-4, ac-17-1, cm-2, sc-4, sc-7-3, sc-7 | FedRAMP-Low-Revision-4: ac-17, cm-2, sc-7 | CIS-4.0.1: 5.3, 5.4;internet-exposed;;;;5.40.0;https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html | https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/EC2/unrestricted-ssh-access.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_22-128529977749-eu-north-1-sg-0ae6dc99a169add31;aws;ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_22;Security group does not allow ingress from 0.0.0.0/0 or ::/0 to TCP port 22 (SSH);Software and Configuration Checks/AWS Security Best Practices/Network Reachability | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | TTPs/Initial Access/Unauthorized Access;PASS;Security group ce-capstone-alb-20260831143450720000000006 (sg-0ae6dc99a169add31) does not have SSH port 22 open to the Internet.;False;ec2;;high;AwsEc2SecurityGroup;arn:aws:ec2:eu-north-1:128529977749:security-group/sg-0ae6dc99a169add31;sg-0ae6dc99a169add31;ce-capstone-alb-20260831143450720000000006;Owner=adnan-nooruddin | Environment=prod | ManagedBy=terraform | Name=ce-capstone-alb-sg | Project=ce-capstone;aws;eu-north-1;"**EC2 security groups** are assessed for **inbound SSH exposure** by locating ingress rules that allow `TCP 22` from the Internet (`0.0.0.0/0` or `::/0`).
+
+Only groups in use are considered; sets already flagged for all-port exposure are not repeated.";Exposed **SSH** invites Internet-scale **brute force** and **credential stuffing**. A successful login grants **remote shell**, enabling data theft (confidentiality), code or config tampering (integrity), and cryptomining or service disruption (availability), plus **lateral movement** within the environment.;;"Apply **least privilege** to SSH:
+- Disallow `0.0.0.0/0` and `::/0`; allow only trusted IPs or VPN ranges
+- Prefer **private access** via bastion hosts or AWS Systems Manager Session Manager
+- Enforce **key-based auth**, disable passwords, rotate keys
+- Add **network segmentation** and monitoring for **defense in depth**";https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_22;"```yaml
+# CloudFormation: restrict SSH from the Internet
+Resources:
+  <example_resource_name>:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Restrict SSH
+      VpcId: <example_resource_id>
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 10.0.0.0/8  # Critical: allows SSH only from a private range, not 0.0.0.0/0
+```";"```hcl
+# Terraform: restrict SSH from the Internet
+resource ""aws_security_group"" ""<example_resource_name>"" {
+  vpc_id = ""<example_resource_id>""
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = ""tcp""
+    cidr_blocks = [""10.0.0.0/8""]  # Critical: do not use 0.0.0.0/0 or ::/0
+  }
+}
+```";aws ec2 revoke-security-group-ingress --group-id <SECURITY_GROUP_ID> --protocol tcp --port 22 --cidr 0.0.0.0/0;"1. In the AWS Console, go to EC2 > Security Groups
+2. Select the affected security group
+3. Open the Inbound rules tab
+4. Delete any rule for port 22 (SSH) with source 0.0.0.0/0 or ::/0
+5. Click Save rules";CISA: your-systems-3, your-data-2 | CIS-7.0: 6.3, 6.4 | SOC2: cc_6_6, cc_7_2 | CIS-1.4: 5.2 | CIS-1.5: 5.2, 5.3 | MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046 | AWS-Foundational-Security-Best-Practices: EC2.13 | ISO27001-2013: A.12.6.C, A.13.1.C | KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.6, 2.10.2 | C5-2025: PI-01.01AC | HIPAA: 164_308_a_1_ii_b, 164_312_e_1 | CIS-2.0: 5.2, 5.3 | KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.6, 2.10.2 | GxP-21-CFR-Part-11: 11.10-d, 11.10-g | AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03 | NIST-CSF-2.0: ac_3 | CIS-5.0: 5.3, 5.4 | NIST-800-171-Revision-2: 3_1_1, 3_1_2, 3_1_3, 3_1_14, 3_1_20, 3_4_7, 3_13_1, 3_13_2, 3_13_5, 3_13_6 | PCI-4.0: 1.2.8.17, 1.3.1.19, 1.3.2.19, 1.4.2.18, 1.5.1.17, A1.1.3.17 | NIST-800-53-Revision-4: ac_4, sc_7_3, sc_7 | NIST-800-53-Revision-5: ac_17_b, ac_17_1, ac_17_9, ac_17_10, cm_9_b, sc_7_7, sc_7_11, sc_7_12, sc_7_16, sc_7_21, sc_7_24_b, sc_7_25, sc_7_26, sc_7_27, sc_7_28, sc_7_a, sc_7_c | CIS-3.0: 5.2, 5.3 | CIS-6.0: 6.3, 6.4 | AWS-Foundational-Technical-Review: NETSEC-001 | NIST-CSF-1.1: ae_1, ac_3, ac_5, ds_7, pt_4 | AWS-Audit-Manager-Control-Tower-Guardrails: 2.0.2 | CCC-v2025.10: CCC.Core.CN01.AR02 | SecNumCloud-3.2: 13.2 | RBI-Cyber-Security-Framework: annex_i_5_1, annex_i_7_3 | FFIEC: d3-pc-am-b-10, d3-pc-im-b-1, d3-pc-im-b-2, d3-pc-im-b-6, d4-c-co-b-2 | PCI-3.2.1: 1.2, 1.2.1, 1.2.1.a, 1.2.1.b, 1.2.1.c, 1.3, 1.3.1, 2.2, 2.2.2 | ProwlerThreatScore-1.0: 2.1.4, 2.1.7 | ISO27001-2022: A.8.20, A.8.21, A.8.22 | FedRamp-Moderate-Revision-4: ac-4, ac-17-1, cm-2, sc-4, sc-7-3, sc-7 | FedRAMP-Low-Revision-4: ac-17, cm-2, sc-7 | CIS-4.0.1: 5.3, 5.4;internet-exposed;;;;5.40.0;https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html | https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/EC2/unrestricted-ssh-access.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_22-128529977749-eu-north-1-sg-0f559018c82176a2b;aws;ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_22;Security group does not allow ingress from 0.0.0.0/0 or ::/0 to TCP port 22 (SSH);Software and Configuration Checks/AWS Security Best Practices/Network Reachability | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | TTPs/Initial Access/Unauthorized Access;PASS;Security group ce-capstone-nat-20260831143450716100000005 (sg-0f559018c82176a2b) does not have SSH port 22 open to the Internet.;False;ec2;;high;AwsEc2SecurityGroup;arn:aws:ec2:eu-north-1:128529977749:security-group/sg-0f559018c82176a2b;sg-0f559018c82176a2b;ce-capstone-nat-20260831143450716100000005;ManagedBy=terraform | Name=ce-capstone-nat-sg | Owner=adnan-nooruddin | Project=ce-capstone | Environment=prod;aws;eu-north-1;"**EC2 security groups** are assessed for **inbound SSH exposure** by locating ingress rules that allow `TCP 22` from the Internet (`0.0.0.0/0` or `::/0`).
+
+Only groups in use are considered; sets already flagged for all-port exposure are not repeated.";Exposed **SSH** invites Internet-scale **brute force** and **credential stuffing**. A successful login grants **remote shell**, enabling data theft (confidentiality), code or config tampering (integrity), and cryptomining or service disruption (availability), plus **lateral movement** within the environment.;;"Apply **least privilege** to SSH:
+- Disallow `0.0.0.0/0` and `::/0`; allow only trusted IPs or VPN ranges
+- Prefer **private access** via bastion hosts or AWS Systems Manager Session Manager
+- Enforce **key-based auth**, disable passwords, rotate keys
+- Add **network segmentation** and monitoring for **defense in depth**";https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_22;"```yaml
+# CloudFormation: restrict SSH from the Internet
+Resources:
+  <example_resource_name>:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Restrict SSH
+      VpcId: <example_resource_id>
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 10.0.0.0/8  # Critical: allows SSH only from a private range, not 0.0.0.0/0
+```";"```hcl
+# Terraform: restrict SSH from the Internet
+resource ""aws_security_group"" ""<example_resource_name>"" {
+  vpc_id = ""<example_resource_id>""
+
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = ""tcp""
+    cidr_blocks = [""10.0.0.0/8""]  # Critical: do not use 0.0.0.0/0 or ::/0
+  }
+}
+```";aws ec2 revoke-security-group-ingress --group-id <SECURITY_GROUP_ID> --protocol tcp --port 22 --cidr 0.0.0.0/0;"1. In the AWS Console, go to EC2 > Security Groups
+2. Select the affected security group
+3. Open the Inbound rules tab
+4. Delete any rule for port 22 (SSH) with source 0.0.0.0/0 or ::/0
+5. Click Save rules";CISA: your-systems-3, your-data-2 | CIS-7.0: 6.3, 6.4 | SOC2: cc_6_6, cc_7_2 | CIS-1.4: 5.2 | CIS-1.5: 5.2, 5.3 | MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046 | AWS-Foundational-Security-Best-Practices: EC2.13 | ISO27001-2013: A.12.6.C, A.13.1.C | KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.6, 2.10.2 | C5-2025: PI-01.01AC | HIPAA: 164_308_a_1_ii_b, 164_312_e_1 | CIS-2.0: 5.2, 5.3 | KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.6, 2.10.2 | GxP-21-CFR-Part-11: 11.10-d, 11.10-g | AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03 | NIST-CSF-2.0: ac_3 | CIS-5.0: 5.3, 5.4 | NIST-800-171-Revision-2: 3_1_1, 3_1_2, 3_1_3, 3_1_14, 3_1_20, 3_4_7, 3_13_1, 3_13_2, 3_13_5, 3_13_6 | PCI-4.0: 1.2.8.17, 1.3.1.19, 1.3.2.19, 1.4.2.18, 1.5.1.17, A1.1.3.17 | NIST-800-53-Revision-4: ac_4, sc_7_3, sc_7 | NIST-800-53-Revision-5: ac_17_b, ac_17_1, ac_17_9, ac_17_10, cm_9_b, sc_7_7, sc_7_11, sc_7_12, sc_7_16, sc_7_21, sc_7_24_b, sc_7_25, sc_7_26, sc_7_27, sc_7_28, sc_7_a, sc_7_c | CIS-3.0: 5.2, 5.3 | CIS-6.0: 6.3, 6.4 | AWS-Foundational-Technical-Review: NETSEC-001 | NIST-CSF-1.1: ae_1, ac_3, ac_5, ds_7, pt_4 | AWS-Audit-Manager-Control-Tower-Guardrails: 2.0.2 | CCC-v2025.10: CCC.Core.CN01.AR02 | SecNumCloud-3.2: 13.2 | RBI-Cyber-Security-Framework: annex_i_5_1, annex_i_7_3 | FFIEC: d3-pc-am-b-10, d3-pc-im-b-1, d3-pc-im-b-2, d3-pc-im-b-6, d4-c-co-b-2 | PCI-3.2.1: 1.2, 1.2.1, 1.2.1.a, 1.2.1.b, 1.2.1.c, 1.3, 1.3.1, 2.2, 2.2.2 | ProwlerThreatScore-1.0: 2.1.4, 2.1.7 | ISO27001-2022: A.8.20, A.8.21, A.8.22 | FedRamp-Moderate-Revision-4: ac-4, ac-17-1, cm-2, sc-4, sc-7-3, sc-7 | FedRAMP-Low-Revision-4: ac-17, cm-2, sc-7 | CIS-4.0.1: 5.3, 5.4;internet-exposed;;;;5.40.0;https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html | https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/EC2/unrestricted-ssh-access.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_3389-128529977749-eu-north-1-sg-004d1060824dafc6d;aws;ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_3389;Security group does not allow ingress from the Internet to TCP port 3389 (RDP);Software and Configuration Checks/AWS Security Best Practices/Network Reachability | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | TTPs/Initial Access;PASS;Security group ce-capstone-app-20260831143453433000000008 (sg-004d1060824dafc6d) does not have Microsoft RDP port 3389 open to the Internet.;False;ec2;;high;AwsEc2SecurityGroup;arn:aws:ec2:eu-north-1:128529977749:security-group/sg-004d1060824dafc6d;sg-004d1060824dafc6d;ce-capstone-app-20260831143453433000000008;Name=ce-capstone-app-sg | Owner=adnan-nooruddin | Project=ce-capstone | Environment=prod | ManagedBy=terraform;aws;eu-north-1;**EC2 security groups** restrict **inbound RDP** on `TCP 3389` to trusted sources, avoiding Internet-wide (`0.0.0.0/0`, `::/0`) exposure.;"**Internet-exposed RDP** enables brute force and credential stuffing and increases the chance of **remote code execution** via RDP flaws.
+
+Adversaries can gain interactive access, exfiltrate data (**confidentiality**), tamper with systems (**integrity**), and trigger ransomware or service disruption (**availability**).";;"Apply **least privilege**: disallow `0.0.0.0/0` and `::/0` to `3389`; permit only specific IPs or private networks.
+
+Prefer **Session Manager**, VPN, or a hardened bastion with MFA and just-in-time access. Use private subnets and add **defense in depth** with network controls and monitoring.";https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_3389;"```yaml
+# CloudFormation: restrict RDP (3389) from the Internet
+Resources:
+  <example_resource_name>:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Restrict RDP
+      VpcId: vpc-<example_resource_id>
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3389
+          ToPort: 3389
+          CidrIp: 10.0.0.0/8  # FIX: not 0.0.0.0/0; limits RDP to internal range, closing Internet access
+```";"```hcl
+# Restrict RDP (3389) from the Internet
+resource ""aws_security_group"" ""<example_resource_name>"" {
+  vpc_id = ""<example_resource_id>""
+
+  ingress {
+    from_port   = 3389
+    to_port     = 3389
+    protocol    = ""tcp""
+    cidr_blocks = [""10.0.0.0/8""] # FIX: not 0.0.0.0/0; restricts RDP to internal range
+  }
+}
+```";aws ec2 revoke-security-group-ingress --group-id <SECURITY_GROUP_ID> --protocol tcp --port 3389 --cidr 0.0.0.0/0;"1. In AWS Console, go to EC2 > Security Groups
+2. Select the security group attached to the instance
+3. In the Inbound rules tab, click Edit inbound rules
+4. Find any rule with Type RDP (TCP 3389) and Source 0.0.0.0/0 or ::/0
+5. Delete the rule or change Source to a specific trusted CIDR (e.g., your office IP)
+6. Click Save rules";CIS-7.0: 6.3, 6.4 | SOC2: cc_6_6 | CIS-1.4: 5.2 | CIS-1.5: 5.2, 5.3 | MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046 | AWS-Foundational-Security-Best-Practices: EC2.14 | ISO27001-2013: A.12.6.B, A.13.1.B | KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.6, 2.10.2 | C5-2025: PI-01.01AC | CIS-2.0: 5.2, 5.3 | KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.6, 2.10.2 | AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03 | NIST-CSF-2.0: ac_3, ac_5 | CIS-5.0: 5.3, 5.4 | CIS-3.0: 5.2, 5.3 | CIS-6.0: 6.3, 6.4 | AWS-Foundational-Technical-Review: NETSEC-001 | AWS-Audit-Manager-Control-Tower-Guardrails: 2.0.1 | SecNumCloud-3.2: 13.2 | RBI-Cyber-Security-Framework: annex_i_1_3 | ProwlerThreatScore-1.0: 2.1.4, 2.1.7 | ISO27001-2022: A.8.20, A.8.21, A.8.22 | CIS-4.0.1: 5.3, 5.4;internet-exposed;;;;5.40.0;https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html | https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/EC2/unrestricted-rdp-access.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_3389-128529977749-eu-north-1-sg-0ab21fe0bf7823fec;aws;ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_3389;Security group does not allow ingress from the Internet to TCP port 3389 (RDP);Software and Configuration Checks/AWS Security Best Practices/Network Reachability | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | TTPs/Initial Access;PASS;Security group ce-capstone-db-20260831143455943400000009 (sg-0ab21fe0bf7823fec) does not have Microsoft RDP port 3389 open to the Internet.;False;ec2;;high;AwsEc2SecurityGroup;arn:aws:ec2:eu-north-1:128529977749:security-group/sg-0ab21fe0bf7823fec;sg-0ab21fe0bf7823fec;ce-capstone-db-20260831143455943400000009;Environment=prod | Owner=adnan-nooruddin | Project=ce-capstone | Name=ce-capstone-db-sg | ManagedBy=terraform;aws;eu-north-1;**EC2 security groups** restrict **inbound RDP** on `TCP 3389` to trusted sources, avoiding Internet-wide (`0.0.0.0/0`, `::/0`) exposure.;"**Internet-exposed RDP** enables brute force and credential stuffing and increases the chance of **remote code execution** via RDP flaws.
+
+Adversaries can gain interactive access, exfiltrate data (**confidentiality**), tamper with systems (**integrity**), and trigger ransomware or service disruption (**availability**).";;"Apply **least privilege**: disallow `0.0.0.0/0` and `::/0` to `3389`; permit only specific IPs or private networks.
+
+Prefer **Session Manager**, VPN, or a hardened bastion with MFA and just-in-time access. Use private subnets and add **defense in depth** with network controls and monitoring.";https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_3389;"```yaml
+# CloudFormation: restrict RDP (3389) from the Internet
+Resources:
+  <example_resource_name>:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Restrict RDP
+      VpcId: vpc-<example_resource_id>
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3389
+          ToPort: 3389
+          CidrIp: 10.0.0.0/8  # FIX: not 0.0.0.0/0; limits RDP to internal range, closing Internet access
+```";"```hcl
+# Restrict RDP (3389) from the Internet
+resource ""aws_security_group"" ""<example_resource_name>"" {
+  vpc_id = ""<example_resource_id>""
+
+  ingress {
+    from_port   = 3389
+    to_port     = 3389
+    protocol    = ""tcp""
+    cidr_blocks = [""10.0.0.0/8""] # FIX: not 0.0.0.0/0; restricts RDP to internal range
+  }
+}
+```";aws ec2 revoke-security-group-ingress --group-id <SECURITY_GROUP_ID> --protocol tcp --port 3389 --cidr 0.0.0.0/0;"1. In AWS Console, go to EC2 > Security Groups
+2. Select the security group attached to the instance
+3. In the Inbound rules tab, click Edit inbound rules
+4. Find any rule with Type RDP (TCP 3389) and Source 0.0.0.0/0 or ::/0
+5. Delete the rule or change Source to a specific trusted CIDR (e.g., your office IP)
+6. Click Save rules";CIS-7.0: 6.3, 6.4 | SOC2: cc_6_6 | CIS-1.4: 5.2 | CIS-1.5: 5.2, 5.3 | MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046 | AWS-Foundational-Security-Best-Practices: EC2.14 | ISO27001-2013: A.12.6.B, A.13.1.B | KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.6, 2.10.2 | C5-2025: PI-01.01AC | CIS-2.0: 5.2, 5.3 | KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.6, 2.10.2 | AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03 | NIST-CSF-2.0: ac_3, ac_5 | CIS-5.0: 5.3, 5.4 | CIS-3.0: 5.2, 5.3 | CIS-6.0: 6.3, 6.4 | AWS-Foundational-Technical-Review: NETSEC-001 | AWS-Audit-Manager-Control-Tower-Guardrails: 2.0.1 | SecNumCloud-3.2: 13.2 | RBI-Cyber-Security-Framework: annex_i_1_3 | ProwlerThreatScore-1.0: 2.1.4, 2.1.7 | ISO27001-2022: A.8.20, A.8.21, A.8.22 | CIS-4.0.1: 5.3, 5.4;internet-exposed;;;;5.40.0;https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html | https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/EC2/unrestricted-rdp-access.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_3389-128529977749-eu-north-1-sg-0ae6dc99a169add31;aws;ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_3389;Security group does not allow ingress from the Internet to TCP port 3389 (RDP);Software and Configuration Checks/AWS Security Best Practices/Network Reachability | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | TTPs/Initial Access;PASS;Security group ce-capstone-alb-20260831143450720000000006 (sg-0ae6dc99a169add31) does not have Microsoft RDP port 3389 open to the Internet.;False;ec2;;high;AwsEc2SecurityGroup;arn:aws:ec2:eu-north-1:128529977749:security-group/sg-0ae6dc99a169add31;sg-0ae6dc99a169add31;ce-capstone-alb-20260831143450720000000006;Owner=adnan-nooruddin | Environment=prod | ManagedBy=terraform | Name=ce-capstone-alb-sg | Project=ce-capstone;aws;eu-north-1;**EC2 security groups** restrict **inbound RDP** on `TCP 3389` to trusted sources, avoiding Internet-wide (`0.0.0.0/0`, `::/0`) exposure.;"**Internet-exposed RDP** enables brute force and credential stuffing and increases the chance of **remote code execution** via RDP flaws.
+
+Adversaries can gain interactive access, exfiltrate data (**confidentiality**), tamper with systems (**integrity**), and trigger ransomware or service disruption (**availability**).";;"Apply **least privilege**: disallow `0.0.0.0/0` and `::/0` to `3389`; permit only specific IPs or private networks.
+
+Prefer **Session Manager**, VPN, or a hardened bastion with MFA and just-in-time access. Use private subnets and add **defense in depth** with network controls and monitoring.";https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_3389;"```yaml
+# CloudFormation: restrict RDP (3389) from the Internet
+Resources:
+  <example_resource_name>:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Restrict RDP
+      VpcId: vpc-<example_resource_id>
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3389
+          ToPort: 3389
+          CidrIp: 10.0.0.0/8  # FIX: not 0.0.0.0/0; limits RDP to internal range, closing Internet access
+```";"```hcl
+# Restrict RDP (3389) from the Internet
+resource ""aws_security_group"" ""<example_resource_name>"" {
+  vpc_id = ""<example_resource_id>""
+
+  ingress {
+    from_port   = 3389
+    to_port     = 3389
+    protocol    = ""tcp""
+    cidr_blocks = [""10.0.0.0/8""] # FIX: not 0.0.0.0/0; restricts RDP to internal range
+  }
+}
+```";aws ec2 revoke-security-group-ingress --group-id <SECURITY_GROUP_ID> --protocol tcp --port 3389 --cidr 0.0.0.0/0;"1. In AWS Console, go to EC2 > Security Groups
+2. Select the security group attached to the instance
+3. In the Inbound rules tab, click Edit inbound rules
+4. Find any rule with Type RDP (TCP 3389) and Source 0.0.0.0/0 or ::/0
+5. Delete the rule or change Source to a specific trusted CIDR (e.g., your office IP)
+6. Click Save rules";CIS-7.0: 6.3, 6.4 | SOC2: cc_6_6 | CIS-1.4: 5.2 | CIS-1.5: 5.2, 5.3 | MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046 | AWS-Foundational-Security-Best-Practices: EC2.14 | ISO27001-2013: A.12.6.B, A.13.1.B | KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.6, 2.10.2 | C5-2025: PI-01.01AC | CIS-2.0: 5.2, 5.3 | KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.6, 2.10.2 | AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03 | NIST-CSF-2.0: ac_3, ac_5 | CIS-5.0: 5.3, 5.4 | CIS-3.0: 5.2, 5.3 | CIS-6.0: 6.3, 6.4 | AWS-Foundational-Technical-Review: NETSEC-001 | AWS-Audit-Manager-Control-Tower-Guardrails: 2.0.1 | SecNumCloud-3.2: 13.2 | RBI-Cyber-Security-Framework: annex_i_1_3 | ProwlerThreatScore-1.0: 2.1.4, 2.1.7 | ISO27001-2022: A.8.20, A.8.21, A.8.22 | CIS-4.0.1: 5.3, 5.4;internet-exposed;;;;5.40.0;https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html | https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/EC2/unrestricted-rdp-access.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_3389-128529977749-eu-north-1-sg-0f559018c82176a2b;aws;ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_3389;Security group does not allow ingress from the Internet to TCP port 3389 (RDP);Software and Configuration Checks/AWS Security Best Practices/Network Reachability | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | TTPs/Initial Access;PASS;Security group ce-capstone-nat-20260831143450716100000005 (sg-0f559018c82176a2b) does not have Microsoft RDP port 3389 open to the Internet.;False;ec2;;high;AwsEc2SecurityGroup;arn:aws:ec2:eu-north-1:128529977749:security-group/sg-0f559018c82176a2b;sg-0f559018c82176a2b;ce-capstone-nat-20260831143450716100000005;ManagedBy=terraform | Name=ce-capstone-nat-sg | Owner=adnan-nooruddin | Project=ce-capstone | Environment=prod;aws;eu-north-1;**EC2 security groups** restrict **inbound RDP** on `TCP 3389` to trusted sources, avoiding Internet-wide (`0.0.0.0/0`, `::/0`) exposure.;"**Internet-exposed RDP** enables brute force and credential stuffing and increases the chance of **remote code execution** via RDP flaws.
+
+Adversaries can gain interactive access, exfiltrate data (**confidentiality**), tamper with systems (**integrity**), and trigger ransomware or service disruption (**availability**).";;"Apply **least privilege**: disallow `0.0.0.0/0` and `::/0` to `3389`; permit only specific IPs or private networks.
+
+Prefer **Session Manager**, VPN, or a hardened bastion with MFA and just-in-time access. Use private subnets and add **defense in depth** with network controls and monitoring.";https://hub.prowler.com/check/ec2_securitygroup_allow_ingress_from_internet_to_tcp_port_3389;"```yaml
+# CloudFormation: restrict RDP (3389) from the Internet
+Resources:
+  <example_resource_name>:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Restrict RDP
+      VpcId: vpc-<example_resource_id>
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 3389
+          ToPort: 3389
+          CidrIp: 10.0.0.0/8  # FIX: not 0.0.0.0/0; limits RDP to internal range, closing Internet access
+```";"```hcl
+# Restrict RDP (3389) from the Internet
+resource ""aws_security_group"" ""<example_resource_name>"" {
+  vpc_id = ""<example_resource_id>""
+
+  ingress {
+    from_port   = 3389
+    to_port     = 3389
+    protocol    = ""tcp""
+    cidr_blocks = [""10.0.0.0/8""] # FIX: not 0.0.0.0/0; restricts RDP to internal range
+  }
+}
+```";aws ec2 revoke-security-group-ingress --group-id <SECURITY_GROUP_ID> --protocol tcp --port 3389 --cidr 0.0.0.0/0;"1. In AWS Console, go to EC2 > Security Groups
+2. Select the security group attached to the instance
+3. In the Inbound rules tab, click Edit inbound rules
+4. Find any rule with Type RDP (TCP 3389) and Source 0.0.0.0/0 or ::/0
+5. Delete the rule or change Source to a specific trusted CIDR (e.g., your office IP)
+6. Click Save rules";CIS-7.0: 6.3, 6.4 | SOC2: cc_6_6 | CIS-1.4: 5.2 | CIS-1.5: 5.2, 5.3 | MITRE-ATTACK: T1199, T1048, T1499, T1498, T1046 | AWS-Foundational-Security-Best-Practices: EC2.14 | ISO27001-2013: A.12.6.B, A.13.1.B | KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.6.6, 2.10.2 | C5-2025: PI-01.01AC | CIS-2.0: 5.2, 5.3 | KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.6.6, 2.10.2 | AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP03 | NIST-CSF-2.0: ac_3, ac_5 | CIS-5.0: 5.3, 5.4 | CIS-3.0: 5.2, 5.3 | CIS-6.0: 6.3, 6.4 | AWS-Foundational-Technical-Review: NETSEC-001 | AWS-Audit-Manager-Control-Tower-Guardrails: 2.0.1 | SecNumCloud-3.2: 13.2 | RBI-Cyber-Security-Framework: annex_i_1_3 | ProwlerThreatScore-1.0: 2.1.4, 2.1.7 | ISO27001-2022: A.8.20, A.8.21, A.8.22 | CIS-4.0.1: 5.3, 5.4;internet-exposed;;;;5.40.0;https://docs.aws.amazon.com/vpc/latest/userguide/VPC_SecurityGroups.html | https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/EC2/unrestricted-rdp-access.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-rds_instance_minor_version_upgrade_enabled-128529977749-eu-north-1-ce-capstone-pg;aws;rds_instance_minor_version_upgrade_enabled;RDS instance has minor version upgrade enabled;Software and Configuration Checks/Patch Management;PASS;RDS Instance ce-capstone-pg has minor version upgrade enabled.;False;rds;;medium;AwsRdsDbInstance;arn:aws:rds:eu-north-1:128529977749:db:ce-capstone-pg;ce-capstone-pg;;Project=ce-capstone | Environment=prod | Owner=adnan-nooruddin | ManagedBy=terraform;aws;eu-north-1;**RDS DB instances** are evaluated for the `auto_minor_version_upgrade` setting that enables **automatic minor engine updates** during maintenance windows.;Without automatic minor upgrades, databases miss **security patches**, leaving known vulnerabilities exploitable and risking **unauthorized data access**. Unapplied fixes can cause **data corruption** and outages, harming **integrity** and **availability**.;;"Enable `auto_minor_version_upgrade` on RDS instances so minor releases are applied promptly. Use maintenance windows and stage testing to limit impact. Follow **defense in depth** and **least privilege**; keep reliable backups and Multi-AZ to preserve continuity if upgrades require rollback.";https://hub.prowler.com/check/rds_instance_minor_version_upgrade_enabled;"```yaml
+# CloudFormation: Enable auto minor version upgrades on an RDS instance
+Resources:
+  <example_resource_name>:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: <example_resource_id>
+      DBInstanceClass: db.t3.micro
+      Engine: mysql
+      MasterUsername: <username>
+      MasterUserPassword: <password>
+      AllocatedStorage: '20'
+      AutoMinorVersionUpgrade: true  # Critical: ensures RDS applies minor engine updates automatically
+```";"```hcl
+# Enable auto minor version upgrades on an RDS instance
+resource ""aws_db_instance"" ""<example_resource_name>"" {
+  allocated_storage          = 20
+  engine                     = ""mysql""
+  instance_class             = ""db.t3.micro""
+  username                   = ""<username>""
+  password                   = ""<password>""
+  auto_minor_version_upgrade = true  # Critical: turns on automatic minor engine upgrades
+}
+```";aws rds modify-db-instance --db-instance-identifier <db_instance_id> --auto-minor-version-upgrade --apply-immediately;"1. In the AWS Console, go to RDS > Databases
+2. Select the DB instance and click Modify
+3. Find ""Auto minor version upgrade"" and set it to Enable
+4. Click Continue, check Apply immediately, then click Modify DB instance";CISA: your-systems-2, booting-up-thing-to-do-first-3 | CIS-7.0: 3.2.2 | CIS-1.5: 2.3.2 | MITRE-ATTACK: T1190 | AWS-Foundational-Security-Best-Practices: RDS.13 | KISA-ISMS-P-2023: 2.10.2, 2.10.8 | CIS-2.0: 2.3.2 | KISA-ISMS-P-2023-korean: 2.10.2, 2.10.8 | AWS-Well-Architected-Framework-Security-Pillar: SEC06-BP01 | CIS-5.0: 2.2.2 | ASD-Essential-Eight-Nov 2023: E8-1.6 | PCI-4.0: 6.3.3.10 | CIS-3.0: 2.3.2 | CIS-6.0: 3.2.2 | RBI-Cyber-Security-Framework: annex_i_6 | FFIEC: d3-cc-pm-b-1, d3-cc-pm-b-3 | CIS-4.0.1: 2.2.2;vulnerabilities;;;;5.40.0;https://aws.amazon.com/blogs/database/best-practices-for-upgrading-amazon-rds-to-major-and-minor-versions-of-postgresql/ | https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/RDS/rds-auto-minor-version-upgrade.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-rds_instance_no_public_access-128529977749-eu-north-1-ce-capstone-pg;aws;rds_instance_no_public_access;RDS instance is not publicly exposed to the Internet;Software and Configuration Checks/AWS Security Best Practices/Network Reachability | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | TTPs/Initial Access;PASS;RDS Instance ce-capstone-pg is not publicly accessible.;False;rds;;critical;AwsRdsDbInstance;arn:aws:rds:eu-north-1:128529977749:db:ce-capstone-pg;ce-capstone-pg;;Project=ce-capstone | Environment=prod | Owner=adnan-nooruddin | ManagedBy=terraform;aws;eu-north-1;**RDS DB instances** are assessed for **internet exposure** using the `PubliclyAccessible` setting, security group ingress to the DB port from any address, and whether subnets are **public**. Instances that combine an internet-facing endpoint, open ingress, and public subnets are identified.;"An internet-reachable database invites:
+- Brute-force and vulnerability probing, risking **availability** and **integrity**
+- Unauthorized queries and dumps leading to **confidentiality** loss
+
+Compromise can enable **lateral movement** and persistence within the VPC.";;"Keep databases private by applying **least privilege** at the network layer:
+- Set `PubliclyAccessible` to `false`
+- Place instances in private subnets
+- Deny `0.0.0.0/0` and `::/0` on the DB port
+- Expose access via private endpoints, VPN, or an application tier/DB proxy
+
+Adopt **defense in depth** with monitoring and strong auth.";https://hub.prowler.com/check/rds_instance_no_public_access;"```yaml
+# CloudFormation: make the RDS instance private
+Resources:
+  <example_resource_name>:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceIdentifier: <example_resource_id>
+      PubliclyAccessible: false  # CRITICAL: disables public access so the instance is not Internet-facing
+```";"```hcl
+# Ensure the RDS instance is not publicly accessible
+resource ""aws_db_instance"" ""<example_resource_name>"" {
+  publicly_accessible = false  # CRITICAL: disables public access (no public endpoint)
+}
+```";aws rds modify-db-instance --db-instance-identifier <db_instance_id> --no-publicly-accessible --apply-immediately;"1. In the AWS console, go to RDS > Databases and select your DB instance
+2. Click Modify
+3. In Connectivity (Connectivity & security), set Public access to No (Not publicly accessible)
+4. Choose Continue, select Apply immediately (or during the next window), then click Modify DB instance";CISA: your-systems-3, your-data-2 | CIS-7.0: 3.2.3 | SOC2: cc_6_2 | CIS-1.5: 2.3.3 | MITRE-ATTACK: T1530 | AWS-Foundational-Security-Best-Practices: RDS.2 | ISO27001-2013: A.12.6.I, A.13.1.H | KISA-ISMS-P-2023: 2.6.1, 2.6.4, 2.10.2 | C5-2025: PS-03.02B, IAM-10.01B, COS-02.01B | HIPAA: 164_308_a_3_i, 164_312_a_1 | CIS-2.0: 2.3.3 | KISA-ISMS-P-2023-korean: 2.6.1, 2.6.4, 2.10.2 | GxP-21-CFR-Part-11: 11.10-d, 11.10-g, 11.10-k | AWS-Well-Architected-Framework-Security-Pillar: SEC03-BP07 | NIST-CSF-2.0: ac_3 | CIS-5.0: 2.2.3 | NIST-800-171-Revision-2: 3_1_1, 3_1_2, 3_1_3, 3_1_14, 3_13_1, 3_13_2, 3_13_5 | PCI-4.0: 1.2.8.28, 1.3.1.31, 1.3.2.31, 1.4.2.29, 1.5.1.28, 10.3.2.15, 3.5.1.3.20, A1.1.2.11, A1.1.3.28, A3.4.1.13 | NIST-800-53-Revision-4: ac_4, ac_6, ac_21, sc_7_3, sc_7 | NIST-800-53-Revision-5: ac_2_6, ac_3, ac_3_7, ac_4_21, ac_6, ac_17_b, ac_17_1, ac_17_4_a, ac_17_9, ac_17_10, mp_2, sc_7_2, sc_7_3, sc_7_7, sc_7_9_a, sc_7_11, sc_7_12, sc_7_16, sc_7_20, sc_7_21, sc_7_24_b, sc_7_25, sc_7_26, sc_7_27, sc_7_28, sc_7_a, sc_7_b, sc_7_c, sc_25 | CIS-3.0: 2.3.3 | CIS-6.0: 3.2.3 | NIST-CSF-1.1: ac_3, ac_5, ds_5, ip_8, pt_4 | AWS-Audit-Manager-Control-Tower-Guardrails: 4.0.1, 4.1.1 | SecNumCloud-3.2: 9.7 | RBI-Cyber-Security-Framework: annex_i_1_3 | FFIEC: d3-pc-im-b-1 | PCI-3.2.1: 1.2, 1.2.1, 1.2.1.a, 1.2.1.b, 1.2.1.c, 1.3, 1.3.1, 1.3.2, 1.3.4, 1.3.6, 2.2, 2.2.2, 7.2, 7.2.1 | ProwlerThreatScore-1.0: 2.2.4 | ISO27001-2022: A.8.1 | FedRamp-Moderate-Revision-4: ac-3, ac-4, ac-6, ac-17-1, ac-21-b, cm-2, sc-4, sc-7-3, sc-7 | FedRAMP-Low-Revision-4: ac-3, ac-17, cm-2, sc-7 | CIS-4.0.1: 2.2.3;internet-exposed;;;;5.40.0;https://docs.aws.amazon.com/config/latest/developerguide/rds-instance-public-access-check.html | https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/RDS/rds-publicly-accessible.html | https://docs.aws.amazon.com/securityhub/latest/userguide/rds-controls.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-rds_instance_storage_encrypted-128529977749-eu-north-1-ce-capstone-pg;aws;rds_instance_storage_encrypted;RDS DB instance storage is encrypted at rest;Software and Configuration Checks/AWS Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/NIST 800-53 Controls (USA) | Software and Configuration Checks/Industry and Regulatory Standards/NIST CSF Controls (USA) | Software and Configuration Checks/Industry and Regulatory Standards/PCI-DSS | Software and Configuration Checks/Industry and Regulatory Standards/ISO 27001 Controls | Software and Configuration Checks/Industry and Regulatory Standards/HIPAA Controls (USA) | Software and Configuration Checks/Industry and Regulatory Standards/GDPR Controls (Europe) | Effects/Data Exposure;PASS;RDS Instance ce-capstone-pg is encrypted.;False;rds;;high;AwsRdsDbInstance;arn:aws:rds:eu-north-1:128529977749:db:ce-capstone-pg;ce-capstone-pg;;Project=ce-capstone | Environment=prod | Owner=adnan-nooruddin | ManagedBy=terraform;aws;eu-north-1;**RDS DB instances** are assessed for **KMS-based encryption at rest** (`StorageEncrypted=true`), covering instance storage and derived artifacts such as snapshots, automated backups, and read replicas.;Without **encryption at rest**, database files, snapshots, and automated backups remain in plaintext. An attacker with access to copied snapshots, compromised backups, or underlying storage can read sensitive data, causing loss of **confidentiality** and enabling large-scale exfiltration.;;Enable **encryption at rest** for all RDS instances. Prefer **customer-managed KMS keys** to control rotation and fine-grained access, applying **least privilege** and **defense in depth**. Restrict key usage, monitor key activity, and manage key lifecycle. Migrate unencrypted instances via encrypted snapshot copy and restore.;https://hub.prowler.com/check/rds_instance_storage_encrypted;"```yaml
+# CloudFormation: create an encrypted RDS DB instance
+Resources:
+  <example_resource_name>:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceClass: ""<instance_class>""
+      Engine: ""<engine>""
+      AllocatedStorage: 20
+      MasterUsername: ""<username>""
+      MasterUserPassword: ""<password>""
+      StorageEncrypted: true  # CRITICAL: enables encryption at rest so the instance passes the check
+```";"```hcl
+# Terraform: create an encrypted RDS DB instance
+resource ""aws_db_instance"" ""<example_resource_name>"" {
+  engine            = ""<engine>""
+  instance_class    = ""<instance_class>""
+  username          = ""<username>""
+  password          = ""<password>""
+  allocated_storage = 20
+
+  storage_encrypted = true  # CRITICAL: enables encryption at rest to pass the check
+}
+```";;"1. In the AWS Console, go to RDS > Databases, select the unencrypted DB instance, then choose Actions > Take snapshot.
+2. After the snapshot is available, go to Snapshots, select it, choose Actions > Copy snapshot, enable encryption, and select a KMS key (or aws/rds).
+3. When the encrypted copy is ready, select it and choose Actions > Restore snapshot to create a new (encrypted) DB instance.
+4. Update your application/endpoint to use the new encrypted DB instance.
+5. Decommission the old unencrypted instance after cutover.";CISA: your-systems-3, your-data-1, your-data-2 | CIS-7.0: 3.2.1 | SOC2: pi_1_5 | CIS-1.4: 2.3.1 | CIS-1.5: 2.3.1 | MITRE-ATTACK: T1119, T1530 | GDPR: article_32 | AWS-Foundational-Security-Best-Practices: RDS.3 | ISO27001-2013: A.10.1.A | KISA-ISMS-P-2023: 2.7.1, 2.10.2 | C5-2025: OIS-08.02B, CRY-01.02AC, CRY-05.01AC, PSS-12.02B | HIPAA: 164_308_a_1_ii_b, 164_308_a_4_ii_a, 164_312_a_2_iv, 164_312_e_2_ii | CIS-2.0: 2.3.1 | KISA-ISMS-P-2023-korean: 2.7.1, 2.10.2 | GxP-21-CFR-Part-11: 11.10-c, 11.30 | AWS-Well-Architected-Framework-Security-Pillar: SEC08-BP02 | GxP-EU-Annex-11: 7.1-data-storage-damage-protection | NIST-CSF-2.0: ds_1 | CIS-5.0: 2.2.1 | NIST-800-171-Revision-2: 3_13_11, 3_13_16 | PCI-4.0: 3.5.1.27, 8.3.2.44 | NIST-800-53-Revision-4: sc_28 | NIST-800-53-Revision-5: au_9_3, cp_9_d, cp_9_8, sc_8_3, sc_8_4, sc_13_a, sc_28_1, si_19_4 | CIS-3.0: 2.3.1 | ENS-RD2022: mp.si.2.aws.rds.1 | CIS-6.0: 3.2.1 | NIST-CSF-1.1: ds_1 | AWS-Audit-Manager-Control-Tower-Guardrails: 5.0.1 | CCC-v2025.10: CCC.Core.CN02.AR01 | SecNumCloud-3.2: 10.1 | RBI-Cyber-Security-Framework: annex_i_1_3 | FFIEC: d3-pc-am-b-12 | PCI-3.2.1: 3.4, 3.4.1, 3.4.1.a, 3.4.1.c, 3.4.a, 3.4.b, 8.2, 8.2.1, 8.2.1.a | ProwlerThreatScore-1.0: 4.2.2 | ISO27001-2022: A.8.11, A.8.24 | AWS-AI-Security-Framework-1.0: AISF-INFRA-05 | FedRamp-Moderate-Revision-4: sc-28 | CIS-4.0.1: 2.2.1 | FedRAMP-20x-KSI-Low-25.05C: ksi-svc;encryption;;;;5.40.0;https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/RDS/rds-encryption-enabled.html | https://aws.amazon.com/blogs/storage/protecting-amazon-rds-db-instances-encrypted-using-kms-aws-managed-key-with-cross-account-and-cross-region-backups/ | https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Overview.Encryption.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-rds_instance_transport_encrypted-128529977749-eu-north-1-ce-capstone-pg;aws;rds_instance_transport_encrypted;RDS instance or cluster enforces SSL/TLS encryption for client connections;Software and Configuration Checks/AWS Security Best Practices/Network Security;PASS;RDS Instance ce-capstone-pg connections use SSL encryption.;False;rds;;high;AwsRdsDbInstance;arn:aws:rds:eu-north-1:128529977749:db:ce-capstone-pg;ce-capstone-pg;;Project=ce-capstone | Environment=prod | Owner=adnan-nooruddin | ManagedBy=terraform;aws;eu-north-1;**RDS DB instances** and **DB clusters** enforce **SSL/TLS** for client connections via parameter groups. The check looks for `rds.force_ssl=1` (PostgreSQL, SQL Server) or `require_secure_transport` enabled (MySQL-family) and identifies databases where encryption enforcement isn't active.;Without enforced **TLS**, clients can connect or downgrade to plaintext, exposing credentials and queries to interception. Adversaries can perform **MITM**, steal secrets, and tamper traffic, undermining **confidentiality** and **integrity** and enabling reuse of captured database credentials.;;"Enforce transport encryption at the database layer:
+- Enable `rds.force_ssl=1` or `require_secure_transport` in parameter groups
+- Configure clients to require certificate validation and prevent fallback
+- Use current TLS versions and trusted CAs
+- Prefer private network access as **defense in depth**";https://hub.prowler.com/check/rds_instance_transport_encrypted;"```yaml
+# CloudFormation: set required parameter to enforce SSL/TLS
+Resources:
+  ExampleDBParameterGroupPostgres:
+    Type: AWS::RDS::DBParameterGroup
+    Properties:
+      Family: <DB_PARAMETER_FAMILY>
+      Description: Enforce SSL/TLS
+      Parameters:
+        rds.force_ssl: ""1""  # Critical: requires SSL/TLS for PostgreSQL/SQL Server instances
+
+  ExampleDBParameterGroupMySQL:
+    Type: AWS::RDS::DBParameterGroup
+    Properties:
+      Family: <DB_PARAMETER_FAMILY>
+      Description: Enforce SSL/TLS
+      Parameters:
+        require_secure_transport: ""1""  # Critical: requires SSL/TLS for MySQL/MariaDB instances
+
+  ExampleDBClusterParameterGroupAuroraPostgres:
+    Type: AWS::RDS::DBClusterParameterGroup
+    Properties:
+      Family: <DB_CLUSTER_PARAMETER_FAMILY>
+      Description: Enforce SSL/TLS
+      Parameters:
+        rds.force_ssl: ""1""  # Critical: requires SSL/TLS for Aurora PostgreSQL clusters
+
+  ExampleDBClusterParameterGroupAuroraMySQL:
+    Type: AWS::RDS::DBClusterParameterGroup
+    Properties:
+      Family: <DB_CLUSTER_PARAMETER_FAMILY>
+      Description: Enforce SSL/TLS
+      Parameters:
+        require_secure_transport: ON  # Critical: requires SSL/TLS for Aurora MySQL clusters
+```";"```hcl
+# DB instances
+resource ""aws_db_parameter_group"" ""example_pg"" {
+  name   = ""<example_resource_name>""
+  family = ""<DB_PARAMETER_FAMILY>""
+
+  parameter {
+    name  = ""rds.force_ssl""
+    value = ""1""  # Critical: requires SSL/TLS for PostgreSQL/SQL Server instances
+  }
+}
+
+resource ""aws_db_parameter_group"" ""example_mysql"" {
+  name   = ""<example_resource_name>""
+  family = ""<DB_PARAMETER_FAMILY>""
+
+  parameter {
+    name  = ""require_secure_transport""
+    value = ""1""  # Critical: requires SSL/TLS for MySQL/MariaDB instances
+  }
+}
+
+# Aurora clusters
+resource ""aws_rds_cluster_parameter_group"" ""example_aurora_pg"" {
+  name   = ""<example_resource_name>""
+  family = ""<DB_CLUSTER_PARAMETER_FAMILY>""
+
+  parameter {
+    name  = ""rds.force_ssl""
+    value = ""1""  # Critical: requires SSL/TLS for Aurora PostgreSQL clusters
+  }
+}
+
+resource ""aws_rds_cluster_parameter_group"" ""example_aurora_mysql"" {
+  name   = ""<example_resource_name>""
+  family = ""<DB_CLUSTER_PARAMETER_FAMILY>""
+
+  parameter {
+    name  = ""require_secure_transport""
+    value = ""ON""  # Critical: requires SSL/TLS for Aurora MySQL clusters
+  }
+}
+```";aws rds modify-db-parameter-group --region <REGION_NAME> --db-parameter-group-name <PARAMETER_GROUP_NAME> --parameters ParameterName='rds.force_ssl',ParameterValue='1',ApplyMethod='pending-reboot';"1. In the AWS Console, go to RDS > Parameter groups
+2. For DB instances:
+   - Edit the DB parameter group attached to the instance (or create one and attach it)
+   - Set rds.force_ssl = 1 for PostgreSQL/SQL Server, or require_secure_transport = 1 for MySQL/MariaDB
+   - Save. If the parameter is static, reboot the instance
+3. For Aurora clusters:
+   - Edit the DB cluster parameter group attached to the cluster (or create one and attach it)
+   - Set rds.force_ssl = 1 for Aurora PostgreSQL, or require_secure_transport = ON for Aurora MySQL
+   - Save. Reboot instances if changes are pending-reboot
+4. Verify the parameter group is associated to the target instance/cluster and status shows the new value applied";CIS-1.4: 2.3.1 | CIS-1.5: 2.3.1 | MITRE-ATTACK: T1040, T1530 | AWS-Foundational-Security-Best-Practices: RDS.38, RDS.39 | KISA-ISMS-P-2023: 2.7.1, 2.10.2 | C5-2025: OPS-31.01B, IAM-07.03B, CRY-01.02AC, CRY-05.01AC, PSS-12.02B | CIS-2.0: 2.3.1 | KISA-ISMS-P-2023-korean: 2.7.1, 2.10.2 | NIST-CSF-2.0: ds_2 | AWS-Audit-Manager-Control-Tower-Guardrails: 5.0.1 | CCC-v2025.10: CCC.Core.CN01.AR01 | SecNumCloud-3.2: 10.2 | ISO27001-2022: A.8.24;encryption;;;;5.40.0;https://aws.amazon.com/premiumsupport/knowledge-center/rds-connect-ssl-connection/ | https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/PostgreSQL.Concepts.General.SSL.html | https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/RDS/transport-encryption.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-s3_account_level_public_access_blocks-128529977749-eu-north-1-128529977749;aws;s3_account_level_public_access_blocks;S3 account-level Block Public Access ignores public ACLs and restricts public buckets;Software and Configuration Checks/AWS Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | Effects/Data Exposure;PASS;Block Public Access is configured for the account 128529977749.;False;s3;;high;AwsS3AccountPublicAccessBlock;arn:aws:s3:eu-north-1:128529977749:account;128529977749;;;aws;eu-north-1;**Amazon S3** account-level **Block Public Access** is assessed for `ignore_public_acls` and `restrict_public_buckets` to confirm centralized blocking of ACL-based public access and limiting buckets with public policies to in-account principals.;"Absent these settings, **public ACLs** and broad bucket policies may grant internet or cross-account access. This risks:
+- Confidentiality: bulk data exfiltration
+- Integrity: object overwrite/tampering
+- Availability: malicious deletions or malware hosting, triggering takedowns";;Turn on account-level **Block Public Access** (prefer enabling all four: `block_public_acls`, `ignore_public_acls`, `block_public_policy`, `restrict_public_buckets`) to enforce least privilege. For legitimate access, use private buckets with **CloudFront**, VPC endpoints, or presigned URLs. Regularly review policies with IAM Access Analyzer.;https://hub.prowler.com/check/s3_account_level_public_access_blocks;"```yaml
+# CloudFormation: Enable required S3 Account-level Block Public Access settings
+Resources:
+  <example_resource_name>:
+    Type: AWS::S3::AccountPublicAccessBlock
+    Properties:
+      AccountId: !Ref AWS::AccountId
+      IgnorePublicAcls: true         # Critical: Ignores any public ACLs at the account level
+      RestrictPublicBuckets: true    # Critical: Restricts buckets with public policies to only same-account principals
+```";"```hcl
+# Terraform: Enable required S3 Account-level Block Public Access settings
+resource ""aws_s3_account_public_access_block"" ""<example_resource_name>"" {
+  ignore_public_acls     = true  # Critical: Ignores any public ACLs account-wide
+  restrict_public_buckets = true # Critical: Restricts buckets with public policies to same-account principals
+}
+```";aws s3control put-public-access-block --account-id <account_id> --public-access-block-configuration IgnorePublicAcls=true,RestrictPublicBuckets=true;"1. In the AWS Console, go to S3
+2. Click Block public access (account settings)
+3. Click Edit
+4. Turn on: Ignore public ACLs and Restrict public buckets
+5. Click Save changes";CISA: your-systems-3, your-data-2 | CIS-7.0: 3.1.4 | CIS-1.4: 2.1.5 | CIS-1.5: 2.1.5 | MITRE-ATTACK: T1530 | AWS-Foundational-Security-Best-Practices: S3.1 | KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.10.2 | C5-2025: PS-03.02B, IAM-10.01B, COS-02.01B | HIPAA: 164_308_a_1_ii_b, 164_308_a_3_i | CIS-2.0: 2.1.4 | KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.10.2 | GxP-21-CFR-Part-11: 11.10-d, 11.10-g | AWS-Well-Architected-Framework-Security-Pillar: SEC03-BP07 | NIST-CSF-2.0: ac_3 | CIS-5.0: 2.1.4 | NIST-800-171-Revision-2: 3_1_1, 3_1_2, 3_1_3, 3_1_14, 3_1_20, 3_3_8, 3_4_6, 3_13_2, 3_13_5 | PCI-4.0: 1.2.8.31, 1.2.8.32, 1.3.1.35, 1.3.1.36, 1.3.2.35, 1.3.2.36, 1.4.2.33, 1.4.2.34, 1.5.1.31, 1.5.1.32, 10.3.2.19, 10.3.2.20, 3.5.1.3.24, 3.5.1.3.25, A1.1.2.15, A1.1.2.16, A1.1.3.31, A1.1.3.32, A3.4.1.17, A3.4.1.18 | NIST-800-53-Revision-4: sc_7_3, sc_7 | NIST-800-53-Revision-5: ac_2_6, ac_3, ac_3_7, ac_4_21, ac_6, ac_17_b, ac_17_1, ac_17_4_a, ac_17_9, ac_17_10, cm_6_a, cm_9_b, mp_2, sc_7_2, sc_7_3, sc_7_7, sc_7_9_a, sc_7_11, sc_7_12, sc_7_16, sc_7_20, sc_7_21, sc_7_24_b, sc_7_25, sc_7_26, sc_7_27, sc_7_28, sc_7_a, sc_7_b, sc_7_c, sc_25 | AWS-Account-Security-Onboarding: S3 Block Public Access | CIS-3.0: 2.1.4 | CIS-6.0: 3.1.4 | NIST-CSF-1.1: ac_3, ac_5, ds_5, ip_8, pt_3 | AWS-Audit-Manager-Control-Tower-Guardrails: 4.1.1 | CCC-v2025.10: CCC.Core.CN05.AR01, CCC.Logging.CN05.AR01, CCC.Logging.CN05.AR02 | SecNumCloud-3.2: 9.7 | RBI-Cyber-Security-Framework: annex_i_1_3 | FFIEC: d3-pc-im-b-1 | PCI-3.2.1: 1.3, 2.2, 2.2.2, 7.2, 7.2.1 | ISO27001-2022: A.8.1 | AWS-AI-Security-Framework-1.0: AISF-DATA-04 | FedRamp-Moderate-Revision-4: ac-3, ac-6, ac-17-1, ac-21-b, cm-2, sc-4, sc-7-3, sc-7 | FedRAMP-Low-Revision-4: ac-3, ac-17, cm-2, sc-7 | CIS-4.0.1: 2.1.4;internet-exposed;;;;5.40.0;https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-s3_bucket_level_public_access_block-128529977749-eu-north-1-ce-capstone-artifacts-20260901081024819300000002;aws;s3_bucket_level_public_access_block;S3 bucket has Block Public Access with IgnorePublicAcls and RestrictPublicBuckets enabled at bucket or account level;Software and Configuration Checks/AWS Security Best Practices/Network Reachability | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | Effects/Data Exposure;PASS;Block Public Access is configured for the S3 Bucket ce-capstone-artifacts-20260901081024819300000002.;False;s3;;high;AwsS3Bucket;arn:aws:s3:::ce-capstone-artifacts-20260901081024819300000002;ce-capstone-artifacts-20260901081024819300000002;;Project=ce-capstone | Environment=prod | Owner=adnan-nooruddin | ManagedBy=terraform;aws;eu-north-1;"**Amazon S3 buckets** are evaluated for **Block Public Access** settings, ensuring `ignore_public_acls` and `restrict_public_buckets` are enabled at the bucket or account scope.
+
+*Account-wide protections, when present, are treated as effective for the bucket.*";"Absent **S3 Block Public Access**, public ACLs or broad policies can grant Internet or cross-account access.
+- Data disclosure (confidentiality)
+- Object overwrite or uploads (integrity)
+- Deletion or outages from misuse (availability)";;Enable **Block Public Access** at account and bucket levels with `block_public_acls`, `ignore_public_acls`, `block_public_policy`, and `restrict_public_buckets` set to `true`. Apply **least privilege** and **defense in depth**. *If public access is required*, narrowly scope policies to fixed principals and conditions.;https://hub.prowler.com/check/s3_bucket_level_public_access_block;"```yaml
+# CloudFormation - enable required S3 Block Public Access settings on a bucket
+Resources:
+  <example_resource_name>:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        IgnorePublicAcls: true        # CRITICAL: Ignore public ACLs on the bucket/objects
+        RestrictPublicBuckets: true   # CRITICAL: Restrict buckets with public policies to same-account/AWS services
+```";"```hcl
+# Enable required S3 Block Public Access settings on a bucket
+resource ""aws_s3_bucket_public_access_block"" ""<example_resource_name>"" {
+  bucket                   = ""<example_resource_id>""
+  ignore_public_acls       = true  # CRITICAL: Ignore public ACLs
+  restrict_public_buckets  = true  # CRITICAL: Restrict public buckets
+}
+```";aws s3api put-public-access-block --bucket <BUCKET_NAME> --public-access-block-configuration IgnorePublicAcls=true,RestrictPublicBuckets=true;"1. In AWS Console, open S3 and select the target bucket
+2. Go to Permissions > Block public access (bucket settings)
+3. Enable only:
+   - Ignore public ACLs
+   - Restrict public buckets
+4. Click Save changes
+5. (Alternatively, to apply account-wide) S3 > Account settings > Block Public Access: enable the same two options and Save";CIS-7.0: 3.1.4 | CIS-1.4: 2.1.5 | CIS-1.5: 2.1.5 | MITRE-ATTACK: T1530 | AWS-Foundational-Security-Best-Practices: S3.8 | KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.10.2 | C5-2025: PS-03.02B, IAM-10.01B, COS-02.01B | CIS-2.0: 2.1.4 | KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.10.2 | NIST-CSF-2.0: ac_3 | CIS-5.0: 2.1.4 | AWS-Account-Security-Onboarding: S3 Block Public Access | CIS-3.0: 2.1.4 | CIS-6.0: 3.1.4 | AWS-Foundational-Technical-Review: S3-001 | CCC-v2025.10: CCC.Logging.CN05.AR01 | SecNumCloud-3.2: 9.7 | AWS-AI-Security-Framework-1.0: AISF-DATA-04 | CIS-4.0.1: 2.1.4;internet-exposed;;;;5.40.0;https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/S3/bucket-public-access-block.html | https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-s3_bucket_level_public_access_block-128529977749-eu-north-1-ce-capstone-config-128529977749;aws;s3_bucket_level_public_access_block;S3 bucket has Block Public Access with IgnorePublicAcls and RestrictPublicBuckets enabled at bucket or account level;Software and Configuration Checks/AWS Security Best Practices/Network Reachability | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | Effects/Data Exposure;PASS;Block Public Access is configured for the S3 Bucket ce-capstone-config-128529977749.;False;s3;;high;AwsS3Bucket;arn:aws:s3:::ce-capstone-config-128529977749;ce-capstone-config-128529977749;;Project=ce-capstone | Environment=prod | Owner=adnan-nooruddin | ManagedBy=terraform;aws;eu-north-1;"**Amazon S3 buckets** are evaluated for **Block Public Access** settings, ensuring `ignore_public_acls` and `restrict_public_buckets` are enabled at the bucket or account scope.
+
+*Account-wide protections, when present, are treated as effective for the bucket.*";"Absent **S3 Block Public Access**, public ACLs or broad policies can grant Internet or cross-account access.
+- Data disclosure (confidentiality)
+- Object overwrite or uploads (integrity)
+- Deletion or outages from misuse (availability)";;Enable **Block Public Access** at account and bucket levels with `block_public_acls`, `ignore_public_acls`, `block_public_policy`, and `restrict_public_buckets` set to `true`. Apply **least privilege** and **defense in depth**. *If public access is required*, narrowly scope policies to fixed principals and conditions.;https://hub.prowler.com/check/s3_bucket_level_public_access_block;"```yaml
+# CloudFormation - enable required S3 Block Public Access settings on a bucket
+Resources:
+  <example_resource_name>:
+    Type: AWS::S3::Bucket
+    Properties:
+      PublicAccessBlockConfiguration:
+        IgnorePublicAcls: true        # CRITICAL: Ignore public ACLs on the bucket/objects
+        RestrictPublicBuckets: true   # CRITICAL: Restrict buckets with public policies to same-account/AWS services
+```";"```hcl
+# Enable required S3 Block Public Access settings on a bucket
+resource ""aws_s3_bucket_public_access_block"" ""<example_resource_name>"" {
+  bucket                   = ""<example_resource_id>""
+  ignore_public_acls       = true  # CRITICAL: Ignore public ACLs
+  restrict_public_buckets  = true  # CRITICAL: Restrict public buckets
+}
+```";aws s3api put-public-access-block --bucket <BUCKET_NAME> --public-access-block-configuration IgnorePublicAcls=true,RestrictPublicBuckets=true;"1. In AWS Console, open S3 and select the target bucket
+2. Go to Permissions > Block public access (bucket settings)
+3. Enable only:
+   - Ignore public ACLs
+   - Restrict public buckets
+4. Click Save changes
+5. (Alternatively, to apply account-wide) S3 > Account settings > Block Public Access: enable the same two options and Save";CIS-7.0: 3.1.4 | CIS-1.4: 2.1.5 | CIS-1.5: 2.1.5 | MITRE-ATTACK: T1530 | AWS-Foundational-Security-Best-Practices: S3.8 | KISA-ISMS-P-2023: 2.6.1, 2.6.2, 2.10.2 | C5-2025: PS-03.02B, IAM-10.01B, COS-02.01B | CIS-2.0: 2.1.4 | KISA-ISMS-P-2023-korean: 2.6.1, 2.6.2, 2.10.2 | NIST-CSF-2.0: ac_3 | CIS-5.0: 2.1.4 | AWS-Account-Security-Onboarding: S3 Block Public Access | CIS-3.0: 2.1.4 | CIS-6.0: 3.1.4 | AWS-Foundational-Technical-Review: S3-001 | CCC-v2025.10: CCC.Logging.CN05.AR01 | SecNumCloud-3.2: 9.7 | AWS-AI-Security-Framework-1.0: AISF-DATA-04 | CIS-4.0.1: 2.1.4;internet-exposed;;;;5.40.0;https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/S3/bucket-public-access-block.html | https://docs.aws.amazon.com/AmazonS3/latest/userguide/access-control-block-public-access.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-s3_bucket_no_mfa_delete-128529977749-eu-north-1-ce-capstone-artifacts-20260901081024819300000002;aws;s3_bucket_no_mfa_delete;S3 bucket has MFA Delete enabled;Software and Configuration Checks/AWS Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | Effects/Data Destruction;FAIL;S3 Bucket ce-capstone-artifacts-20260901081024819300000002 has MFA Delete disabled.;False;s3;;medium;AwsS3Bucket;arn:aws:s3:::ce-capstone-artifacts-20260901081024819300000002;ce-capstone-artifacts-20260901081024819300000002;;Project=ce-capstone | Environment=prod | Owner=adnan-nooruddin | ManagedBy=terraform;aws;eu-north-1;**Amazon S3 buckets** are assessed for **MFA Delete** status. MFA Delete requires a second factor to permanently delete object versions or change `Versioning` configuration. The finding highlights buckets where this protection is not enabled.;"Without **MFA Delete**, a compromised or over-privileged identity can irrevocably purge object history or change versioning.
+
+This erases recovery points, degrading data **availability**, weakening **integrity**, and increasing the blast radius of account compromise or ransomware.";;Enable **MFA Delete** on sensitive, versioned buckets so permanent deletions and `Versioning` changes require a second factor. Apply **least privilege** to restrict version purge actions, enforce **change control**, and combine with **Object Lock** or immutable backups for defense in depth.;https://hub.prowler.com/check/s3_bucket_no_mfa_delete;;;"aws s3api put-bucket-versioning --bucket <BUCKET_NAME> --versioning-configuration Status=Enabled,MFADelete=Enabled --mfa ""<MFA_SERIAL_OR_ARN> <MFA_CODE>""";"1. Sign in to the AWS Management Console as the root user
+2. Open the account menu > Security credentials > Multi-factor authentication (MFA) and assign an MFA device; copy its ARN/serial
+3. From a machine configured to use the root user credentials, run:
+
+```bash
+aws s3api put-bucket-versioning --bucket <BUCKET_NAME> --versioning-configuration Status=Enabled,MFADelete=Enabled --mfa ""<MFA_SERIAL_OR_ARN> <MFA_CODE>""
+```";CIS-7.0: 3.1.2 | CIS-1.4: 2.1.3 | CIS-1.5: 2.1.3 | MITRE-ATTACK: T1485 | AWS-Foundational-Security-Best-Practices: S3.20 | KISA-ISMS-P-2023: 2.5.3, 2.10.2 | C5-2025: AM-07.02B, OPS-16.01B, IAM-04.06B, IAM-09.02B, IAM-09.01AC, PSS-05.01B, PSS-07.02B | CIS-2.0: 2.1.2 | KISA-ISMS-P-2023-korean: 2.5.3, 2.10.2 | AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP02 | CIS-5.0: 2.1.2 | PCI-4.0: 10.3.2.22, 3.5.1.3.27, 8.4.1.5, 8.4.2.5, 8.4.3.5, A1.1.2.18, A3.4.1.20 | CIS-3.0: 2.1.2 | CIS-6.0: 3.1.2 | CCC-v2025.10: CCC.ObjStor.CN07.AR01, CCC.ObjStor.CN07.AR02, CCC.ObjStor.CN07.AR03 | ProwlerThreatScore-1.0: 2.2.1 | CIS-4.0.1: 2.1.2 | NIS2: 11.7.2;identity-access;;;;5.40.0;https://docs.aws.amazon.com/AmazonS3/latest/userguide/MultiFactorAuthenticationDelete.html | https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMFADelete.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-s3_bucket_no_mfa_delete-128529977749-eu-north-1-ce-capstone-config-128529977749;aws;s3_bucket_no_mfa_delete;S3 bucket has MFA Delete enabled;Software and Configuration Checks/AWS Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark | Effects/Data Destruction;FAIL;S3 Bucket ce-capstone-config-128529977749 has MFA Delete disabled.;False;s3;;medium;AwsS3Bucket;arn:aws:s3:::ce-capstone-config-128529977749;ce-capstone-config-128529977749;;Project=ce-capstone | Environment=prod | Owner=adnan-nooruddin | ManagedBy=terraform;aws;eu-north-1;**Amazon S3 buckets** are assessed for **MFA Delete** status. MFA Delete requires a second factor to permanently delete object versions or change `Versioning` configuration. The finding highlights buckets where this protection is not enabled.;"Without **MFA Delete**, a compromised or over-privileged identity can irrevocably purge object history or change versioning.
+
+This erases recovery points, degrading data **availability**, weakening **integrity**, and increasing the blast radius of account compromise or ransomware.";;Enable **MFA Delete** on sensitive, versioned buckets so permanent deletions and `Versioning` changes require a second factor. Apply **least privilege** to restrict version purge actions, enforce **change control**, and combine with **Object Lock** or immutable backups for defense in depth.;https://hub.prowler.com/check/s3_bucket_no_mfa_delete;;;"aws s3api put-bucket-versioning --bucket <BUCKET_NAME> --versioning-configuration Status=Enabled,MFADelete=Enabled --mfa ""<MFA_SERIAL_OR_ARN> <MFA_CODE>""";"1. Sign in to the AWS Management Console as the root user
+2. Open the account menu > Security credentials > Multi-factor authentication (MFA) and assign an MFA device; copy its ARN/serial
+3. From a machine configured to use the root user credentials, run:
+
+```bash
+aws s3api put-bucket-versioning --bucket <BUCKET_NAME> --versioning-configuration Status=Enabled,MFADelete=Enabled --mfa ""<MFA_SERIAL_OR_ARN> <MFA_CODE>""
+```";CIS-7.0: 3.1.2 | CIS-1.4: 2.1.3 | CIS-1.5: 2.1.3 | MITRE-ATTACK: T1485 | AWS-Foundational-Security-Best-Practices: S3.20 | KISA-ISMS-P-2023: 2.5.3, 2.10.2 | C5-2025: AM-07.02B, OPS-16.01B, IAM-04.06B, IAM-09.02B, IAM-09.01AC, PSS-05.01B, PSS-07.02B | CIS-2.0: 2.1.2 | KISA-ISMS-P-2023-korean: 2.5.3, 2.10.2 | AWS-Well-Architected-Framework-Security-Pillar: SEC05-BP02 | CIS-5.0: 2.1.2 | PCI-4.0: 10.3.2.22, 3.5.1.3.27, 8.4.1.5, 8.4.2.5, 8.4.3.5, A1.1.2.18, A3.4.1.20 | CIS-3.0: 2.1.2 | CIS-6.0: 3.1.2 | CCC-v2025.10: CCC.ObjStor.CN07.AR01, CCC.ObjStor.CN07.AR02, CCC.ObjStor.CN07.AR03 | ProwlerThreatScore-1.0: 2.2.1 | CIS-4.0.1: 2.1.2 | NIS2: 11.7.2;identity-access;;;;5.40.0;https://docs.aws.amazon.com/AmazonS3/latest/userguide/MultiFactorAuthenticationDelete.html | https://docs.aws.amazon.com/AmazonS3/latest/userguide/UsingMFADelete.html;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-s3_bucket_secure_transport_policy-128529977749-eu-north-1-ce-capstone-artifacts-20260901081024819300000002;aws;s3_bucket_secure_transport_policy;S3 bucket policy denies requests over insecure transport;Software and Configuration Checks/AWS Security Best Practices/Network Reachability | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark;FAIL;S3 Bucket ce-capstone-artifacts-20260901081024819300000002 does not have a bucket policy, thus it allows HTTP requests.;False;s3;;medium;AwsS3Bucket;arn:aws:s3:::ce-capstone-artifacts-20260901081024819300000002;ce-capstone-artifacts-20260901081024819300000002;;Project=ce-capstone | Environment=prod | Owner=adnan-nooruddin | ManagedBy=terraform;aws;eu-north-1;"**Amazon S3 buckets** are evaluated for a bucket policy that enforces **secure transport** by denying requests when `aws:SecureTransport` is `false`.
+
+Buckets without this explicit denial, or without a policy, are treated as allowing access over insecure transport.";HTTP access exposes object data and auth details to **eavesdropping** and **man-in-the-middle** attacks. Captured **pre-signed URLs** can be replayed to exfiltrate data. Traffic can be intercepted or altered, undermining **confidentiality** and **integrity** of S3 content.;;"Enforce **HTTPS-only** access with a bucket policy that denies requests when `aws:SecureTransport=false`.
+
+Prefer **private access** (VPC endpoints or CloudFront with TLS), avoid S3 website endpoints, apply **least privilege**, use short-lived HTTPS **pre-signed URLs**, and monitor logs for insecure access attempts.";https://hub.prowler.com/check/s3_bucket_secure_transport_policy;"```yaml
+# CloudFormation: Deny non-SSL (HTTP) requests to the S3 bucket
+Resources:
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: <example_resource_name>
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Deny
+            Principal: ""*""
+            Action: s3:*
+            Resource: arn:aws:s3:::<example_resource_name>/*
+            Condition:
+              Bool:
+                aws:SecureTransport: ""false""  # Critical: deny requests not using SSL/TLS
+```";"```hcl
+# Deny non-SSL (HTTP) requests to the S3 bucket
+resource ""aws_s3_bucket_policy"" ""policy"" {
+  bucket = ""<example_resource_name>""
+  policy = jsonencode({
+    Version   = ""2012-10-17""
+    Statement = [{
+      Effect    = ""Deny""
+      Principal = ""*""
+      Action    = ""s3:*""
+      Resource  = ""arn:aws:s3:::<example_resource_name>/*""
+      Condition = {
+        Bool = {
+          ""aws:SecureTransport"" = ""false"" # Critical: deny requests not using SSL/TLS
+        }
+      }
+    }]
+  })
+}
+```";"aws s3api put-bucket-policy --bucket <example_resource_name> --policy '{""Version"":""2012-10-17"",""Statement"":[{""Effect"":""Deny"",""Principal"":""*"",""Action"":""s3:*"",""Resource"":""arn:aws:s3:::<example_resource_name>/*"",""Condition"":{""Bool"":{""aws:SecureTransport"":""false""}}}]}'";"1. In the AWS Console, go to S3 and open the bucket <example_resource_name>
+2. Select the Permissions tab and click Edit in Bucket policy
+3. Paste this policy, replacing the bucket name:
+   ```
+   {
+     ""Version"": ""2012-10-17"",
+     ""Statement"": [
+       {
+         ""Effect"": ""Deny"",
+         ""Principal"": ""*"",
+         ""Action"": ""s3:*"",
+         ""Resource"": ""arn:aws:s3:::<example_resource_name>/*"",
+         ""Condition"": { ""Bool"": { ""aws:SecureTransport"": ""false"" } }
+       }
+     ]
+   }
+   ```
+4. Click Save changes
+";CISA: your-systems-3, your-data-2 | CIS-7.0: 3.1.1 | CIS-1.4: 2.1.2 | CIS-1.5: 2.1.2 | MITRE-ATTACK: T1040 | GDPR: article_32 | AWS-Foundational-Security-Best-Practices: S3.5 | KISA-ISMS-P-2023: 2.7.1, 2.10.2 | HIPAA: 164_308_a_1_ii_b, 164_312_a_2_iv, 164_312_c_1, 164_312_c_2, 164_312_e_1, 164_312_e_2_i, 164_312_e_2_ii | CIS-2.0: 2.1.1 | KISA-ISMS-P-2023-korean: 2.7.1, 2.10.2 | GxP-21-CFR-Part-11: 11.10-c, 11.30 | AWS-Well-Architected-Framework-Security-Pillar: SEC09-BP02 | NIST-CSF-2.0: ds_2, pt_4 | CIS-5.0: 2.1.1 | NIST-800-171-Revision-2: 3_1_13, 3_5_10, 3_13_1, 3_13_5, 3_13_8, 3_13_11, 3_13_16 | PCI-4.0: 1.2.5.15, 2.2.5.15, 2.2.7.19, 4.2.1.1.27, 4.2.1.19, 8.3.2.49 | NIST-800-53-Revision-4: ac_17_2, sc_7, sc_8_1, sc_8 | NIST-800-53-Revision-5: ac_4, ac_4_22, ac_17_2, ac_24_1, au_9_3, ca_9_b, cm_6_a, cm_9_b, ia_5_1_c, pm_11_b, pm_17_b, sc_7_4_b, sc_7_4_g, sc_7_5, sc_8, sc_8_1, sc_8_2, sc_8_3, sc_8_4, sc_8_5, sc_13_a, sc_16_1, sc_23, si_1_a_2 | CIS-3.0: 2.1.1 | ENS-RD2022: mp.com.1.aws.s3.1, mp.com.3.aws.s3.1 | CIS-6.0: 3.1.1 | AWS-Foundational-Technical-Review: S3-001 | NIST-CSF-1.1: ds_2 | CCC-v2025.10: CCC.Core.CN01.AR01, CCC.Core.CN01.AR03 | SecNumCloud-3.2: 10.2 | RBI-Cyber-Security-Framework: annex_i_1_3 | FFIEC: d3-pc-am-b-12, d3-pc-am-b-13, d3-pc-am-b-15 | ProwlerThreatScore-1.0: 4.1.1 | AWS-AI-Security-Framework-1.0: AISF-INFRA-06, AISF-DATA-04 | FedRamp-Moderate-Revision-4: ac-17-2, sc-7, sc-8-1, sc-8, sc-23 | FedRAMP-Low-Revision-4: ac-17, sc-7 | CIS-4.0.1: 2.1.1 | FedRAMP-20x-KSI-Low-25.05C: ksi-svc;encryption;;;;5.40.0;https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/S3/secure-transport.html | https://aws.amazon.com/premiumsupport/knowledge-center/s3-bucket-policy-for-config-rule/;;
+profile: None;2026-09-03 17:54:35.978487;128529977749;;;;;;prowler-aws-s3_bucket_secure_transport_policy-128529977749-eu-north-1-ce-capstone-config-128529977749;aws;s3_bucket_secure_transport_policy;S3 bucket policy denies requests over insecure transport;Software and Configuration Checks/AWS Security Best Practices/Network Reachability | Software and Configuration Checks/Industry and Regulatory Standards/AWS Foundational Security Best Practices | Software and Configuration Checks/Industry and Regulatory Standards/CIS AWS Foundations Benchmark;FAIL;S3 Bucket ce-capstone-config-128529977749 allows requests over insecure transport in the bucket policy.;False;s3;;medium;AwsS3Bucket;arn:aws:s3:::ce-capstone-config-128529977749;ce-capstone-config-128529977749;;Project=ce-capstone | Environment=prod | Owner=adnan-nooruddin | ManagedBy=terraform;aws;eu-north-1;"**Amazon S3 buckets** are evaluated for a bucket policy that enforces **secure transport** by denying requests when `aws:SecureTransport` is `false`.
+
+Buckets without this explicit denial, or without a policy, are treated as allowing access over insecure transport.";HTTP access exposes object data and auth details to **eavesdropping** and **man-in-the-middle** attacks. Captured **pre-signed URLs** can be replayed to exfiltrate data. Traffic can be intercepted or altered, undermining **confidentiality** and **integrity** of S3 content.;;"Enforce **HTTPS-only** access with a bucket policy that denies requests when `aws:SecureTransport=false`.
+
+Prefer **private access** (VPC endpoints or CloudFront with TLS), avoid S3 website endpoints, apply **least privilege**, use short-lived HTTPS **pre-signed URLs**, and monitor logs for insecure access attempts.";https://hub.prowler.com/check/s3_bucket_secure_transport_policy;"```yaml
+# CloudFormation: Deny non-SSL (HTTP) requests to the S3 bucket
+Resources:
+  BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: <example_resource_name>
+      PolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          - Effect: Deny
+            Principal: ""*""
+            Action: s3:*
+            Resource: arn:aws:s3:::<example_resource_name>/*
+            Condition:
+              Bool:
+                aws:SecureTransport: ""false""  # Critical: deny requests not using SSL/TLS
+```";"```hcl
+# Deny non-SSL (HTTP) requests to the S3 bucket
+resource ""aws_s3_bucket_policy"" ""policy"" {
+  bucket = ""<example_resource_name>""
+  policy = jsonencode({
+    Version   = ""2012-10-17""
+    Statement = [{
+      Effect    = ""Deny""
+      Principal = ""*""
+      Action    = ""s3:*""
+      Resource  = ""arn:aws:s3:::<example_resource_name>/*""
+      Condition = {
+        Bool = {
+          ""aws:SecureTransport"" = ""false"" # Critical: deny requests not using SSL/TLS
+        }
+      }
+    }]
+  })
+}
+```";"aws s3api put-bucket-policy --bucket <example_resource_name> --policy '{""Version"":""2012-10-17"",""Statement"":[{""Effect"":""Deny"",""Principal"":""*"",""Action"":""s3:*"",""Resource"":""arn:aws:s3:::<example_resource_name>/*"",""Condition"":{""Bool"":{""aws:SecureTransport"":""false""}}}]}'";"1. In the AWS Console, go to S3 and open the bucket <example_resource_name>
+2. Select the Permissions tab and click Edit in Bucket policy
+3. Paste this policy, replacing the bucket name:
+   ```
+   {
+     ""Version"": ""2012-10-17"",
+     ""Statement"": [
+       {
+         ""Effect"": ""Deny"",
+         ""Principal"": ""*"",
+         ""Action"": ""s3:*"",
+         ""Resource"": ""arn:aws:s3:::<example_resource_name>/*"",
+         ""Condition"": { ""Bool"": { ""aws:SecureTransport"": ""false"" } }
+       }
+     ]
+   }
+   ```
+4. Click Save changes
+";CISA: your-systems-3, your-data-2 | CIS-7.0: 3.1.1 | CIS-1.4: 2.1.2 | CIS-1.5: 2.1.2 | MITRE-ATTACK: T1040 | GDPR: article_32 | AWS-Foundational-Security-Best-Practices: S3.5 | KISA-ISMS-P-2023: 2.7.1, 2.10.2 | HIPAA: 164_308_a_1_ii_b, 164_312_a_2_iv, 164_312_c_1, 164_312_c_2, 164_312_e_1, 164_312_e_2_i, 164_312_e_2_ii | CIS-2.0: 2.1.1 | KISA-ISMS-P-2023-korean: 2.7.1, 2.10.2 | GxP-21-CFR-Part-11: 11.10-c, 11.30 | AWS-Well-Architected-Framework-Security-Pillar: SEC09-BP02 | NIST-CSF-2.0: ds_2, pt_4 | CIS-5.0: 2.1.1 | NIST-800-171-Revision-2: 3_1_13, 3_5_10, 3_13_1, 3_13_5, 3_13_8, 3_13_11, 3_13_16 | PCI-4.0: 1.2.5.15, 2.2.5.15, 2.2.7.19, 4.2.1.1.27, 4.2.1.19, 8.3.2.49 | NIST-800-53-Revision-4: ac_17_2, sc_7, sc_8_1, sc_8 | NIST-800-53-Revision-5: ac_4, ac_4_22, ac_17_2, ac_24_1, au_9_3, ca_9_b, cm_6_a, cm_9_b, ia_5_1_c, pm_11_b, pm_17_b, sc_7_4_b, sc_7_4_g, sc_7_5, sc_8, sc_8_1, sc_8_2, sc_8_3, sc_8_4, sc_8_5, sc_13_a, sc_16_1, sc_23, si_1_a_2 | CIS-3.0: 2.1.1 | ENS-RD2022: mp.com.1.aws.s3.1, mp.com.3.aws.s3.1 | CIS-6.0: 3.1.1 | AWS-Foundational-Technical-Review: S3-001 | NIST-CSF-1.1: ds_2 | CCC-v2025.10: CCC.Core.CN01.AR01, CCC.Core.CN01.AR03 | SecNumCloud-3.2: 10.2 | RBI-Cyber-Security-Framework: annex_i_1_3 | FFIEC: d3-pc-am-b-12, d3-pc-am-b-13, d3-pc-am-b-15 | ProwlerThreatScore-1.0: 4.1.1 | AWS-AI-Security-Framework-1.0: AISF-INFRA-06, AISF-DATA-04 | FedRamp-Moderate-Revision-4: ac-17-2, sc-7, sc-8-1, sc-8, sc-23 | FedRAMP-Low-Revision-4: ac-17, sc-7 | CIS-4.0.1: 2.1.1 | FedRAMP-20x-KSI-Low-25.05C: ksi-svc;encryption;;;;5.40.0;https://www.trendmicro.com/trendaivisiononecloudriskmanagement/knowledge-base/aws/S3/secure-transport.html | https://aws.amazon.com/premiumsupport/knowledge-center/s3-bucket-policy-for-config-rule/;;
